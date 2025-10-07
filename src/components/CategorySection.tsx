@@ -18,19 +18,19 @@ const categories = [
   },
   {
     name: "Cakes",
-    image: "/assets/img1.png",
+    image: "/assets/img2.png",
     tagline: "Celebrate every moment with sweetness!",
   },
   {
     name: "Breads",
-    image: "/assets/img1.png",
+    image: "/assets/img2.png",
     tagline: "Warm, fresh, and made with love!",
   },
 ];
 
 function CategorySection() {
   return (
-    <section className="py-16 px-4 md:py-20 bg-pink-50">
+    <section className="py-16 px-4 md:py-20 bg-pink-50 mt-8">
       <div className="container mx-auto max-w-7xl">
         {/* Section heading */}
         <h2 className="text-5xl md:text-6xl lg:text-7xl  text-center mb-16 text-balance font-kaushan">

@@ -10,27 +10,21 @@ import {
 
 function Footer() {
   return (
-    <footer className="bg-pink-50 border-t-4 border-pink-200 px-6 py-8 mt-8">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer className="bg-[#E6E3E3]  px-24 py-14 mt-8">
+      <div className="max-w-8xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 ">
         {/* Brand */}
-        <div>
-          <div
-            className="text-[#C967AC] text-xl font-kaushan mb-2"
-            style={{ fontFamily: '"Kaushan Script", cursive' }}
-          >
+        <div className="">
+          <div className="text-[#C967AC] text-2xl font-kaushan mb-2">
             Koket Bakery And Pastry
           </div>
-          <p className="text-gray-700 text-sm">
+          <p className="text-gray-700 text-sm max-w-xs">
             Creating memorable moments with delicious custom cakes and desserts
             since 2020.
           </p>
         </div>
         {/* Quick Links */}
-        <div>
-          <div
-            className="text-[#C967AC] font-kaushan mb-2"
-            style={{ fontFamily: '"Kaushan Script", cursive' }}
-          >
+        <div className="">
+          <div className="text-[#C967AC] font-kaushan mb-2 text-xl">
             Quick Links
           </div>
           <ul className="space-y-1">
@@ -58,10 +52,7 @@ function Footer() {
         </div>
         {/* Contact */}
         <div>
-          <div
-            className="text-[#C967AC] font-kaushan mb-2"
-            style={{ fontFamily: '"Kaushan Script", cursive' }}
-          >
+          <div className="text-[#C967AC] font-kaushan mb-2 text-xl">
             Contact
           </div>
           <ul className="text-sm space-y-1">
@@ -73,10 +64,7 @@ function Footer() {
         </div>
         {/* Social */}
         <div>
-          <div
-            className="text-[#C967AC] font-kaushan mb-2"
-            style={{ fontFamily: '"Kaushan Script", cursive' }}
-          >
+          <div className="text-[#C967AC] font-kaushan mb-2 text-xl">
             Follow Us
           </div>
           <div className="flex gap-4 text-2xl mt-2">
@@ -95,7 +83,7 @@ function Footer() {
           </div>
         </div>
       </div>
-      <div className="flex items-center justify-center mt-8 text-gray-800 text-base gap-2">
+      <div className="flex  items-center justify-center mt-8 text-gray-800 text-base gap-2">
         <FaRegCopyright />
         <span>Velour Cake. All Rights reserved</span>
       </div>

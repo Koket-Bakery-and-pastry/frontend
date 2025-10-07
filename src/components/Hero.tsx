@@ -4,10 +4,10 @@ import Link from "next/link";
 function Hero() {
   return (
     <section className="bg-pink-50 py-32 px-20 flex flex-col items-center text-center ">
-      <h1 className="font-kaushan text-5xl md:text-8xl text-black mb-4">
+      <h1 className="font-kaushan text-5xl md:text-8xl text-black mb-4 leading-tight">
         Delicious Cakes for <br /> Every Celebration
       </h1>
-      <p className="text-lg md:text-2xl text-gray-700 max-w-5xl mx-auto mt-8 mb-14">
+      <p className="text-lg md:text-2xl text-gray-700 max-w-5xl mx-auto mt-8 mb-14 leading-relaxed">
         From birthdays to weddings, we create custom cakes that taste as amazing
         as they look. Order online and make your special moments sweeter.
       </p>

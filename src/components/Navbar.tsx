@@ -12,15 +12,15 @@ function Navbar() {
   ];
 
   return (
-    <nav className="w-full   px-24 py-3 flex items-center justify-between">
+    <nav className="w-full   px-24 py-6 flex items-center justify-between">
       {/* Logo */}
       <div className="flex flex-col">
         <span className="text-[#C967AC] text-2xl font-kaushan ">
           Koket Bakery
         </span>
-        <span className="text-[#C967AC] text-2xl font-kaushan ">
+        {/* <span className="text-[#C967AC] text-2xl font-kaushan ">
           And Pastry
-        </span>
+        </span> */}
       </div>
 
       {/* Navigation Links */}

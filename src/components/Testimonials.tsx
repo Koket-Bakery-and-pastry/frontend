@@ -29,15 +29,15 @@ const testimonials = [
 
 function Testimonials() {
   return (
-    <section className="bg-pink-50 py-12 px-32">
+    <section className="bg-[#FFFAFF] py-12 px-24 mt-8">
       <h2 className="text-3xl md:text-4xl font-kaushan text-center mb-12">
         What Our Customers Say
       </h2>
-      <div className="flex flex-col md:flex-row justify-center items-stretch gap-6">
+      <div className="flex flex-col md:flex-row justify-center items-stretch gap-16">
         {testimonials.map((t, i) => (
           <div
             key={i}
-            className="bg-white rounded-xl shadow-md p-6 w-full md:w-72 flex flex-col mb-4 md:mb-0"
+            className="bg-white rounded-xl shadow-lg p-6 w-full md:w-72 flex flex-col mb-4 md:mb-0"
           >
             <div className="flex mb-2">
               {Array.from({ length: t.rating }).map((_, idx) => (
