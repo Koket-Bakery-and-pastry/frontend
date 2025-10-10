@@ -10,12 +10,12 @@ import {
 export default function Home() {
   return (
     <>
-      <Hero />
+      {/* <Hero />
       <CategorySection />
       <FeaturedSection />
       <OurValues />
       <Testimonials />
-      <CallToAction />
+      <CallToAction /> */}
     </>
   );
 }
