@@ -7,7 +7,7 @@ function Hero() {
       <h1 className="font-kaushan text-4xl xs:text-6xl sm:text-7xl lg:text-8xl text-black  md:mb-4 leading-tight">
         Delicious Cakes for <br /> Every Celebration
       </h1>
-      <p className="text-sm sm:text-lg md:text-2xl text-gray-700 max-w-5xl mx-auto mt-8 mb-14 leading-relaxed">
+      <p className="text-sm xs:text-base sm:text-lg md:text-2xl text-gray-700 max-w-5xl mx-auto mt-8 mb-14 leading-relaxed">
         From birthdays to weddings, we create custom cakes that taste as amazing
         as they look. Order online and make your special moments sweeter.
       </p>
