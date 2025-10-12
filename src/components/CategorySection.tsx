@@ -54,7 +54,7 @@ const cardVariants: Variants = {
 
 function CategorySection() {
   return (
-    <section className=" bg-pink-50 mt-8 section-spacing ">
+    <section className=" bg-[linear-gradient(135deg,#FBEFF7_0%,#F8EFFA_50%,#F8EFFA_100%)] mt-8 section-spacing ">
       <div className="mx-auto max-w-7xl">
         {/* Section heading */}
         <motion.h2
@@ -62,7 +62,7 @@ function CategorySection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-3xl xs:text-5xl md:text-6xl lg:text-7xl text-center mb-16 text-balance font-kaushan"
+          className="text-3xl md:text-5xl xl:text-6xl 2xl:text-7xl text-center mb-16 text-balance font-kaushan"
         >
           Shop by Category
         </motion.h2>
@@ -73,14 +73,14 @@ function CategorySection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 lg:gap-12"
+          className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-8 lg:gap-12"
         >
           {categories.map((category, index) => (
             <motion.div
               key={index}
               variants={cardVariants}
               whileHover={{ scale: 1.02 }}
-              className="flex flex-col group cursor-pointer overflow-hidden transition-transform px-8 xs:px-0 max-w- mx-"
+              className="flex flex-col group cursor-pointer overflow-hidden transition-transform px-8 md:px-0 "
             >
               <Card className="shadow-none border-none pt-0 ">
                 {/* Image container */}
@@ -100,8 +100,8 @@ function CategorySection() {
               </Card>
 
               {/* Tagline box */}
-              <div className="rounded-lg py-4 px-4 text-center -mt-8 max-w-[200px] xl:max-w-[300px] bg-[#E8BEDB] mx-auto">
-                <p className="text-sm sm:text-base xl:text-xl font-semibold text-secondary-foreground leading-relaxed md:max-w-[170px] xl:max-w-[250px]">
+              <div className="rounded-lg py-4 px-4 text-center -mt-8 max-w-[180px] xs:max-w-[200px] sm:max-w-[220px] 2xl:max-w-[230px] 3xl:max-w-[300px] bg-[#E8BEDB] mx-auto">
+                <p className="text-sm 2xl:text-base 3xl:text-xl font-semibold text-secondary-foreground leading-relaxed md:max-w-[170px] xl:max-w-[250px]">
                   {category.tagline}
                 </p>
               </div>

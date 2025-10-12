@@ -3,7 +3,7 @@ import Link from "next/link";
 
 function Hero() {
   return (
-    <section className="bg-pink-50   flex flex-col items-center text-center section-spacing ">
+    <section className="bg-[#F8EFFA]   flex flex-col items-center text-center section-spacing ">
       <h1 className="font-kaushan text-4xl md:text-5xl lg:text-7xl 2xl:text-8xl text-black  md:mb-4 leading-tight">
         Delicious Cakes for <br /> Every Celebration
       </h1>
