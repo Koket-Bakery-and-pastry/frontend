@@ -23,30 +23,30 @@ function Navbar() {
   return (
     <>
       {/* Desktop Navbar */}
-      <nav className="w-full hidden md:flex py-6 items-center justify-between px-4 sm:px-6 md:px-10 lg:px-16 xl:px-24">
+      <nav className="w-full hidden xl:flex py-8 items-center justify-between px-4 lg:px-6 xl:px-10 2xl:px-16 3xl:px-24">
         {/* Logo */}
         <div className="flex flex-col">
-          <span className="text-[#C967AC] text-xl lg:text-3xl font-kaushan">
+          <span className="text-[#C967AC] text-xl 2xl:text-3xl font-kaushan">
             Koket Bakery
           </span>
         </div>
         {/* Navigation Links */}
-        <div className="flex-1 flex justify-center gap-6 lg:gap-10">
+        <div className="flex-1 flex justify-center gap-6 2xl:gap-10">
           {NavLinks.map((link) => (
             <Link
               key={link.name}
               href={link.href}
-              className="lg:text-lg hover:text-[#C967AC] transition font-normal"
+              className="2xl:text-lg hover:text-[#C967AC] transition font-normal"
             >
               {link.name}
             </Link>
           ))}
         </div>
         {/* Cart and Login */}
-        <div className="flex items-center gap-4 lg:gap-8">
+        <div className="flex items-center gap-4 2xl:gap-8">
           <Link
             href="/cart"
-            className="text-[#C967AC] text-xl lg:text-2xl transition-colors duration-200 hover:text-[#ae5d95] hover:scale-110 focus:outline-none focus:ring-2 focus:ring-[#C967AC] rounded-full"
+            className="text-[#C967AC] text-xl 2xl:text-2xl transition-colors duration-200 hover:text-[#ae5d95] hover:scale-110 focus:outline-none focus:ring-2 focus:ring-[#C967AC] rounded-full"
           >
             <FaShoppingCart />
           </Link>
@@ -60,7 +60,7 @@ function Navbar() {
       </nav>
 
       {/* Mobile Navbar with shadcn Sheet */}
-      <nav className="w-full flex md:hidden px-4 py-4 items-center justify-between bg-white border-b">
+      <nav className="w-full flex xl:hidden px-4 py-4 items-center justify-between bg-white border-b">
         {/* Logo */}
         <span className="text-[#C967AC] text-xl font-kaushan">
           Koket Bakery
