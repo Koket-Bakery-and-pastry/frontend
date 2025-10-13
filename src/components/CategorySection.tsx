@@ -54,7 +54,7 @@ const cardVariants: Variants = {
 
 function CategorySection() {
   return (
-    <section className=" bg-[linear-gradient(135deg,#FBEFF7_0%,#F8EFFA_50%,#F8EFFA_100%)] mt-8 section-spacing ">
+    <section className=" bg-[linear-gradient(135deg,#FBEFF7_0%,#F8EFFA_50%,#F8EFFA_100%)] mt-8 section-spacing min-h-screen">
       <div className="mx-auto max-w-7xl">
         {/* Section heading */}
         <motion.h2
@@ -73,18 +73,18 @@ function CategorySection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-8 lg:gap-12"
+          className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-8 lg:gap-12"
         >
           {categories.map((category, index) => (
             <motion.div
               key={index}
               variants={cardVariants}
               whileHover={{ scale: 1.02 }}
-              className="flex flex-col group cursor-pointer overflow-hidden transition-transform px-8 md:px-0 "
+              className="flex flex-col group cursor-pointer overflow-hidden transition-transform px-8 md:px-0  "
             >
               <Card className="shadow-none border-none pt-0 ">
                 {/* Image container */}
-                <div className="relative aspect-square overflow-hidden rounded-lg xl:mb-3 ">
+                <div className="relative aspect-square overiflow-hidden rounded-lg xl:mb-3 ">
                   <Image
                     src={category.image || "/placeholder.svg"}
                     alt={category.name}
