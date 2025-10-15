@@ -16,7 +16,7 @@ import { motion, Variants } from "framer-motion"; // ✅ import motion
 const categories = [
   {
     name: "Cookies",
-    image: "/assets/img1.png",
+    image: "/assets/img2.png",
     tagline: "One bite, endless smiles!  love at first bite!",
   },
   {
@@ -54,7 +54,7 @@ const cardVariants: Variants = {
 
 function CategorySection() {
   return (
-    <section className=" bg-[linear-gradient(135deg,#FBEFF7_0%,#F8EFFA_50%,#F8EFFA_100%)] mt-8 section-spacing min-h-screen">
+    <section className=" bg-[linear-gradient(135deg,#FBEFF7_0%,#F8EFFA_50%,#F8EFFA_100%)] mt-8 section-spacing ">
       <div className="mx-auto max-w-7xl">
         {/* Section heading */}
         <motion.h2
@@ -80,9 +80,9 @@ function CategorySection() {
               key={index}
               variants={cardVariants}
               whileHover={{ scale: 1.02 }}
-              className="flex flex-col group cursor-pointer overflow-hidden transition-transform px-8 md:px-0  "
+              className="flex flex-col group cursor-pointer overflow-hidden transition-transform px-8 md:px-0   "
             >
-              <Card className="shadow-none border-none pt-0 ">
+              <Card className="shadow-none border-none pt-0 gap-4 ">
                 {/* Image container */}
                 <div className="relative aspect-square overiflow-hidden rounded-lg xl:mb-3 ">
                   <Image
@@ -100,8 +100,12 @@ function CategorySection() {
               </Card>
 
               {/* Tagline box */}
-              <div className="rounded-lg py-4 px-4 text-center -mt-8 max-w-[180px] xs:max-w-[200px] sm:max-w-[220px] 2xl:max-w-[230px] 3xl:max-w-[300px] bg-[#E8BEDB] mx-auto">
-                <p className="text-sm 2xl:text-base 3xl:text-xl font-semibold text-secondary-foreground leading-relaxed md:max-w-[170px] xl:max-w-[250px]">
+              <div
+                className="flex items-center justify-center rounded-lg py-3 px-4 text-center -mt-8 
+  bg-[#E8BEDB] w-fit mx-auto 
+  max-w-[80%] sm:max-w-[220px] xl:max-w-[250px]"
+              >
+                <p className="text-xs lg:text-base font-semibold text-secondary-foreground leading-relaxed">
                   {category.tagline}
                 </p>
               </div>
