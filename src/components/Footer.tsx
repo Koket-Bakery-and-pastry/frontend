@@ -1,3 +1,4 @@
+// ...existing code...
 import React from "react";
 import Link from "next/link";
 import {
@@ -10,24 +11,25 @@ import {
 
 function Footer() {
   return (
-    <footer className="bg-[#E6E3E3]  px-24 py-14 mt-8">
-      <div className="max-w-8xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 ">
+    <footer className="bg-[#E6E3E3] px-6 md:px-12 lg:px-24 py-8 md:py-12 mt-8">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
         {/* Brand */}
-        <div className="">
-          <div className="text-[#C967AC] text-2xl font-kaushan mb-2">
+        <div className="flex flex-col">
+          <div className="text-[#C967AC] text-xl sm:text-2xl font-kaushan mb-2">
             Koket Bakery And Pastry
           </div>
-          <p className="text-gray-700 text-sm max-w-xs">
+          <p className="text-gray-700 text-sm sm:text-sm max-w-md">
             Creating memorable moments with delicious custom cakes and desserts
             since 2020.
           </p>
         </div>
+
         {/* Quick Links */}
-        <div className="">
-          <div className="text-[#C967AC] font-kaushan mb-2 text-xl">
+        <div>
+          <div className="text-[#C967AC] font-kaushan mb-2 text-lg sm:text-xl">
             Quick Links
           </div>
-          <ul className="space-y-1">
+          <ul className="space-y-2 text-sm">
             <li>
               <Link href="/products" className="hover:text-pink-400">
                 Products
@@ -50,24 +52,34 @@ function Footer() {
             </li>
           </ul>
         </div>
+
         {/* Contact */}
         <div>
-          <div className="text-[#C967AC] font-kaushan mb-2 text-xl">
+          <div className="text-[#C967AC] font-kaushan mb-2 text-lg sm:text-xl">
             Contact
           </div>
           <ul className="text-sm space-y-1">
-            <li>123, Bakery Street</li>
+            <li className="break-words">123, Bakery Street</li>
             <li>Adama City, SC 12345</li>
             <li>Phone: (+251) 900-123-456</li>
-            <li>Email: hello@sweetcake.com</li>
+            <li>
+              Email:{" "}
+              <Link
+                href="mailto:hello@sweetcake.com"
+                className="hover:text-pink-400"
+              >
+                hello@sweetcake.com
+              </Link>
+            </li>
           </ul>
         </div>
+
         {/* Social */}
         <div>
-          <div className="text-[#C967AC] font-kaushan mb-2 text-xl">
+          <div className="text-[#C967AC] font-kaushan mb-2 text-lg sm:text-xl">
             Follow Us
           </div>
-          <div className="flex gap-4 text-2xl mt-2">
+          <div className="flex gap-4 mt-2 text-2xl sm:text-3xl">
             <a href="#" aria-label="Facebook" className="hover:text-pink-400">
               <FaFacebookF />
             </a>
@@ -83,9 +95,24 @@ function Footer() {
           </div>
         </div>
       </div>
-      <div className="flex  items-center justify-center mt-8 text-gray-800 text-base gap-2">
-        <FaRegCopyright />
-        <span>Velour Cake. All Rights reserved</span>
+
+      <div className="mt-8 border-t border-[#DBD7D7] pt-6">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-gray-800 text-sm sm:text-base">
+            <FaRegCopyright />
+            <span>Velour Cake. All Rights reserved</span>
+          </div>
+
+          <div className="text-sm text-gray-600">
+            <span className="hidden sm:inline">Designed with care • </span>
+            <Link href="/terms" className="hover:text-pink-400 mr-2">
+              Terms
+            </Link>
+            <Link href="/privacy" className="hover:text-pink-400">
+              Privacy
+            </Link>
+          </div>
+        </div>
       </div>
     </footer>
   );

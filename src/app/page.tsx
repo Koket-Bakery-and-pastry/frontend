@@ -14,8 +14,8 @@ export default function Home() {
       <CategorySection />
       <FeaturedSection />
       <OurValues />
-      {/* <Testimonials />
-      <CallToAction /> */}
+      <Testimonials />
+      <CallToAction />
     </>
   );
 }

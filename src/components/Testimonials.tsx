@@ -1,3 +1,4 @@
+// ...existing code...
 import React from "react";
 
 const testimonials = [
@@ -8,46 +9,51 @@ const testimonials = [
     rating: 5,
   },
   {
-    name: "Michael Chen",
+    name: "Aisha Rahman",
     review:
-      "Ordered a custom birthday cake for my daughter and it exceeded all expectations. The attention to detail was incredible!",
+      "Beautiful cake and amazing service — exactly what we wanted for the celebration. Highly recommend!",
     rating: 5,
   },
   {
-    name: "Michael Chen",
+    name: "Daniel Kim",
     review:
-      "Ordered a custom birthday cake for my daughter and it exceeded all expectations. The attention to detail was incredible!",
+      "Flavors were spot on and the design was flawless. Will order again for sure.",
     rating: 5,
   },
   {
-    name: "Michael Chen",
+    name: "Sofia Martinez",
     review:
-      "Ordered a custom birthday cake for my daughter and it exceeded all expectations. The attention to detail was incredible!",
+      "Great customer support and timely delivery. The cake arrived fresh and delicious!",
     rating: 5,
   },
 ];
 
 function Testimonials() {
   return (
-    <section className="bg-[#FFFAFF] py-12 px-24 mt-8">
+    <section className="bg-[#FFFAFF] section-spacing">
       <h2 className="text-3xl md:text-4xl font-kaushan text-center mb-12">
         What Our Customers Say
       </h2>
-      <div className="flex flex-col md:flex-row justify-center items-stretch gap-16">
+
+      <div className=" grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-4 gap-6 items-stretch">
         {testimonials.map((t, i) => (
           <div
             key={i}
-            className="bg-white rounded-xl shadow-lg p-6 w-full md:w-72 flex flex-col mb-4 md:mb-0"
+            className="bg-white rounded-xl shadow-lg p-6 flex flex-col"
           >
-            <div className="flex mb-2">
+            <div className="flex mb-3">
               {Array.from({ length: t.rating }).map((_, idx) => (
-                <span key={idx} className="text-yellow-400 text-lg">
+                <span key={idx} className="text-yellow-400 text-lg mr-1">
                   &#9733;
                 </span>
               ))}
             </div>
-            <p className="text-gray-800 mb-4">{t.review}</p>
-            <span className="font-bold text-black">{t.name}</span>
+
+            <p className="text-gray-800 mb-4 flex-1 overflow-hidden line-clamp-4">
+              {t.review}
+            </p>
+
+            <span className="font-bold text-black mt-4">{t.name}</span>
           </div>
         ))}
       </div>
@@ -56,3 +62,4 @@ function Testimonials() {
 }
 
 export default Testimonials;
+// ...existing code...
