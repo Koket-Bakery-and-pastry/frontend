@@ -10,9 +10,9 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-white">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-12">
+          <div className=" space-y-12">
             {/* Header */}
             <div className="text-center">
               <h1 className="text-4xl md:text-5xl font-serif italic mb-3 text-foreground">
@@ -25,7 +25,7 @@ export default function ContactPage() {
             </div>
 
             {/* Contact Method Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               <ContactMethodCard
                 icon={Phone}
                 label="Cup Cakes"
@@ -59,13 +59,6 @@ export default function ContactPage() {
               <LocationSection />
             </div>
           </div>
-
-          {/* Sidebar */}
-          {/* <div className="lg:col-span-1">
-            <div className="sticky top-8">
-              <BookingHoursSidebar />
-            </div>
-          </div> */}
         </div>
       </div>
     </div>

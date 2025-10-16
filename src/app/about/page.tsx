@@ -6,7 +6,7 @@ export default function AboutPage() {
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-white">
       <div className="container mx-auto px-4 py-12 max-w-4xl">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 ">
           <h1 className="text-4xl md:text-5xl font-serif italic mb-3 text-foreground">
             About Sweet Delights
           </h1>
