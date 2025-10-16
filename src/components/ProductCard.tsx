@@ -21,7 +21,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <img src={image} alt={name} className="w-full h-72 object-cover" />
       <div className="p-5">
         <h3 className="font-bold text-2xl mb-1">{name}</h3>
-        <p className="text-gray-500 text-lg mb-4">{description}</p>
+        <p className="text-gray-500 text-lg mb-4 line-clamp-2">{description}</p>
         <div className="flex items-center justify-between">
           <span className="text-[#C967AC] font-bold text-2xl">{price}</span>
           <button

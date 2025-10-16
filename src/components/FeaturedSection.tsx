@@ -50,17 +50,19 @@ function FeaturedSection() {
   ];
 
   return (
-    <section className=" bg-pink-50 py-10 mt-8">
-      <h1 className="text-center text-3xl font-bold my-32 font-kaushan  ">
-        Featured Products
-      </h1>
+    <section className=" section-spacing bg-pink-50 mt-8">
+      <div className="pb-16  w-full">
+        <h1 className="text-3xl md:text-5xl xl:text-6xl 2xl:text-7xl text-center mb-16 text-balance font-kaushan">
+          Featured Products
+        </h1>
+      </div>
 
-      <div className=" mx-32 my-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-10 ">
-        {/* <h1>Koket Bakery and Pastry Featured Products</h1> */}
-
+      <div className=" 2xl:my-16 grid grid-cols-1 lg:grid-cols-2  2xl:grid-cols-3 gap-6 3xl:gap-10 ">
         {products.map((product, index) => (
           <div
-            className={`${index === 1 || index === 4 ? "-mt-28" : ""} mx-auto`}
+            className={`${
+              index === 1 || index === 4 ? "2xl:-mt-28" : ""
+            } mx-auto`}
             key={product.id}
           >
             <ProductCard
@@ -76,8 +78,8 @@ function FeaturedSection() {
           </div>
         ))}
       </div>
-      <div className="flex justify-center items-center mb-16">
-        <Button className="py-6 bg-[#C967AC] hover:bg-[#C967AC] px-10 text-lg -mt-20">
+      <div className="flex justify-center items-center mb-16 py-6">
+        <Button className="py-6 bg-[#C967AC] hover:bg-[#C967AC] md:px-10 md:text-lg 2xl:-mt-20">
           View All Featured Products
         </Button>
       </div>
