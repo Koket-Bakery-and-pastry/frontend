@@ -12,8 +12,6 @@ import {
 } from "@/components/ui/card";
 import Image from "next/image";
 import { motion, Variants } from "framer-motion"; // ✅ import motion
-import { Forward, Plus } from "lucide-react";
-import Link from "next/link";
 
 const categories = [
   {
@@ -24,12 +22,12 @@ const categories = [
   {
     name: "Cakes",
     image: "/assets/img2.png",
-    tagline: "One bite, endless smiles!  love at first bite!",
+    tagline: "Celebrate every moment with sweetness!",
   },
   {
     name: "Breads",
     image: "/assets/img2.png",
-    tagline: "One bite, endless smiles!  love at first bite!,",
+    tagline: "Warm, fresh, and made with love!",
   },
 ];
 
@@ -56,7 +54,7 @@ const cardVariants: Variants = {
 
 function CategorySection() {
   return (
-    <section className=" bg-[linear-gradient(135deg,#FBEFF7_0%,#F8EFFA_50%,#F8EFFA_100%)] mt-8 section-spacing ">
+    <section className=" bg-[linear-gradient(135deg,#FBEFF7_0%,#F8EFFA_50%,#F8EFFA_100%)] mt-8 section-spacing min-h-screen">
       <div className="mx-auto max-w-7xl">
         {/* Section heading */}
         <motion.h2
@@ -70,41 +68,46 @@ function CategorySection() {
         </motion.h2>
 
         {/* Category grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-8 lg:gap-12">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-8 lg:gap-12"
+        >
           {categories.map((category, index) => (
-            <div key={index} className="group relative pb-20">
-              {/* Image Container */}
-              <div className="relative rounded-xl overflow-hidden">
-                <div className="aspect-[3.2/3] relative">
+            <motion.div
+              key={index}
+              variants={cardVariants}
+              whileHover={{ scale: 1.02 }}
+              className="flex flex-col group cursor-pointer overflow-hidden transition-transform px-8 md:px-0   "
+            >
+              <Card className="shadow-none border-none pt-0 gap-4 ">
+                {/* Image container */}
+                <div className="relative aspect-square overiflow-hidden rounded-lg xl:mb-3 ">
                   <Image
                     src={category.image || "/placeholder.svg"}
                     alt={category.name}
                     fill
-                    className="object-cover"
+                    className="object-cover transition-transform group-hover:scale-105 width-1/2 "
                   />
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 bg-gradient-to-b from-[#D9D9D9] to-[#D9D9D9]/40 transition-all duration-500 ease-in-out group-hover:opacity-100">
-                    <div className="flex gap-4 transform translate-y-4 transition-transform duration-500 ease-in-out group-hover:translate-y-0">
-                      <Link
-                        href={"/"}
-                        className="p-5 rounded-full bg-secondary/60 hover:bg-secondary/80 transition-colors duration-300"
-                      >
-                        <Plus className="w-5 h-5 text-white" />
-                      </Link>
-                    </div>
-                  </div>
                 </div>
-              </div>
 
-              {/* Content */}
-              <div className="absolute bottom-0 left-6 right-6 px-2 py-6 md:py-6 lg:py-6 rounded-xl bg-[#E8BEDB] border shadow-xl text-foreground transition-all duration-500 ease-in-out transform group-hover:translate-y-2 ">
-                <h3 className="text-xl font-semibold mb-2">{category.name}</h3>
-                <p className="text-sm lg:text-base 3xl:text-lg">
+                {/* Category name */}
+                <h3 className="text-2xl lg:text-3xl font-bold text-center pb-8 text-foreground">
+                  {category.name}
+                </h3>
+              </Card>
+
+              {/* Tagline box */}
+              <div className="flex items-center justify-center rounded-lg py-4 px-4 text-center -mt-8 max-w-[180px] xs:max-w-[200px] sm:max-w-[220px]  2xl:max-w-[230px] 3xl:max-w-[300px] bg-[#E8BEDB]   mx-auto">
+                <p className="text-sm 2xl:text-base 3xl:text-xl font-semibold text-secondary-foreground leading-relaxed md:max-w-[170px] xl:max-w-[250px]">
                   {category.tagline}
                 </p>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
