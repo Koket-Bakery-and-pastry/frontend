@@ -84,13 +84,14 @@ function CategorySection() {
             >
               <Card className="shadow-none border-none pt-0 gap-4 ">
                 {/* Image container */}
-                <div className="relative aspect-square overiflow-hidden rounded-lg xl:mb-3 ">
+                <div className="group relative aspect-square overflow-hidden rounded-lg xl:mb-3">
                   <Image
                     src={category.image || "/placeholder.svg"}
                     alt={category.name}
                     fill
-                    className="object-cover transition-transform group-hover:scale-105 width-1/2 "
+                    className="object-cover transition-transform group-hover:scale-105"
                   />
+                  <div className="absolute inset-0 bg-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
 
                 {/* Category name */}

@@ -15,7 +15,6 @@ function Navbar() {
   const NavLinks = [
     { name: "Home", href: "/" },
     { name: "Products", href: "/products" },
-    { name: "Custom Order", href: "/custom-cake" },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
   ];

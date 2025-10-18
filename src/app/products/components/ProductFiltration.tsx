@@ -1,6 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { FaSearch } from "react-icons/fa";
+import Link from "next/link";
+import { FaSearch, FaBars } from "react-icons/fa";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 const categories = [
   "All Products",
@@ -16,7 +23,6 @@ const sortOptions = [
   { label: "Price: High to Low", value: "priceDesc" },
 ];
 
-// filter options per top-level category (user provided catalogue)
 const filterOptionsMap: Record<string, string[]> = {
   "All Products": ["All Products"],
   Cake: [
@@ -41,7 +47,7 @@ const filterOptionsMap: Record<string, string[]> = {
     "Marmalade bread",
   ],
   Cookies: ["All Cookies", "½kg - 250 birr", "2 kg - 500 birr"],
-  "Fondant Cake": [], // coming soon -> empty list
+  "Fondant Cake": [], // coming soon
 };
 
 function ProductFiltration() {
@@ -53,7 +59,15 @@ function ProductFiltration() {
   const [selectedSort, setSelectedSort] = useState(sortOptions[0].value);
   const [showSortDropdown, setShowSortDropdown] = useState(false);
 
-  // Update filter options when top-level category changes
+  // items with ids for mobile dropdown
+  const items = categories.map((label) => ({
+    id: label.replace(/\s+/g, "-").toLowerCase(),
+    label,
+  }));
+  const activeTabItem =
+    items.find((it) => it.label === selectedCategory) ?? items[0];
+
+  // keep selectedFilter in sync with selectedCategory
   useEffect(() => {
     const opts = filterOptionsMap[selectedCategory] ?? ["All Products"];
     setSelectedFilter(opts[0]);
@@ -62,73 +76,84 @@ function ProductFiltration() {
   const currentFilterOptions = filterOptionsMap[selectedCategory] ?? [];
   const isComingSoon = currentFilterOptions.length === 0;
 
+  function handleTabClick(label: string) {
+    setSelectedCategory(label);
+  }
+
   return (
     <div className="bg-[#FFFAFF] py-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-16">
-        {/* Categories: dropdown on small screens, tabs on md+ */}
-        <div className="mb-6">
-          {/* small screens: dropdown */}
-          <div className="block md:hidden max-w-xs">
-            <label htmlFor="category-select" className="sr-only">
-              Category
-            </label>
-            <div className="relative">
-              <select
-                id="category-select"
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="appearance-none w-full bg-white border rounded-lg px-4 py-2 pr-10 font-semibold text-sm"
-                aria-label="Select category"
-              >
-                {categories.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
-              <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-600">
-                &#9662;
-              </span>
-            </div>
-            {selectedCategory === "Fondant Cake" && (
-              <div className="mt-2 text-xs text-gray-600">
-                Fondant Cake is coming soon —{" "}
-                <a
-                  href={`mailto:hello@sweetcake.com?subject=Notify me when ${encodeURIComponent(
-                    selectedCategory
-                  )} is available`}
-                  className="text-[#C967AC] hover:underline"
-                >
-                  request notification
-                </a>
-                .
-              </div>
-            )}
+      <div className="max-w-7xl  px-4 sm:px-6 lg:px-16">
+        {/* Mobile: active tab + dropdown for others */}
+        <div className="mb-6 block xl:hidden">
+          <div className="flex w-full items-center justify-between pr-4">
+            <Link
+              href={`?tab=${activeTabItem.id}`}
+              onClick={() => handleTabClick(activeTabItem.label)}
+              className="flex h-full py-1.5 items-center gap-2 border-b-2 border-[#C967AC] bg-[#C967AC]/20 font-bold px-4 text-sm text-[#C967AC] rounded-t-xl"
+            >
+              {activeTabItem.label}
+            </Link>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-1 border-b-2 border-[#C967AC] bg-[#C967AC]/20 text-[#C967AC] rounded-t-md py-0.5 px-2 text-sm font-medium">
+                  <FaBars />
+                </button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent align="end">
+                {items
+                  .filter((item) => item.id !== activeTabItem.id)
+                  .map((item) => (
+                    <DropdownMenuItem
+                      key={item.id}
+                      onClick={() => handleTabClick(item.label)}
+                      className="flex items-center gap-2"
+                    >
+                      {item.label}
+                    </DropdownMenuItem>
+                  ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
-          {/* md+ screens: horizontal tabs */}
-          <div className="hidden md:flex gap-4 overflow-x-auto no-scrollbar py-1">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-4 sm:px-6 py-2 rounded-lg font-semibold shadow text-sm sm:text-base ${
-                  selectedCategory === cat
-                    ? "bg-pink-400 text-white"
-                    : "bg-white text-black"
-                } transition`}
-                aria-pressed={selectedCategory === cat}
+          {selectedCategory === "Fondant Cake" && (
+            <div className="mt-2 text-xs text-gray-600">
+              Fondant Cake is coming soon —{" "}
+              <a
+                href={`mailto:hello@sweetcake.com?subject=Notify me when ${encodeURIComponent(
+                  selectedCategory
+                )} is available`}
+                className="text-[#C967AC] hover:underline"
               >
-                {cat}
-              </button>
-            ))}
-          </div>
+                request notification
+              </a>
+              .
+            </div>
+          )}
         </div>
 
-        {/* Search & Filters - responsive grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 items-center">
-          {/* Search (full width on small, spans 2 cols on md+) */}
-          <div className="md:col-span-2 w-full">
+        {/* Desktop tabs */}
+        <div className="hidden xl:flex gap-4 overflow-x-auto no-scrollbar py-1 mb-6">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-4 sm:px-6 py-2 rounded-lg font-semibold shadow text-sm sm:text-base ${
+                selectedCategory === cat
+                  ? "bg-pink-400 text-white"
+                  : "bg-white text-black"
+              } transition`}
+              aria-pressed={selectedCategory === cat}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Search & Filters */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 items-center">
+          <div className="md:col-span-3 w-full">
             <div className="flex items-center w-full bg-white rounded-lg border px-4 py-2">
               <FaSearch className="text-gray-400 mr-2" />
               <input
@@ -146,45 +171,45 @@ function ProductFiltration() {
             </div>
           </div>
 
-          {/* Sort dropdown */}
-          <div className="relative w-full lg:w-auto">
-            <button
-              className="w-full lg:w-auto bg-white border rounded-lg px-4 py-2 flex items-center gap-2 justify-between"
-              onClick={() => setShowSortDropdown(!showSortDropdown)}
-              aria-haspopup="listbox"
-              aria-expanded={showSortDropdown}
-            >
-              {sortOptions.find((opt) => opt.value === selectedSort)?.label}
-              <span className="ml-2 text-gray-600">&#9662;</span>
-            </button>
+          <div className="flex justify-end w-full lg:col-span-1">
+            <div className="relative w-full lg:w-auto">
+              <button
+                className="w-full lg:w-auto bg-white border rounded-lg px-4 py-2 flex items-center gap-2 justify-between"
+                onClick={() => setShowSortDropdown(!showSortDropdown)}
+                aria-haspopup="listbox"
+                aria-expanded={showSortDropdown}
+              >
+                {sortOptions.find((opt) => opt.value === selectedSort)?.label}
+                <span className="ml-2 text-gray-600">&#9662;</span>
+              </button>
 
-            {showSortDropdown && (
-              <div className="absolute z-20 mt-2 left-0 lg:left-auto lg:right-0 bg-white rounded-lg shadow-lg py-2 w-full lg:w-48">
-                {sortOptions.map((opt) => (
-                  <button
-                    key={opt.value}
-                    onClick={() => {
-                      setSelectedSort(opt.value);
-                      setShowSortDropdown(false);
-                    }}
-                    className={`block w-full text-left px-4 py-2 hover:bg-orange-100 ${
-                      selectedSort === opt.value
-                        ? "bg-orange-300 text-black font-semibold"
-                        : "text-black"
-                    }`}
-                  >
-                    {selectedSort === opt.value && (
-                      <span className="mr-2">&#10003;</span>
-                    )}
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            )}
+              {showSortDropdown && (
+                <div className="absolute z-20 mt-2 left-0 lg:left-auto lg:right-0 bg-white rounded-lg shadow-lg py-2 w-full lg:w-48">
+                  {sortOptions.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => {
+                        setSelectedSort(opt.value);
+                        setShowSortDropdown(false);
+                      }}
+                      className={`block w-full text-left px-4 py-2 hover:bg-orange-100 ${
+                        selectedSort === opt.value
+                          ? "bg-orange-300 text-black font-semibold"
+                          : "text-black"
+                      }`}
+                    >
+                      {selectedSort === opt.value && (
+                        <span className="mr-2">&#10003;</span>
+                      )}
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Category-specific Filter or Coming Soon */}
-          <div className="w-full">
+          <div className="w-full lg:col-span-1">
             {isComingSoon ? (
               <div className="flex items-center gap-3">
                 <button
@@ -220,9 +245,9 @@ function ProductFiltration() {
           </div>
         </div>
 
-        {/* small helper text for coming soon (mobile) */}
+        {/* mobile helper for coming soon */}
         {isComingSoon && (
-          <div className="mt-3 text-sm text-gray-600 lg:hidden">
+          <div className="mt-3 text-sm text-gray-600 xl:hidden">
             {selectedCategory} is coming soon —{" "}
             <a
               href={`mailto:hello@sweetcake.com?subject=Notify me when ${encodeURIComponent(
