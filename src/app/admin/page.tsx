@@ -8,11 +8,9 @@ import {
 import { Link } from "lucide-react";
 import { useMemo, useState } from "react";
 import { FaBars } from "react-icons/fa";
-import StatCard from "../components/DashboardCard";
-import OrderDistributionCard from "../components/DistributionCard";
-import TopSellingProductsCard from "../components/TopSellingProductsCard";
-import { Button } from "@/components/ui/button";
-import ProductCard from "../components/ProductCard";
+import StatCard from "./components/DashboardCard";
+import OrderDistributionCard from "./components/DistributionCard";
+import TopSellingProductsCard from "./components/TopSellingProductsCard";
 
 function AdminPage() {
   const categories = [
@@ -112,107 +110,102 @@ function AdminPage() {
     }
   }, [reportRange]);
 
-  const products = [
-    {
-      id: 1,
-      image: "/assets/img1.png",
-      name: "Mocha Cake",
-      description: "Chocolate Drip Cake with Mocha Buttercream Frosting",
-      price: "$500",
-    },
-    {
-      id: 2,
-      image: "/assets/img2.png",
-      name: "Vanilla Cake",
-      description: "Classic Vanilla Cake with Buttercream Frosting",
-      price: "$450",
-    },
-    {
-      id: 3,
-      image: "/assets/img2.png",
-      name: "Red Velvet Cake",
-      description: "Rich Red Velvet Cake with Cream Cheese Frosting",
-      price: "$550",
-    },
-    {
-      id: 4,
-      image: "/assets/img2.png",
-      name: "Lemon Cake",
-      description: "Zesty Lemon Cake with Lemon Buttercream Frosting",
-      price: "$480",
-    },
-    {
-      id: 5,
-      image: "/assets/img2.png",
-      name: "Carrot Cake",
-      description: "Moist Carrot Cake with Cream Cheese Frosting",
-      price: "$520",
-    },
-    {
-      id: 6,
-      image: "/assets/img2.png",
-      name: "Chocolate Cake",
-      description: "Decadent Chocolate Cake with Chocolate Ganache",
-      price: "$600",
-    },
-  ];
-
   return (
     <div>
       <div className="bg-pink-50 section-spacing text-center">
         <h1 className="text-4xl md:text-5xl font-kaushan italic mb-3 text-foreground">
-          Our Products
+          Admin Dashboard
         </h1>
         <p className="text-muted-foreground max-w-2xl mx-auto text-balance">
-          Browse our delicious selection of cakes and desserts
+          Manage your cake shop and track performance
         </p>
       </div>
-      <div className="border-2 m-6 rounded-3xl">
-        <div className="overview flex flex-row items-center justify-between px-3 sm:px-6 lg:px-10 pt-6">
-          <h1 className="text-sm md:text-2xl font-bold text-[#C967AC]">
-            All Products
-          </h1>
-          <div className="flex items-center gap-4">
-            <Button
-              size="sm"
-              className="bg-[#C967AC] hover:bg-[#da78d6] text-white md:px-3 md:py-5 px-1 py-2 rounded-md flex items-center gap-2 w-fit text-xs md:text-md "
-              aria-label="Add New Product"
+
+      <div className="overview flex flex-row items-center justify-between px-4 sm:px-6 lg:px-16 py-8">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">Overview</h1>
+        <div className="flex items-center gap-4">
+          <label htmlFor="report-range" className="sr-only">
+            Report range
+          </label>
+          {/* Desktop: regular select (shown on sm and up) */}
+          <label htmlFor="report-range" className="sr-only">
+            Report range
+          </label>
+
+          <select
+            id="report-range"
+            value={reportRange}
+            onChange={(e) => setReportRange(e.target.value)}
+            className="hidden sm:inline-block px-3 py-2 bg-[#F8EFFA] border border-gray-200 rounded-md shadow-sm text-sm"
+          >
+            <option>Daily Report</option>
+            <option>Weekly Report</option>
+            <option>Annual Report</option>
+          </select>
+
+          {/* Mobile: hamburger dropdown (shown below sm) */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                aria-label="Open report menu"
+                className="inline-flex items-center gap-2 sm:hidden px-3 py-2 bg-[#F8EFFA] border border-gray-200 rounded-md shadow-sm text-sm"
+              >
+                <FaBars />
+                <span className="truncate max-w-[8rem]">{reportRange}</span>
+              </button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent
+              align="end"
+              sideOffset={8}
+              className="w-44 bg-white rounded-md shadow-md p-1"
             >
-              <span className="inline-flex items-center justify-center w-5 h-5 text-white bg-white/10 rounded-full">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-3 h-3"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
+              {["Daily Report", "Weekly Report", "Annual Report"].map((r) => (
+                <DropdownMenuItem
+                  key={r}
+                  onClick={() => setReportRange(r)}
+                  className={`cursor-pointer px-3 py-2 text-sm ${
+                    reportRange === r ? "bg-gray-100 font-medium" : ""
+                  }`}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 4v16m8-8H4"
-                  />
-                </svg>
-              </span>
-              <span>Add New Product</span>
-            </Button>
-          </div>
+                  {r}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 4xl:grid-cols-4 gap-10 p-8 bg-[#FFFAFF]  ">
-          {products.map((product) => (
-            <ProductCard
-              key={product.id}
-              image={product.image}
-              name={product.name}
-              description={product.description}
-              price={product.price}
-              onView={() => {
-                /* handle view or add to cart */
-              }}
-            />
-          ))}
-        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:grid-cols-2 gap-4 px-4 sm:px-6 lg:px-16 mb-8">
+        <StatCard
+          title="Total Revenue"
+          value={stats.totalRevenue}
+          subtext={stats.subtextRevenue}
+          iconType="revenue"
+        />
+        <StatCard
+          title="Active Orders"
+          value={stats.activeOrders}
+          subtext="Needs attention"
+          iconType="orders"
+        />
+        <StatCard
+          title="Custom Requests"
+          value={stats.customRequests}
+          subtext="Pending Requests"
+          iconType="requests"
+        />
+        <StatCard
+          title="Total Products"
+          value={stats.totalProducts}
+          subtext={`${stats.totalProducts} in stock`}
+          iconType="products"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 px-4 sm:px-6 lg:px-16 mb-8">
+        <OrderDistributionCard statuses={orderStatuses} />
+        <TopSellingProductsCard products={topProducts} />
       </div>
     </div>
   );
