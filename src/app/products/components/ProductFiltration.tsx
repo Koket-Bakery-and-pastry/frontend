@@ -1,4 +1,3 @@
-// ...existing code...
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
@@ -86,9 +85,9 @@ function ProductFiltration() {
 
   return (
     <div className="bg-[#FFFAFF] section-spacing">
-      <div className="max-w-7xl  ">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-16">
         {/* Mobile: active tab + dropdown for others */}
-        <div className="mb-6 block 2xl:hidden ">
+        <div className="mb-6 block 2xl:hidden">
           <div className="flex w-full items-center justify-between pr-4">
             <Link
               href={`?tab=${activeTabItem.id}`}
@@ -160,57 +159,71 @@ function ProductFiltration() {
             </div>
           </div>
 
+          {/* Sort: use shadcn DropdownMenu */}
           <div className="flex justify-end w-full col-span-1 ">
             <div className="relative w-full lg:w-auto">
-              <button
-                className="w-full lg:w-auto bg-white border rounded-lg px-4 py-3 flex items-center gap-2 justify-between"
-                onClick={() => setShowSortDropdown(!showSortDropdown)}
-                aria-haspopup="listbox"
-                aria-expanded={showSortDropdown}
-              >
-                {sortOptions.find((opt) => opt.value === selectedSort)?.label}
-                <span className="ml-2 text-gray-600">&#9662;</span>
-              </button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className="w-full lg:w-auto bg-white border rounded-lg px-4 py-3 flex items-center gap-2 justify-between"
+                    aria-haspopup="listbox"
+                    aria-expanded={showSortDropdown}
+                    onClick={() => setShowSortDropdown((s) => !s)}
+                  >
+                    {
+                      sortOptions.find((opt) => opt.value === selectedSort)
+                        ?.label
+                    }
+                    <span className="ml-2 text-gray-600">&#9662;</span>
+                  </button>
+                </DropdownMenuTrigger>
 
-              {showSortDropdown && (
-                <div className="absolute z-20 mt-2 left-0 lg:left-auto lg:right-0 bg-white rounded-lg shadow-lg py-2 w-full lg:w-48">
+                <DropdownMenuContent className="w-full lg:w-48">
                   {sortOptions.map((opt) => (
-                    <button
+                    <DropdownMenuItem
                       key={opt.value}
                       onClick={() => {
                         setSelectedSort(opt.value);
                         setShowSortDropdown(false);
                       }}
-                      className={`block w-full text-left px-4 py-2 hover:bg-orange-100 ${
-                        selectedSort === opt.value
-                          ? "bg-orange-300 text-black font-semibold"
-                          : "text-black"
-                      }`}
+                      className="flex items-center justify-between px-4 py-2"
                     >
+                      <span>{opt.label}</span>
                       {selectedSort === opt.value && (
-                        <span className="mr-2">&#10003;</span>
+                        <span className="text-green-600">✓</span>
                       )}
-                      {opt.label}
-                    </button>
+                    </DropdownMenuItem>
                   ))}
-                </div>
-              )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
 
+          {/* Filter: use shadcn DropdownMenu */}
           <div className="w-full col-span-1">
-            <select
-              value={selectedFilter}
-              onChange={(e) => setSelectedFilter(e.target.value)}
-              className="bg-white border rounded-lg px-4 py-3 w-full"
-              aria-label="Filter products"
-            >
-              {currentFilterOptions.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="w-full bg-white border rounded-lg px-4 py-3 text-left flex items-center justify-between">
+                  <span className="line-clamp-1">{selectedFilter}</span>
+                  <span className="text-gray-600 ml-2">&#9662;</span>
+                </button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent className="w-full">
+                {currentFilterOptions.map((opt) => (
+                  <DropdownMenuItem
+                    key={opt}
+                    onClick={() => setSelectedFilter(opt)}
+                    className="flex items-center justify-between px-4 py-2"
+                  >
+                    <span>{opt}</span>
+                    {selectedFilter === opt && (
+                      <span className="text-green-600">✓</span>
+                    )}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
@@ -219,4 +232,3 @@ function ProductFiltration() {
 }
 
 export default ProductFiltration;
-// ...existing code...
