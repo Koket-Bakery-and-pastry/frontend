@@ -46,7 +46,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               onClick={onView}
               className="flex items-center gap-2 bg-[#C967AC] hover:bg-[#ae5d95] text-white font-semibold px-3 py-1.5 lg:px-6 lg:py-2 rounded-lg transition text-xs"
             >
-              <FaEye className="text-xs lg:text-xl" />
+              <FaEye className="text-xs lg:text-xl" /> 
               <span className="text-xs lg:text-base">View</span>
             </button>
           </div>
