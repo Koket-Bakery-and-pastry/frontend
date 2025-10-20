@@ -53,7 +53,7 @@ function ProductsPage() {
     <div className="bg-[#FFFAFF] ">
       <ProductHeader />
       <ProductFiltration />
-      <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 4xl:grid-cols-4 gap-10 section-spacing bg-[#FFFAFF]  ">
+      <div className="grid grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-4 gap-4 section-spacing bg-[#FFFAFF]  ">
         {products.map((product) => (
           <ProductCard
             key={product.id}

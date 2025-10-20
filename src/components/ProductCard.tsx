@@ -17,20 +17,39 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onView,
 }) => {
   return (
-    <div className=" rounded-2xl overflow-hidden bg-white shadow-md max-w-sm">
-      <img src={image} alt={name} className="w-full h-72 object-cover" />
-      <div className="p-5">
-        <h3 className="font-bold text-2xl mb-1">{name}</h3>
-        <p className="text-gray-500 text-lg mb-4 line-clamp-2">{description}</p>
-        <div className="flex items-center justify-between">
-          <span className="text-[#C967AC] font-bold text-2xl">{price}</span>
-          <button
-            onClick={onView}
-            className="flex items-center gap-2 bg-[#C967AC] hover:bg-[#ae5d95] text-white font-semibold px-6 py-2 rounded-lg transition"
-          >
-            <FaEye className="text-xl" />
-            View
-          </button>
+    // full width so grid controls columns; no fixed max width
+    <div className="w-full h-full">
+      <div className="rounded-2xl overflow-hidden bg-white shadow-md h-full flex flex-col">
+        <div className="overflow-hidden">
+          <img
+            src={image}
+            alt={name}
+            className="w-full h-40 lg:h-72 object-cover transform transition-transform duration-300 hover:scale-105"
+          />
+        </div>
+
+        <div className="p-3 flex-1 flex flex-col">
+          <h3 className="font-bold text-sm lg:text-lg 2xl:text-2xl line-clamp-1 mb-1">
+            {name}
+          </h3>
+
+          <p className="text-gray-500 text-xs lg:text-base 2xl:text-lg mb-3 line-clamp-2">
+            {description}
+          </p>
+
+          <div className="mt-auto pb-2 md:pb-5 flex  items-center justify-between gap-2">
+            <span className="text-[#C967AC] font-bold text-sm lg:text-2xl">
+              {price}
+            </span>
+
+            <button
+              onClick={onView}
+              className="flex items-center gap-2 bg-[#C967AC] hover:bg-[#ae5d95] text-white font-semibold px-3 py-1.5 lg:px-6 lg:py-2 rounded-lg transition text-xs"
+            >
+              <FaEye className="text-xs lg:text-xl" />
+              <span className="text-xs lg:text-base">View</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

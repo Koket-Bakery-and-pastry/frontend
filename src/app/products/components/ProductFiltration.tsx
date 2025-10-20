@@ -1,3 +1,4 @@
+// ...existing code...
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
@@ -31,7 +32,7 @@ const filterOptionsMap: Record<string, string[]> = {
     "Caramel cakes",
     "Black forest cakes",
     "White forest cakes",
-    "Red valvet cakes (Coming soon)",
+    "Red valvet cakes",
     "Moca cakes",
     "Vanilla cakes",
     "Cup cakes",
@@ -47,7 +48,7 @@ const filterOptionsMap: Record<string, string[]> = {
     "Marmalade bread",
   ],
   Cookies: ["All Cookies", "½kg - 250 birr", "2 kg - 500 birr"],
-  "Fondant Cake": [], // coming soon
+  "Fondant Cake": [], // kept empty in data; UI will fallback to a default option
 };
 
 function ProductFiltration() {
@@ -67,14 +68,17 @@ function ProductFiltration() {
   const activeTabItem =
     items.find((it) => it.label === selectedCategory) ?? items[0];
 
-  // keep selectedFilter in sync with selectedCategory
+  // keep selectedFilter in sync with selectedCategory, fallback if empty
   useEffect(() => {
-    const opts = filterOptionsMap[selectedCategory] ?? ["All Products"];
+    const rawOpts = filterOptionsMap[selectedCategory] ?? [];
+    const opts = rawOpts.length ? rawOpts : ["All Products"];
     setSelectedFilter(opts[0]);
   }, [selectedCategory]);
 
-  const currentFilterOptions = filterOptionsMap[selectedCategory] ?? [];
-  const isComingSoon = currentFilterOptions.length === 0;
+  const currentFilterOptions = (() => {
+    const opts = filterOptionsMap[selectedCategory] ?? [];
+    return opts.length ? opts : ["All Products"];
+  })();
 
   function handleTabClick(label: string) {
     setSelectedCategory(label);
@@ -82,7 +86,7 @@ function ProductFiltration() {
 
   return (
     <div className="bg-[#FFFAFF] section-spacing">
-      <div className="max-w-7xl ">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-16">
         {/* Mobile: active tab + dropdown for others */}
         <div className="mb-6 block 2xl:hidden">
           <div className="flex w-full items-center justify-between pr-4">
@@ -116,21 +120,6 @@ function ProductFiltration() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-
-          {selectedCategory === "Fondant Cake" && (
-            <div className="mt-2 text-xs text-gray-600">
-              Fondant Cake is coming soon —{" "}
-              <a
-                href={`mailto:hello@sweetcake.com?subject=Notify me when ${encodeURIComponent(
-                  selectedCategory
-                )} is available`}
-                className="text-[#C967AC] hover:underline"
-              >
-                request notification
-              </a>
-              .
-            </div>
-          )}
         </div>
 
         {/* Desktop tabs */}
@@ -210,59 +199,24 @@ function ProductFiltration() {
           </div>
 
           <div className="w-full col-span-1">
-            {isComingSoon ? (
-              <div className="flex items-center  gap-3">
-                <button
-                  className="w-full bg-gray-100 text-gray-600 rounded-lg px-4 py-3 cursor-not-allowed"
-                  disabled
-                  aria-disabled="true"
-                >
-                  Coming soon
-                </button>
-                <a
-                  href={`mailto:hello@sweetcake.com?subject=Notify me when ${encodeURIComponent(
-                    selectedCategory
-                  )} is available`}
-                  className="hidden lg:inline-block text-sm text-[#C967AC] hover:underline"
-                >
-                  Notify me
-                </a>
-              </div>
-            ) : (
-              <select
-                value={selectedFilter}
-                onChange={(e) => setSelectedFilter(e.target.value)}
-                className="bg-white border rounded-lg px-4 py-3 w-full"
-                aria-label="Filter products"
-              >
-                {currentFilterOptions.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-            )}
+            <select
+              value={selectedFilter}
+              onChange={(e) => setSelectedFilter(e.target.value)}
+              className="bg-white border rounded-lg px-4 py-3 w-full"
+              aria-label="Filter products"
+            >
+              {currentFilterOptions.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
-
-        {/* mobile helper for coming soon */}
-        {isComingSoon && (
-          <div className="mt-3 text-sm text-gray-600 xl:hidden">
-            {selectedCategory} is coming soon —{" "}
-            <a
-              href={`mailto:hello@sweetcake.com?subject=Notify me when ${encodeURIComponent(
-                selectedCategory
-              )} is available`}
-              className="text-[#C967AC] hover:underline"
-            >
-              request notification
-            </a>
-            .
-          </div>
-        )}
       </div>
     </div>
   );
 }
 
 export default ProductFiltration;
+// ...existing code...
