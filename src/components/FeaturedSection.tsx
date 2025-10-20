@@ -51,7 +51,7 @@ function FeaturedSection() {
 
   return (
     <section className=" section-spacing bg-pink-50 mt-8">
-      <div className="pb-16  w-full">
+      <div className="pb-16 w-full">
         <h1 className="text-3xl md:text-5xl xl:text-6xl 2xl:text-7xl text-center mb-16 text-balance font-kaushan">
           Featured Products
         </h1>
@@ -61,7 +61,7 @@ function FeaturedSection() {
         {products.map((product, index) => (
           <div
             className={`${
-              index === 1 || index === 4 ? "2xl:-mt-28" : ""
+              index === 1 || index === 4 ? "2xl:-mt-28" : " "
             } mx-auto`}
             key={product.id}
           >
