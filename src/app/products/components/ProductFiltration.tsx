@@ -18,9 +18,9 @@ const categories = [
 ];
 
 const sortOptions = [
-  { label: "Name", value: "name" },
-  { label: "Price: Low to High", value: "priceAsc" },
-  { label: "Price: High to Low", value: "priceDesc" },
+  { label: "Price", value: "name" },
+  { label: "Low to High", value: "priceAsc" },
+  { label: "High to Low", value: "priceDesc" },
 ];
 
 const filterOptionsMap: Record<string, string[]> = {
@@ -31,7 +31,7 @@ const filterOptionsMap: Record<string, string[]> = {
     "Caramel cakes",
     "Black forest cakes",
     "White forest cakes",
-    "Red valvet cakes (Coming soon)",
+    "Red valvet cakes",
     "Moca cakes",
     "Vanilla cakes",
     "Cup cakes",
@@ -47,7 +47,7 @@ const filterOptionsMap: Record<string, string[]> = {
     "Marmalade bread",
   ],
   Cookies: ["All Cookies", "½kg - 250 birr", "2 kg - 500 birr"],
-  "Fondant Cake": [], // coming soon
+  "Fondant Cake": [], // kept empty in data; UI will fallback to a default option
 };
 
 function ProductFiltration() {
@@ -67,24 +67,27 @@ function ProductFiltration() {
   const activeTabItem =
     items.find((it) => it.label === selectedCategory) ?? items[0];
 
-  // keep selectedFilter in sync with selectedCategory
+  // keep selectedFilter in sync with selectedCategory, fallback if empty
   useEffect(() => {
-    const opts = filterOptionsMap[selectedCategory] ?? ["All Products"];
+    const rawOpts = filterOptionsMap[selectedCategory] ?? [];
+    const opts = rawOpts.length ? rawOpts : ["All Products"];
     setSelectedFilter(opts[0]);
   }, [selectedCategory]);
 
-  const currentFilterOptions = filterOptionsMap[selectedCategory] ?? [];
-  const isComingSoon = currentFilterOptions.length === 0;
+  const currentFilterOptions = (() => {
+    const opts = filterOptionsMap[selectedCategory] ?? [];
+    return opts.length ? opts : ["All Products"];
+  })();
 
   function handleTabClick(label: string) {
     setSelectedCategory(label);
   }
 
   return (
-    <div className="bg-[#FFFAFF] py-6">
-      <div className="max-w-7xl  px-4 sm:px-6 lg:px-16">
+    <div className="bg-[#FFFAFF] px-3 xss:px-4 sm:px-6 md:px-10 lg:px-16 xl:px-24  pt-6 xss:pt-8 sm:pt-12 md:pt-16 lg:pt-20 xl:pt-24 ">
+      <div className="max-w-7xl ">
         {/* Mobile: active tab + dropdown for others */}
-        <div className="mb-6 block xl:hidden">
+        <div className="mb-6 block 2xl:hidden">
           <div className="flex w-full items-center justify-between pr-4">
             <Link
               href={`?tab=${activeTabItem.id}`}
@@ -116,25 +119,10 @@ function ProductFiltration() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-
-          {selectedCategory === "Fondant Cake" && (
-            <div className="mt-2 text-xs text-gray-600">
-              Fondant Cake is coming soon —{" "}
-              <a
-                href={`mailto:hello@sweetcake.com?subject=Notify me when ${encodeURIComponent(
-                  selectedCategory
-                )} is available`}
-                className="text-[#C967AC] hover:underline"
-              >
-                request notification
-              </a>
-              .
-            </div>
-          )}
         </div>
 
         {/* Desktop tabs */}
-        <div className="hidden xl:flex gap-4 overflow-x-auto no-scrollbar py-1 mb-6">
+        <div className="hidden 2xl:flex gap-4 overflow-x-auto no-scrollbar py-1 mb-6">
           {categories.map((cat) => (
             <button
               key={cat}
@@ -152,9 +140,9 @@ function ProductFiltration() {
         </div>
 
         {/* Search & Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 items-center">
-          <div className="md:col-span-3 w-full">
-            <div className="flex items-center w-full bg-white rounded-lg border px-4 py-2">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 items-center w-full">
+          <div className="col-span-2 md:col-span-3 w-full">
+            <div className="flex items-center w-full bg-white rounded-lg border px-6 py-3">
               <FaSearch className="text-gray-400 mr-2" />
               <input
                 type="text"
@@ -171,95 +159,75 @@ function ProductFiltration() {
             </div>
           </div>
 
-          <div className="flex justify-end w-full lg:col-span-1">
+          {/* Sort: use shadcn DropdownMenu */}
+          <div className="flex justify-end w-full col-span-1 ">
             <div className="relative w-full lg:w-auto">
-              <button
-                className="w-full lg:w-auto bg-white border rounded-lg px-4 py-2 flex items-center gap-2 justify-between"
-                onClick={() => setShowSortDropdown(!showSortDropdown)}
-                aria-haspopup="listbox"
-                aria-expanded={showSortDropdown}
-              >
-                {sortOptions.find((opt) => opt.value === selectedSort)?.label}
-                <span className="ml-2 text-gray-600">&#9662;</span>
-              </button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className="w-full lg:w-auto bg-white border rounded-lg px-4 py-3 flex items-center gap-2 justify-between "
+                    aria-haspopup="listbox"
+                    aria-expanded={showSortDropdown}
+                    onClick={() => setShowSortDropdown((s) => !s)}
+                  >
+                    <span className="line-clamp-1 ">
+                      {
+                        sortOptions.find((opt) => opt.value === selectedSort)
+                          ?.label
+                      }
+                    </span>
+                    <span className="ml-2 text-gray-600">&#9662;</span>
+                  </button>
+                </DropdownMenuTrigger>
 
-              {showSortDropdown && (
-                <div className="absolute z-20 mt-2 left-0 lg:left-auto lg:right-0 bg-white rounded-lg shadow-lg py-2 w-full lg:w-48">
+                <DropdownMenuContent className="w-full lg:w-48">
                   {sortOptions.map((opt) => (
-                    <button
+                    <DropdownMenuItem
                       key={opt.value}
                       onClick={() => {
                         setSelectedSort(opt.value);
                         setShowSortDropdown(false);
                       }}
-                      className={`block w-full text-left px-4 py-2 hover:bg-orange-100 ${
-                        selectedSort === opt.value
-                          ? "bg-orange-300 text-black font-semibold"
-                          : "text-black"
-                      }`}
+                      className="flex items-center justify-between px-4 py-2 "
                     >
+                      <span>{opt.label}</span>
                       {selectedSort === opt.value && (
-                        <span className="mr-2">&#10003;</span>
+                        <span className="text-green-600">✓</span>
                       )}
-                      {opt.label}
-                    </button>
+                    </DropdownMenuItem>
                   ))}
-                </div>
-              )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
 
-          <div className="w-full lg:col-span-1">
-            {isComingSoon ? (
-              <div className="flex items-center gap-3">
-                <button
-                  className="w-full bg-gray-100 text-gray-600 rounded-lg px-4 py-2 cursor-not-allowed"
-                  disabled
-                  aria-disabled="true"
-                >
-                  Coming soon
+          {/* Filter: use shadcn DropdownMenu */}
+          <div className="w-full col-span-1">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="w-full bg-white border rounded-lg px-4 py-3 text-left flex items-center justify-between">
+                  <span className="line-clamp-1">{selectedFilter}</span>
+                  <span className="text-gray-600 ml-2">&#9662;</span>
                 </button>
-                <a
-                  href={`mailto:hello@sweetcake.com?subject=Notify me when ${encodeURIComponent(
-                    selectedCategory
-                  )} is available`}
-                  className="hidden lg:inline-block text-sm text-[#C967AC] hover:underline"
-                >
-                  Notify me
-                </a>
-              </div>
-            ) : (
-              <select
-                value={selectedFilter}
-                onChange={(e) => setSelectedFilter(e.target.value)}
-                className="bg-white border rounded-lg px-4 py-2 w-full"
-                aria-label="Filter products"
-              >
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent className="w-full">
                 {currentFilterOptions.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
+                  <DropdownMenuItem
+                    key={opt}
+                    onClick={() => setSelectedFilter(opt)}
+                    className="flex items-center justify-between px-4 py-2"
+                  >
+                    <span>{opt}</span>
+                    {selectedFilter === opt && (
+                      <span className="text-green-600">✓</span>
+                    )}
+                  </DropdownMenuItem>
                 ))}
-              </select>
-            )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
-
-        {/* mobile helper for coming soon */}
-        {isComingSoon && (
-          <div className="mt-3 text-sm text-gray-600 xl:hidden">
-            {selectedCategory} is coming soon —{" "}
-            <a
-              href={`mailto:hello@sweetcake.com?subject=Notify me when ${encodeURIComponent(
-                selectedCategory
-              )} is available`}
-              className="text-[#C967AC] hover:underline"
-            >
-              request notification
-            </a>
-            .
-          </div>
-        )}
       </div>
     </div>
   );
