@@ -50,7 +50,7 @@ function ProductsPage() {
     },
   ];
   return (
-    <div className="bg-[#FFFAFF] ">
+    <div className="bg-[#FFFAFF]  ">
       <ProductHeader />
       <ProductFiltration />
       <div className="grid grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-4 gap-4 section-spacing bg-[#FFFAFF]  ">

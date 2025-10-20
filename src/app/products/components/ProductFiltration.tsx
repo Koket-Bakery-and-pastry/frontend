@@ -86,9 +86,9 @@ function ProductFiltration() {
 
   return (
     <div className="bg-[#FFFAFF] section-spacing">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-16">
+      <div className="max-w-7xl  ">
         {/* Mobile: active tab + dropdown for others */}
-        <div className="mb-6 block 2xl:hidden">
+        <div className="mb-6 block 2xl:hidden ">
           <div className="flex w-full items-center justify-between pr-4">
             <Link
               href={`?tab=${activeTabItem.id}`}
@@ -141,7 +141,7 @@ function ProductFiltration() {
         </div>
 
         {/* Search & Filters */}
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 items-center">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 items-center w-full">
           <div className="col-span-2 md:col-span-3 w-full">
             <div className="flex items-center w-full bg-white rounded-lg border px-6 py-3">
               <FaSearch className="text-gray-400 mr-2" />

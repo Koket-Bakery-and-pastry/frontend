@@ -19,7 +19,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   return (
     // full width so grid controls columns; no fixed max width
     <div className="w-full h-full">
-      <div className="rounded-2xl overflow-hidden bg-white shadow-md h-full flex flex-col">
+      <div className="rounded-2xl overflow-hidden bg-white shadow-md  flex flex-col max-w-sm">
         <div className="overflow-hidden">
           <img
             src={image}
@@ -37,7 +37,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             {description}
           </p>
 
-          <div className="mt-auto pb-2 md:pb-5 flex  items-center justify-between gap-2">
+          <div className="mt-auto pb-2 lg:pb-5 flex  items-center justify-between gap-2">
             <span className="text-[#C967AC] font-bold text-sm lg:text-2xl">
               {price}
             </span>
@@ -46,7 +46,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               onClick={onView}
               className="flex items-center gap-2 bg-[#C967AC] hover:bg-[#ae5d95] text-white font-semibold px-3 py-1.5 lg:px-6 lg:py-2 rounded-lg transition text-xs"
             >
-              <FaEye className="text-xs lg:text-xl" /> 
+              <FaEye className="text-xs lg:text-xl" />
               <span className="text-xs lg:text-base">View</span>
             </button>
           </div>

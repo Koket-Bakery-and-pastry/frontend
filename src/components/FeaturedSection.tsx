@@ -57,7 +57,7 @@ function FeaturedSection() {
         </h1>
       </div>
 
-      <div className=" 2xl:my-16 grid grid-cols-1 lg:grid-cols-2  2xl:grid-cols-3 gap-6 3xl:gap-10 ">
+      <div className=" 2xl:my-16 grid grid-cols-2  2xl:grid-cols-3 gap-6 3xl:gap-10 ">
         {products.map((product, index) => (
           <div
             className={`${
@@ -79,7 +79,7 @@ function FeaturedSection() {
         ))}
       </div>
       <div className="flex justify-center items-center mb-16 py-6">
-        <Button className="py-6 bg-[#C967AC] hover:bg-[#C967AC] md:px-10 md:text-lg 2xl:-mt-20">
+        <Button className="py-6 bg-[#C967AC] hover:bg-[#C967AC] lg:px-10 lg:text-lg 2xl:-mt-20">
           View All Featured Products
         </Button>
       </div>
