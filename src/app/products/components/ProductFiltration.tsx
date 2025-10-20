@@ -18,7 +18,7 @@ const categories = [
 ];
 
 const sortOptions = [
-  { label: "Name", value: "name" },
+  { label: "Price", value: "name" },
   { label: "Price: Low to High", value: "priceAsc" },
   { label: "Price: High to Low", value: "priceDesc" },
 ];
@@ -81,10 +81,10 @@ function ProductFiltration() {
   }
 
   return (
-    <div className="bg-[#FFFAFF] py-6">
-      <div className="max-w-7xl  px-4 sm:px-6 lg:px-16">
+    <div className="bg-[#FFFAFF] section-spacing">
+      <div className="max-w-7xl ">
         {/* Mobile: active tab + dropdown for others */}
-        <div className="mb-6 block xl:hidden">
+        <div className="mb-6 block 2xl:hidden">
           <div className="flex w-full items-center justify-between pr-4">
             <Link
               href={`?tab=${activeTabItem.id}`}
@@ -134,7 +134,7 @@ function ProductFiltration() {
         </div>
 
         {/* Desktop tabs */}
-        <div className="hidden xl:flex gap-4 overflow-x-auto no-scrollbar py-1 mb-6">
+        <div className="hidden 2xl:flex gap-4 overflow-x-auto no-scrollbar py-1 mb-6">
           {categories.map((cat) => (
             <button
               key={cat}
@@ -152,9 +152,9 @@ function ProductFiltration() {
         </div>
 
         {/* Search & Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 items-center">
-          <div className="md:col-span-3 w-full">
-            <div className="flex items-center w-full bg-white rounded-lg border px-4 py-2">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 items-center">
+          <div className="col-span-2 md:col-span-3 w-full">
+            <div className="flex items-center w-full bg-white rounded-lg border px-6 py-3">
               <FaSearch className="text-gray-400 mr-2" />
               <input
                 type="text"
@@ -171,10 +171,10 @@ function ProductFiltration() {
             </div>
           </div>
 
-          <div className="flex justify-end w-full lg:col-span-1">
+          <div className="flex justify-end w-full col-span-1 ">
             <div className="relative w-full lg:w-auto">
               <button
-                className="w-full lg:w-auto bg-white border rounded-lg px-4 py-2 flex items-center gap-2 justify-between"
+                className="w-full lg:w-auto bg-white border rounded-lg px-4 py-3 flex items-center gap-2 justify-between"
                 onClick={() => setShowSortDropdown(!showSortDropdown)}
                 aria-haspopup="listbox"
                 aria-expanded={showSortDropdown}
@@ -209,11 +209,11 @@ function ProductFiltration() {
             </div>
           </div>
 
-          <div className="w-full lg:col-span-1">
+          <div className="w-full col-span-1">
             {isComingSoon ? (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center  gap-3">
                 <button
-                  className="w-full bg-gray-100 text-gray-600 rounded-lg px-4 py-2 cursor-not-allowed"
+                  className="w-full bg-gray-100 text-gray-600 rounded-lg px-4 py-3 cursor-not-allowed"
                   disabled
                   aria-disabled="true"
                 >
@@ -232,7 +232,7 @@ function ProductFiltration() {
               <select
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
-                className="bg-white border rounded-lg px-4 py-2 w-full"
+                className="bg-white border rounded-lg px-4 py-3 w-full"
                 aria-label="Filter products"
               >
                 {currentFilterOptions.map((opt) => (
