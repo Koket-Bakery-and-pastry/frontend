@@ -19,8 +19,8 @@ const categories = [
 
 const sortOptions = [
   { label: "Price", value: "name" },
-  { label: "Price: Low to High", value: "priceAsc" },
-  { label: "Price: High to Low", value: "priceDesc" },
+  { label: "Low to High", value: "priceAsc" },
+  { label: "High to Low", value: "priceDesc" },
 ];
 
 const filterOptionsMap: Record<string, string[]> = {
@@ -84,8 +84,8 @@ function ProductFiltration() {
   }
 
   return (
-    <div className="bg-[#FFFAFF] section-spacing">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-16">
+    <div className="bg-[#FFFAFF] px-3 xss:px-4 sm:px-6 md:px-10 lg:px-16 xl:px-24  pt-6 xss:pt-8 sm:pt-12 md:pt-16 lg:pt-20 xl:pt-24 ">
+      <div className="max-w-7xl ">
         {/* Mobile: active tab + dropdown for others */}
         <div className="mb-6 block 2xl:hidden">
           <div className="flex w-full items-center justify-between pr-4">
@@ -165,15 +165,17 @@ function ProductFiltration() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
-                    className="w-full lg:w-auto bg-white border rounded-lg px-4 py-3 flex items-center gap-2 justify-between"
+                    className="w-full lg:w-auto bg-white border rounded-lg px-4 py-3 flex items-center gap-2 justify-between "
                     aria-haspopup="listbox"
                     aria-expanded={showSortDropdown}
                     onClick={() => setShowSortDropdown((s) => !s)}
                   >
-                    {
-                      sortOptions.find((opt) => opt.value === selectedSort)
-                        ?.label
-                    }
+                    <span className="line-clamp-1 ">
+                      {
+                        sortOptions.find((opt) => opt.value === selectedSort)
+                          ?.label
+                      }
+                    </span>
                     <span className="ml-2 text-gray-600">&#9662;</span>
                   </button>
                 </DropdownMenuTrigger>
@@ -186,7 +188,7 @@ function ProductFiltration() {
                         setSelectedSort(opt.value);
                         setShowSortDropdown(false);
                       }}
-                      className="flex items-center justify-between px-4 py-2"
+                      className="flex items-center justify-between px-4 py-2 "
                     >
                       <span>{opt.label}</span>
                       {selectedSort === opt.value && (
