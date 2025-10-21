@@ -10,6 +10,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { is, tr } from "date-fns/locale";
 
 function Navbar() {
   const NavLinks = [
@@ -18,6 +19,16 @@ function Navbar() {
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
   ];
+
+  const AdminLinks = [
+    { name: "Products", href: "/admin/products" },
+    { name: "Orders", href: "/admin/orders" },
+    { name: "Users", href: "/admin/users" },
+  ];
+
+  const isAdmin = true;
+
+  const linksToDisplay = isAdmin ? AdminLinks : NavLinks;
 
   return (
     <>
@@ -31,7 +42,7 @@ function Navbar() {
         </div>
         {/* Navigation Links */}
         <div className="flex-1 flex justify-center gap-6 2xl:gap-10">
-          {NavLinks.map((link) => (
+          {linksToDisplay.map((link) => (
             <Link
               key={link.name}
               href={link.href}
@@ -42,20 +53,22 @@ function Navbar() {
           ))}
         </div>
         {/* Cart and Login */}
-        <div className="flex items-center gap-4 2xl:gap-8">
-          <Link
-            href="/cart"
-            className="text-[#C967AC] text-xl 2xl:text-2xl transition-colors duration-200 hover:text-[#ae5d95] hover:scale-110 focus:outline-none focus:ring-2 focus:ring-[#C967AC] rounded-full"
-          >
-            <FaShoppingCart />
-          </Link>
-          <Link
-            href="/auth/login"
-            className="bg-[#C967AC] hover:bg-[#ae5d95] text-white font-bold px-4 py-1 rounded-full transition"
-          >
-            Login
-          </Link>
-        </div>
+        {isAdmin ? null : (
+          <div className="flex items-center gap-4 2xl:gap-8">
+            <Link
+              href="/cart"
+              className="text-[#C967AC] text-xl 2xl:text-2xl transition-colors duration-200 hover:text-[#ae5d95] hover:scale-110 focus:outline-none focus:ring-2 focus:ring-[#C967AC] rounded-full"
+            >
+              <FaShoppingCart />
+            </Link>
+            <Link
+              href="/auth/login"
+              className="bg-[#C967AC] hover:bg-[#ae5d95] text-white font-bold px-4 py-1 rounded-full transition"
+            >
+              Login
+            </Link>
+          </div>
+        )}
       </nav>
 
       {/* Mobile Navbar with shadcn Sheet */}
@@ -98,21 +111,22 @@ function Navbar() {
                 </SheetClose>
               ))}
             </div>
-            <div className="flex flex-col items-start gap-4  ">
-              <SheetClose asChild>
-                <Link href="/cart" className="text-[#C967AC] text-4xl">
+            {isAdmin ? null : (
+              <div className="flex items-center gap-4 2xl:gap-8">
+                <Link
+                  href="/cart"
+                  className="text-[#C967AC] text-xl 2xl:text-2xl transition-colors duration-200 hover:text-[#ae5d95] hover:scale-110 focus:outline-none focus:ring-2 focus:ring-[#C967AC] rounded-full"
+                >
                   <FaShoppingCart />
                 </Link>
-              </SheetClose>
-              <SheetClose asChild>
                 <Link
                   href="/auth/login"
                   className="bg-[#C967AC] hover:bg-[#ae5d95] text-white font-bold px-4 py-1 rounded-full transition"
                 >
                   Login
                 </Link>
-              </SheetClose>
-            </div>
+              </div>
+            )}
           </SheetContent>
         </Sheet>
       </nav>
