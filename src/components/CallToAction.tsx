@@ -1,6 +1,7 @@
 // ...existing code...
 import React from "react";
 import Link from "next/link";
+import Header from "./Header";
 
 function CallToAction() {
   return (
@@ -14,9 +15,7 @@ function CallToAction() {
       <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/60 to-white/30"></div>
 
       <div className="relative z-10 flex flex-col items-center justify-center text-center lg:px-12 py-10 max-w-4xl">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-kaushan mb-4 sm:mb-6">
-          Ready to Order Your Perfect Cake?
-        </h2>
+        <Header text="Ready to Order Your Perfect Cake Today?" />
 
         <p className="text-base sm:text-lg md:text-2xl font-kaushan mb-6 leading-relaxed">
           Browse our collection or create a{" "}

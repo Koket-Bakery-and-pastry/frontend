@@ -26,7 +26,7 @@ function Navbar() {
     { name: "Users", href: "/admin/users" },
   ];
 
-  const isAdmin = true;
+  const isAdmin = false;
 
   const linksToDisplay = isAdmin ? AdminLinks : NavLinks;
 

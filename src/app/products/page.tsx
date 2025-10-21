@@ -1,7 +1,7 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ProductHeader, ProductFiltration } from "./components";
-import { ProductCard } from "@/components";
+import { PageHeader, ProductCard } from "@/components";
 import { ProductFilters, Category } from "../types/ProductFilters";
 
 const allProducts = [
@@ -59,7 +59,72 @@ const allProducts = [
     category: "Cake",
     subcategory: "Caramel cakes",
   },
+  {
+    id: 7,
+    image: "/assets/img2.png",
+    name: "Caramel Cake",
+    description: "Soft caramel cake with buttery frosting",
+    price: 520,
+    category: "Cake",
+    subcategory: "Caramel cakes",
+  },
+  {
+    id: 8,
+    image: "/assets/img2.png",
+    name: "Caramel Cake",
+    description: "Soft caramel cake with buttery frosting",
+    price: 520,
+    category: "Cake",
+    subcategory: "Caramel cakes",
+  },
+  {
+    id: 9,
+    image: "/assets/img2.png",
+    name: "Caramel Cake",
+    description: "Soft caramel cake with buttery frosting",
+    price: 520,
+    category: "Cake",
+    subcategory: "Caramel cakes",
+  },
+  {
+    id: 10,
+    image: "/assets/img2.png",
+    name: "Caramel Cake",
+    description: "Soft caramel cake with buttery frosting",
+    price: 520,
+    category: "Cake",
+    subcategory: "Caramel cakes",
+  },
+  {
+    id: 11,
+    image: "/assets/img2.png",
+    name: "Caramel Cake",
+    description: "Soft caramel cake with buttery frosting",
+    price: 520,
+    category: "Cake",
+    subcategory: "Caramel cakes",
+  },
+  {
+    id: 12,
+    image: "/assets/img2.png",
+    name: "Caramel Cake",
+    description: "Soft caramel cake with buttery frosting",
+    price: 520,
+    category: "Cake",
+    subcategory: "Caramel cakes",
+  },
+  {
+    id: 13,
+    image: "/assets/img2.png",
+    name: "Caramel Cake",
+    description: "Soft caramel cake with buttery frosting",
+    price: 520,
+    category: "Cake",
+    subcategory: "Caramel cakes",
+  },
 ];
+
+const PAGE_SIZE = 6;
 
 function ProductsPage() {
   const [filters, setFilters] = useState<ProductFilters>({
@@ -68,6 +133,8 @@ function ProductsPage() {
     search: "",
     sort: "name",
   });
+
+  const [page, setPage] = useState(1);
 
   const filteredProducts = useMemo(() => {
     let products = [...allProducts];
@@ -113,15 +180,31 @@ function ProductsPage() {
     return products;
   }, [filters]);
 
+  // Pagination logic
+  const totalPages = Math.ceil(filteredProducts.length / PAGE_SIZE);
+  const paginatedProducts = filteredProducts.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE
+  );
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [filters]);
+
   return (
     <div className="bg-[#FFFAFF] min-h-screen">
-      <ProductHeader />
+      <PageHeader
+        title="Our Products"
+        subtitle="        Browse our delicious selection of cakes and desserts
+"
+      />
 
       <ProductFiltration filters={filters} setFilters={setFilters} />
 
       <div className="grid grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-4 gap-4 section-spacing bg-[#FFFAFF] px-4 sm:px-8 md:px-12 lg:px-16">
-        {filteredProducts.length > 0 ? (
-          filteredProducts.map((product) => (
+        {paginatedProducts.length > 0 ? (
+          paginatedProducts.map((product) => (
             <ProductCard
               key={product.id}
               image={product.image}
@@ -137,6 +220,39 @@ function ProductsPage() {
           </div>
         )}
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 py-8">
+          <button
+            className="px-3 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-50"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+          >
+            Previous
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i + 1}
+              className={`px-3 py-1 rounded ${
+                page === i + 1
+                  ? "bg-[#C967AC] text-white"
+                  : "bg-gray-100 text-gray-700"
+              }`}
+              onClick={() => setPage(i + 1)}
+            >
+              {i + 1}
+            </button>
+          ))}
+          <button
+            className="px-3 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-50"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 }

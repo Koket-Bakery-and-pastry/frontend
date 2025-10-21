@@ -117,7 +117,7 @@ export default function ProductFiltration({
         </div>
 
         {/* Desktop category tabs */}
-        <div className="hidden 2xl:flex gap-4 overflow-x-auto no-scrollbar mb-6">
+        <div className="hidden 2xl:flex gap-4 overflow-x-auto no-scrollbar mb-6 py-2">
           {categories.map((cat) => (
             <button
               key={cat}
@@ -125,7 +125,7 @@ export default function ProductFiltration({
               className={`px-4 py-2 rounded-lg font-semibold shadow text-sm transition ${
                 category === cat
                   ? "bg-pink-400 text-white"
-                  : "bg-white text-black"
+                  : "bg-white text-black shadow-md"
               }`}
             >
               {cat}

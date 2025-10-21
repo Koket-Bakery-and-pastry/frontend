@@ -2,6 +2,7 @@
 import React from "react";
 import ProductCard from "./ProductCard";
 import { Button } from "./ui/button";
+import Header from "./Header";
 
 function FeaturedSection() {
   const products = [
@@ -51,10 +52,8 @@ function FeaturedSection() {
 
   return (
     <section className=" section-spacing bg-pink-50 mt-8">
-      <div className="pb-16 w-full">
-        <h1 className="text-3xl md:text-5xl xl:text-6xl 2xl:text-7xl text-center mb-16 text-balance font-kaushan">
-          Featured Products
-        </h1>
+      <div className=" 2xl:pb-16 w-full">
+        <Header text="Featured Products" />
       </div>
 
       <div className=" 2xl:my-16 grid grid-cols-2  2xl:grid-cols-3 gap-6 3xl:gap-10 ">
@@ -79,7 +78,7 @@ function FeaturedSection() {
         ))}
       </div>
       <div className="flex justify-center items-center mb-16 py-6">
-        <Button className="py-6 bg-[#C967AC] hover:bg-[#C967AC] lg:px-10 lg:text-lg 2xl:-mt-20">
+        <Button className="py-3 md:py-6 bg-[#C967AC] hover:bg-[#C967AC] lg:px-10 lg:text-lg 2xl:-mt-20">
           View All Featured Products
         </Button>
       </div>

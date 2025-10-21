@@ -37,7 +37,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             {description}
           </p>
 
-          <div className="mt-auto pb-2 lg:pb-5 flex  items-center justify-between gap-2">
+          <div className="mt-auto md:pb-2 lg:pb-5 flex  items-center justify-between gap-2">
             <span className="text-[#C967AC] font-bold text-sm lg:text-2xl">
               {price}
             </span>

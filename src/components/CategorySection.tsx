@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import Image from "next/image";
 import { motion, Variants } from "framer-motion"; // ✅ import motion
+import Header from "./Header";
 
 const categories = [
   {
@@ -64,7 +65,7 @@ function CategorySection() {
           viewport={{ once: true }}
           className="text-3xl md:text-5xl xl:text-6xl 2xl:text-7xl text-center mb-16 text-balance font-kaushan"
         >
-          Shop by Category
+          <Header text="Explore Our Delicious Categories" />
         </motion.h2>
 
         {/* Category grid */}
@@ -73,7 +74,7 @@ function CategorySection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-8 lg:gap-12"
+          className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-8 lg:gap-12"
         >
           {categories.map((category, index) => (
             <motion.div
@@ -101,8 +102,8 @@ function CategorySection() {
               </Card>
 
               {/* Tagline box */}
-              <div className="flex items-center justify-center rounded-lg py-4 px-4 text-center -mt-8 max-w-[180px] xs:max-w-[200px] sm:max-w-[220px]  2xl:max-w-[230px] 3xl:max-w-[300px] bg-[#E8BEDB]   mx-auto">
-                <p className="text-sm 2xl:text-base 3xl:text-xl font-semibold text-secondary-foreground leading-relaxed md:max-w-[170px] xl:max-w-[250px]">
+              <div className="flex items-center justify-center rounded-lg py-4 px-4 md:px-1 lg:px-4 text-center -mt-8 max-w-[180px] xs:max-w-[200px] sm:max-w-[220px]  2xl:max-w-[230px] 3xl:max-w-[300px] bg-[#E8BEDB]   mx-auto">
+                <p className="text-xs lg:text-sm 2xl:text-base 3xl:text-xl font-semibold text-secondary-foreground leading-relaxed md:max-w-[170px] xl:max-w-[250px]">
                   {category.tagline}
                 </p>
               </div>

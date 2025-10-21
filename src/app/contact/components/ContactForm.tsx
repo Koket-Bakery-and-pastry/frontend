@@ -1,13 +1,19 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 function ContactForm() {
   const [formData, setFormData] = useState({
@@ -17,17 +23,19 @@ function ContactForm() {
     inquiryType: "",
     subject: "",
     message: "",
-  })
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Form submitted:", formData)
+    e.preventDefault();
+    console.log("Form submitted:", formData);
     // Handle form submission
-  }
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-md p-8 max-w-2xl mx-auto">
-      <h2 className="text-2xl font-bold mb-2 text-foreground">Send Us a Message</h2>
+      <h2 className="text-2xl font-bold mb-2 text-foreground">
+        Send Us a Message
+      </h2>
       <p className="text-sm text-muted-foreground mb-6">
         Fill out the form below and we'll get back to you as soon as possible.
       </p>
@@ -42,7 +50,9 @@ function ContactForm() {
               id="name"
               placeholder="Your Name"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               required
             />
           </div>
@@ -56,7 +66,9 @@ function ContactForm() {
               type="email"
               placeholder="Your@email.com"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
               required
             />
           </div>
@@ -72,7 +84,9 @@ function ContactForm() {
               type="tel"
               placeholder="(0123) 01 23 14 68"
               value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, phone: e.target.value })
+              }
               required
             />
           </div>
@@ -83,7 +97,9 @@ function ContactForm() {
             </Label>
             <Select
               value={formData.inquiryType}
-              onValueChange={(value) => setFormData({ ...formData, inquiryType: value })}
+              onValueChange={(value) =>
+                setFormData({ ...formData, inquiryType: value })
+              }
             >
               <SelectTrigger id="inquiryType">
                 <SelectValue placeholder="Select one" />
@@ -106,7 +122,9 @@ function ContactForm() {
             id="subject"
             placeholder="What's this about?"
             value={formData.subject}
-            onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, subject: e.target.value })
+            }
             required
           />
         </div>
@@ -120,17 +138,22 @@ function ContactForm() {
             placeholder="Tell us more about your inquiry..."
             rows={5}
             value={formData.message}
-            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, message: e.target.value })
+            }
             required
           />
         </div>
 
-        <Button type="submit" className="w-full bg-pink-500 hover:bg-pink-600 text-white font-medium">
+        <Button
+          type="submit"
+          className="w-full bg-[#C967AC] hover:bg-[#C967AC] text-white font-medium"
+        >
           Send Message
         </Button>
       </form>
     </div>
-  )
+  );
 }
 
-export default ContactForm
+export default ContactForm;
