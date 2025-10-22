@@ -1,16 +1,18 @@
-import { MapPin } from "lucide-react"
+import { MapPin } from "lucide-react";
 
 function LocationSection() {
   return (
-    <div className="bg-gray-50 rounded-lg p-12 text-center">
+    <div className="bg-[#D9D9D9] rounded-lg px-4 py-32 max-w-4xl mx-auto  text-center">
       <div className="flex justify-center mb-4">
         <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
           <MapPin className="w-8 h-8 text-gray-400" />
         </div>
       </div>
-      <p className="text-foreground font-medium mb-1">123 Bakery Street, Sweet City, SC 12345</p>
+      <p className="text-foreground font-medium mb-1">
+        123 Bakery Street, Sweet City, SC 12345
+      </p>
       <a
-        href="https://maps.google.com"
+        href="https://maps.app.goo.gl/mK1wM7gaCb4zdMHg9"
         target="_blank"
         rel="noopener noreferrer"
         className="text-pink-500 hover:text-pink-600 text-sm"
@@ -18,6 +20,6 @@ function LocationSection() {
         Open in Google Maps
       </a>
     </div>
-  )
+  );
 }
-export  default LocationSection;
+export default LocationSection;

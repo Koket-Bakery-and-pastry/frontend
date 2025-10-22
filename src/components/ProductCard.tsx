@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 import { FaEye } from "react-icons/fa";
 
@@ -6,7 +7,7 @@ interface ProductCardProps {
   name: string;
   description: string;
   price: string;
-  onView?: () => void;
+  productId: string;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -14,7 +15,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   name,
   description,
   price,
-  onView,
+  productId,
 }) => {
   return (
     // full width so grid controls columns; no fixed max width
@@ -42,13 +43,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
               {price}
             </span>
 
-            <button
-              onClick={onView}
-              className="flex items-center gap-2 bg-[#C967AC] hover:bg-[#ae5d95] text-white font-semibold px-3 py-1.5 lg:px-6 lg:py-2 rounded-lg transition text-xs"
-            >
-              <FaEye className="text-xs lg:text-xl" />
-              <span className="text-xs lg:text-base">View</span>
-            </button>
+            <Link href={`/products/${productId}`} passHref>
+              <button className="flex items-center gap-2 bg-[#C967AC] hover:bg-[#ae5d95] text-white font-semibold px-3 py-1.5 lg:px-6 lg:py-2 rounded-lg transition text-xs">
+                <FaEye className="text-xs lg:text-xl" />
+                <span className="text-xs lg:text-base">View</span>
+              </button>
+            </Link>
           </div>
         </div>
       </div>

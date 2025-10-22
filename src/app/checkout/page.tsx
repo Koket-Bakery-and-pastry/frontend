@@ -1,11 +1,83 @@
-import React from 'react'
+"use client"
 
-function page() {
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { ContactPaymentForm } from "./components/ContactPaymentForm"
+import { CheckoutItemPreview } from "./components/CheckoutItemPreview"
+
+interface CartItem {
+  id: string
+  image: string
+  name: string
+  price: number
+  quantity: number
+}
+
+export default function CheckoutPage() {
+  const [items] = useState<CartItem[]>([
+    {
+      id: "1",
+      image: "/black-forest-cake.png",
+      name: "Black Forest Cake",
+      price: 48,
+      quantity: 3,
+    },
+  ])
+
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  const total = subtotal
+
+  const handlePaymentSubmit = (data: any) => {
+    console.log("Payment data submitted:", data)
+    // Handle payment submission
+  }
+
   return (
-    <div>
-      <h1>Checkout</h1>
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-white">
+      <div className="container mx-auto px-4 py-12">
+        <h1 className="text-4xl md:text-5xl font-serif italic mb-12 text-foreground">Shopping Cart</h1>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+          {/* Contact & Payment Form */}
+          <div className="lg:col-span-2">
+            <ContactPaymentForm onSubmit={handlePaymentSubmit} />
+
+
+
+          </div>
+
+          {/* Order Summary */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-8">
+              <div className="border-2 border-blue-400 rounded-lg p-6 bg-white">
+                <h2 className="text-2xl font-semibold text-foreground mb-6">Order Summary</h2>
+                <div className="space-y-4">
+                  <div className="flex justify-between text-muted-foreground">
+                    <span>Subtotal</span>
+                    <span>${subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="border-t border-border pt-4 flex justify-between font-semibold text-lg">
+                    <span className="text-foreground">Total</span>
+                    <span className="text-pink-500">${total.toFixed(2)}</span>
+                  </div>
+                </div>
+                <Button className="w-full mt-6 bg-pink-500 hover:bg-pink-600 text-white">Place Order</Button>
+                <p className="text-center text-xs text-muted-foreground mt-4">
+                  By placing this order, you agree to our terms and conditions. Please ensure payment is completed
+                  before delivery.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Cart Items Preview */}
+        <div className="space-y-4">
+          {items.map((item) => (
+            <CheckoutItemPreview key={item.id} {...item} />
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
-
-export default page
