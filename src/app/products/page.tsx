@@ -211,7 +211,7 @@ function ProductsPage() {
               name={product.name}
               description={product.description}
               price={`$${product.price}`}
-              onView={() => {}}
+              productId={product.id.toString()}
             />
           ))
         ) : (

@@ -70,9 +70,7 @@ function FeaturedSection() {
               name={product.name}
               description={product.description}
               price={product.price}
-              onView={() => {
-                /* handle view or add to cart */
-              }}
+              productId={product.id.toString()}
             />
           </div>
         ))}
