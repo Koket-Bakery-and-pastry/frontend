@@ -103,6 +103,7 @@ export default function ProductPage() {
 
   return (
     <main className="min-h-screen bg-background px-4 lg:px-6 xl:px-10 2xl:px-16 3xl:px-24">
+      {/* Logo *">
       {/* Header */}
       <header className="border-b border-border bg-card">
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
@@ -118,7 +119,7 @@ export default function ProductPage() {
       </header>
 
       {/* Product Section */}
-      <section className="mx- max-w-7xl ">
+      <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 xl:px-0">
         <div className="grid gap-8 xl:grid-cols-2">
           {/* Product Gallery */}
           <ProductGallery />
@@ -167,7 +168,7 @@ export default function ProductPage() {
             </div>
 
             {/* Kilos + Message row */}
-            <div className="flex items-start gap-6">
+            <div className="flex flex-col 2xl:flex-row items-start gap-6">
               <div className="flex flex-col">
                 <label className="mb-2 block text-sm font-medium">Kilos</label>
                 <select
@@ -189,12 +190,12 @@ export default function ProductPage() {
                 </select>
               </div>
 
-              <div className="flex-1">
+              <div className="flex-1 w-full">
                 <label className="mb-2 block text-sm font-medium">
                   Message on cake
                 </label>
-                <input
-                  type="text"
+                <textarea
+                  rows={3}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="e.g Happy Birthday!"

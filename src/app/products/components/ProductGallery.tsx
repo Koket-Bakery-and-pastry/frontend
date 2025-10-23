@@ -7,7 +7,12 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 export function ProductGallery() {
   const [currentImage, setCurrentImage] = useState(0);
 
-  const images = ["/assets/img2.png", "/assets/img1.png", "/assets/img3.jpeg"];
+  const images = [
+    "/assets/img2.png",
+    "/assets/img1.png",
+    "/assets/img3.jpeg",
+    // "/assets/img3.jpeg",
+  ];
 
   const nextImage = () => {
     setCurrentImage((prev) => (prev + 1) % images.length);
@@ -24,7 +29,7 @@ export function ProductGallery() {
         <img
           src={images[currentImage] || "/placeholder.svg"}
           alt="Black Forest Cake"
-          className="w-full h-[420px] object-cover"
+          className="w-full h-[250px] md:h-[420px] object-cover"
         />
         <button
           onClick={prevImage}
@@ -46,7 +51,7 @@ export function ProductGallery() {
           <button
             key={index}
             onClick={() => setCurrentImage(index)}
-            className={`h-20 w-20 overflow-hidden rounded-lg border-2 transition-colors ${
+            className={`h-15 w-15 md:h-20 md:w-20 overflow-hidden rounded-lg border-2 transition-colors ${
               currentImage === index ? "border-[#C967AC]" : "border-border"
             }`}
           >
