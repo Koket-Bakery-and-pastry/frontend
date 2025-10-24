@@ -1,24 +1,26 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { CartItem } from "./components/CartItem"
-import { OrderSummary } from "./components/OrderSummary"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { CartItem } from "./components/CartItem";
+import { OrderSummary } from "./components/OrderSummary";
+import { PageHeader } from "@/components";
+import Link from "next/link";
 
 interface CartItemData {
-  id: string
-  image: string
-  name: string
-  category: string
-  price: number
-  quantity: number
+  id: string;
+  image: string;
+  name: string;
+  category: string;
+  price: number;
+  quantity: number;
 }
 
 export default function ShoppingCartPage() {
   const [items, setItems] = useState<CartItemData[]>([
     {
       id: "1",
-      image: "/black-forest-cake.png",
+      image: "/assets/img1.png",
       name: "Black Forest Cake",
       category: "Cakes",
       price: 48,
@@ -26,61 +28,119 @@ export default function ShoppingCartPage() {
     },
     {
       id: "2",
-      image: "/black-forest-cake.png",
-      name: "Black Forest Cake",
+      image: "/assets/img2.png",
+      name: "Red Velvet Cake",
       category: "Cakes",
       price: 48,
       quantity: 1,
     },
     {
       id: "3",
-      image: "/black-forest-cake.png",
-      name: "Black Forest Cake",
+      image: "/assets/img3.jpeg",
+      name: "Chocolate Cake",
       category: "Cakes",
-      price: 48,
+      price: 55,
       quantity: 1,
     },
-  ])
+  ]);
+
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  const handleSelect = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id)
+        ? prev.filter((selectedId) => selectedId !== id)
+        : [...prev, id]
+    );
+  };
 
   const handleQuantityChange = (id: string, quantity: number) => {
-    setItems(items.map((item) => (item.id === id ? { ...item, quantity } : item)))
-  }
+    setItems(
+      items.map((item) => (item.id === id ? { ...item, quantity } : item))
+    );
+  };
 
   const handleDelete = (id: string) => {
-    setItems(items.filter((item) => item.id !== id))
-  }
+    setItems(items.filter((item) => item.id !== id));
+    setSelectedIds(selectedIds.filter((selectedId) => selectedId !== id));
+  };
 
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const total = subtotal
+  const subtotal = items
+    .filter((item) => selectedIds.includes(item.id))
+    .reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  const total = subtotal;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-white">
-      <div className="container mx-auto px-4 py-12">
-        <h1 className="text-4xl md:text-5xl font-serif italic mb-12 text-foreground">Shopping Cart</h1>
+    <div className="min-h-screen bg-white">
+      <div>
+        <div className="mb-12">
+          <PageHeader
+            title="Shopping Cart"
+            subtitle="Tap to select your cakes and proceed to checkout"
+          />
+        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 2xl:grid-cols-3 gap-8 px-4 lg:px-6 xl:px-10 2xl:px-16 3xl:px-24">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
+            {/* 🆕 Selection Info Bar */}
+            <div className="flex items-center justify-between bg-pink-100/70 border border-pink-200 text-sm text-pink-700 px-4 py-2 rounded-md mb-4">
+              <p>
+                Tap on an item to select it.{" "}
+                <span className="font-semibold">
+                  {selectedIds.length} selected
+                </span>
+              </p>
+              {selectedIds.length > 0 && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-pink-300 text-pink-600 hover:bg-pink-50 bg-transparent"
+                  onClick={() => setSelectedIds([])}
+                >
+                  Clear
+                </Button>
+              )}
+            </div>
+
             {items.length > 0 ? (
               <>
                 {items.map((item) => (
-                  <CartItem
+                  <div
                     key={item.id}
-                    {...item}
-                    onQuantityChange={(quantity) => handleQuantityChange(item.id, quantity)}
-                    onDelete={() => handleDelete(item.id)}
-                  />
+                    onClick={() => handleSelect(item.id)}
+                    className={`transition-all duration-200 cursor-pointer rounded-lg border ${
+                      selectedIds.includes(item.id)
+                        ? "border-pink-400 bg-pink-50 shadow-md scale-[1.01]"
+                        : "border-border bg-white hover:shadow-sm"
+                    }`}
+                  >
+                    <CartItem
+                      {...item}
+                      selected={selectedIds.includes(item.id)}
+                      onSelect={() => handleSelect(item.id)}
+                      onQuantityChange={(quantity) =>
+                        handleQuantityChange(item.id, quantity)
+                      }
+                      onDelete={() => handleDelete(item.id)}
+                    />
+                  </div>
                 ))}
-                <Button
-                  variant="outline"
-                  className="mt-6 border-pink-300 text-pink-600 hover:bg-pink-50 bg-transparent"
-                >
-                  Continue Shopping
-                </Button>
+                <Link href="/products">
+                  <Button
+                    variant="outline"
+                    className="mt-6 border-pink-300 text-pink-600 hover:bg-pink-50 bg-transparent"
+                  >
+                    Continue Shopping
+                  </Button>
+                </Link>
               </>
             ) : (
               <div className="text-center py-12">
-                <p className="text-muted-foreground text-lg">Your cart is empty</p>
+                <p className="text-muted-foreground text-lg">
+                  Your cart is empty
+                </p>
               </div>
             )}
           </div>
@@ -94,5 +154,5 @@ export default function ShoppingCartPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
