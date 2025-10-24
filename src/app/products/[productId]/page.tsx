@@ -130,14 +130,16 @@ export default function ProductPage() {
               <p className="text-sm text-muted-foreground">
                 Cakes/Black Forest
               </p>
-              <h1 className="mt-2 text-4xl font-bold text-foreground">
+              <h1 className="mt-2 text-2xl md:text-4xl font-bold text-foreground">
                 Black Forest Cake
               </h1>
-              <p className="mt-2 text-sm text-muted-foreground">
+              <p className="mt-2 md:text-sm text-muted-foreground">
                 Delicious & fresh, made with love Delicious & fresh, made with
                 love Delicious & fresh, made with love Delicious & fresh, made
                 with love Delicious & fresh, made with love Delicious & fresh,
-                made with love Delicious & fresh, made with love
+                made with love Delicious & fresh, made with love made with love
+                Delicious & fresh, made with love Delicious & fresh, made with
+                love Delicious & fresh, made with love
               </p>
             </div>
 
@@ -213,54 +215,48 @@ export default function ProductPage() {
                 <ShoppingCart className="h-4 w-4" /> Add to Cart
               </Button>
             </div>
-
             {/* Product Details */}
             <Card className="p-6 rounded-lg border border-border bg-background">
               <h3 className="mb-4 text-lg font-semibold">Product Details</h3>
 
-              <div className="grid gap-3 grid-cols-1 md:grid-cols-2 text-sm">
-                <div className="space-y-3">
-                  <div>
-                    <span className="text-muted-foreground font-medium">
-                      Category:
-                    </span>
-                  </div>
-
-                  <div>
-                    <span className="text-muted-foreground font-medium">
-                      Type:
-                    </span>
-                  </div>
-
-                  <div>
-                    <span className="text-muted-foreground font-medium">
-                      Availability:
-                    </span>
-                  </div>
+              <div className="grid gap-4 text-sm">
+                {/* Category */}
+                <div className="flex flex-col sm:grid sm:grid-cols-2 sm:items-center">
+                  <span className="text-muted-foreground font-medium">
+                    Category:
+                  </span>
+                  <span className="font-medium sm:text-right">Cakes</span>
                 </div>
 
-                <div className="space-y-3 text-right">
-                  <div>
-                    <span className="font-medium">Cakes</span>
-                  </div>
-
-                  <div>
-                    <span className="font-medium">Black Forest</span>
-                  </div>
-
-                  <div>
-                    <span className="font-medium text-green-600">In Stock</span>
-                  </div>
+                {/* Type */}
+                <div className="flex flex-col sm:grid sm:grid-cols-2 sm:items-center">
+                  <span className="text-muted-foreground font-medium">
+                    Type:
+                  </span>
+                  <span className="font-medium sm:text-right">
+                    Black Forest
+                  </span>
                 </div>
 
-                <div className="md:col-span-2 mt-4 border-t border-border pt-4">
+                {/* Availability */}
+                <div className="flex flex-col sm:grid sm:grid-cols-2 sm:items-center">
+                  <span className="text-muted-foreground font-medium">
+                    Availability:
+                  </span>
+                  <span className="font-medium text-green-600 sm:text-right">
+                    In Stock
+                  </span>
+                </div>
+
+                {/* Optional note */}
+                <div className="mt-4 border-t border-border pt-4">
                   {/* <p className="text-sm text-muted-foreground leading-relaxed">
-                    Please pay attention, that the time of delivery and pick up
-                    can be changed due to the current state of workload! *The
-                    cake on the image is given as an example, the finished
-                    product may differ from the one shown on the site, because
-                    it is handmade.
-                  </p> */}
+        Please pay attention, that the time of delivery and pick up
+        can be changed due to the current state of workload! *The
+        cake on the image is given as an example, the finished
+        product may differ from the one shown on the site, because
+        it is handmade.
+      </p> */}
                 </div>
               </div>
             </Card>
@@ -272,7 +268,7 @@ export default function ProductPage() {
       <section className="border-t border-border bg-card">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="mb-8 flex items-center justify-between">
-            <h2 className="text-2xl font-bold">Customer Reviews</h2>
+            <h2 className="text-lg md:text-2xl font-bold">Customer Reviews</h2>
             <Button
               onClick={() => setShowReviewForm(!showReviewForm)}
               className="bg-[#C967AC] hover:bg-[#bd5b9e] text-white rounded-full px-4 py-2"
