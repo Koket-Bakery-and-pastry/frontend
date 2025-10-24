@@ -1,14 +1,14 @@
-import { Star } from "lucide-react"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Star } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 interface Review {
-  id: string
-  author: string
-  title: string
-  content: string
-  rating: number
-  avatar: string
+  id: string;
+  author: string;
+  title: string;
+  content: string;
+  rating: number;
+  avatar: string;
 }
 
 const reviews: Review[] = [
@@ -48,8 +48,7 @@ const reviews: Review[] = [
     rating: 5,
     avatar: "D",
   },
-]
-
+];
 
 export function ReviewsList() {
   return (
@@ -64,34 +63,54 @@ export function ReviewsList() {
       <div className="space-y-4 mt-6">
         {reviews.length === 0 ? (
           <div className="rounded-lg border border-border p-8 text-center bg-white">
-            <p className="text-muted-foreground">No reviews yet. Be the first to review! 🍰</p>
+            <p className="text-muted-foreground">
+              No reviews yet. Be the first to review! 🍰
+            </p>
           </div>
         ) : (
           reviews.map((review) => (
-            <Card key={review.id} className="p-6 border border-border rounded-lg">
-              <div className="flex gap-4">
+            <Card
+              key={review.id}
+              className="p-6 border border-border rounded-lg"
+            >
+              <div className="flex flex-col gap-4">
                 {/* Avatar */}
-                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-pink-100 text-pink-600 font-semibold">
+                {/* <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-pink-100 text-pink-600 font-semibold">
                   {review.avatar}
-                </div>
+                </div> */}
 
                 {/* Review Content */}
                 <div className="flex-1">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="font-semibold text-[#C967AC]">{review.author}</p>
-                      <p className="text-sm text-muted-foreground">{review.title}</p>
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-pink-100 text-pink-600 font-semibold">
+                        {review.avatar}
+                      </div>
+                      <div>
+                        <p className=" font-semibold text-[#C967AC]">
+                          {review.author}
+                        </p>
+                        <p className="text-xs md:text-sm text-muted-foreground">
+                          {review.title}
+                        </p>
+                      </div>
                     </div>
                     <div className="flex gap-1">
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
-                          className={`h-4 w-4 ${i < review.rating ? "fill-amber-400 text-amber-400" : "text-muted-foreground"}`}
+                          className={`h-4 w-4 ${
+                            i < review.rating
+                              ? "fill-amber-400 text-amber-400"
+                              : "text-muted-foreground"
+                          }`}
                         />
                       ))}
                     </div>
                   </div>
-                  <p className="mt-3 text-sm leading-relaxed text-foreground">{review.content}</p>
+                  <p className="mt-3 text-xs md:text-sm leading-relaxed text-foreground">
+                    {review.content}
+                  </p>
                 </div>
               </div>
             </Card>
@@ -99,6 +118,5 @@ export function ReviewsList() {
         )}
       </div>
     </div>
-  )
+  );
 }
-
