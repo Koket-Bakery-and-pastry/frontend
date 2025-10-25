@@ -1,5 +1,8 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { FaShoppingCart } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +13,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { is, tr } from "date-fns/locale";
 
 function Navbar() {
   const NavLinks = [
@@ -24,11 +26,31 @@ function Navbar() {
     { name: "Products", href: "/admin/products" },
     { name: "Orders", href: "/admin/orders" },
     { name: "Users", href: "/admin/users" },
+    { name: "Categories", href: "/admin/categories" },
   ];
 
   const isAdmin = true;
 
   const linksToDisplay = isAdmin ? AdminLinks : NavLinks;
+
+  const pathname = usePathname() || "/";
+
+  const isActive = (href: string) => {
+    if (href === "/") return pathname === "/";
+    return pathname.startsWith(href);
+  };
+
+  const desktopLinkClass = (href: string) =>
+    `2xl:text-lg transition ${
+      isActive(href)
+        ? "text-[#C967AC] font-semibold"
+        : "font-normal hover:text-[#C967AC]"
+    }`;
+
+  const mobileLinkClass = (href: string) =>
+    `text-lg font-medium ${
+      isActive(href) ? "text-[#C967AC]" : "hover:text-[#C967AC] transition"
+    }`;
 
   return (
     <>
@@ -46,7 +68,7 @@ function Navbar() {
             <Link
               key={link.name}
               href={link.href}
-              className="2xl:text-lg hover:text-[#C967AC] transition font-normal"
+              className={desktopLinkClass(link.href)}
             >
               {link.name}
             </Link>
@@ -100,12 +122,9 @@ function Navbar() {
               </SheetTitle>
             </SheetHeader>
             <div className="flex flex-col gap-6 mt-4 mb-8">
-              {NavLinks.map((link) => (
+              {linksToDisplay.map((link) => (
                 <SheetClose asChild key={link.name}>
-                  <Link
-                    href={link.href}
-                    className="text-lg font-medium hover:text-[#C967AC] transition"
-                  >
+                  <Link href={link.href} className={mobileLinkClass(link.href)}>
                     {link.name}
                   </Link>
                 </SheetClose>

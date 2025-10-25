@@ -1,11 +1,226 @@
-import React from 'react'
+"use client";
+import React, { useEffect, useState } from "react";
+import { Order, OrderStatus, statusColors } from "../../types/order";
 
-const page = () => {
+import OrderCard from "../components/OrderCard";
+import Pagination from "../components/Pagination";
+import RejectModal from "../components/RejectModal";
+import { mockOrders } from "../../data/mockData";
+import OrderFilters from "../components/OrderFilter";
+
+export default function OrdersPage() {
+  const [orders, setOrders] = useState<Order[]>(mockOrders);
+  const [filterStatus, setFilterStatus] = useState<OrderStatus | "All">("All");
+  const [search, setSearch] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("All");
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+  const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
+  const [expandedProductKeys, setExpandedProductKeys] = useState<string[]>([]);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
+  // Extract unique categories from products
+  const categories = [
+    "All",
+    ...new Set(
+      orders.flatMap((order) =>
+        order.products.map((product) => product.name.split(" ")[0])
+      )
+    ),
+  ];
+
+  const parseDate = (dateString: string) => {
+    const datePart = dateString.split(" at ")[0];
+    return new Date(datePart);
+  };
+
+  const filteredOrders = orders.filter((order) => {
+    const matchesStatus =
+      filterStatus === "All" || order.status === filterStatus;
+    const matchesSearch = order.customer
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+    const orderDate = parseDate(order.date);
+    const from = fromDate ? new Date(fromDate) : null;
+    const to = toDate ? new Date(toDate) : null;
+    const matchesFromDate = !from || orderDate >= from;
+    const matchesToDate = !to || orderDate <= to;
+
+    const matchesCategory =
+      categoryFilter === "All" ||
+      order.products.some((product) =>
+        product.name.toLowerCase().includes(categoryFilter.toLowerCase())
+      );
+
+    return (
+      matchesStatus &&
+      matchesSearch &&
+      matchesFromDate &&
+      matchesToDate &&
+      matchesCategory
+    );
+  });
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [
+    filterStatus,
+    search,
+    fromDate,
+    toDate,
+    categoryFilter,
+    itemsPerPage,
+    orders,
+  ]);
+
+  const totalItems = filteredOrders.length;
+  const paginatedOrders = filteredOrders.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handleStatusChange = (id: string, status: OrderStatus) => {
+    setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)));
+  };
+
+  const handleReject = (id: string) => {
+    setSelectedOrder(id);
+    setShowRejectModal(true);
+  };
+
+  const confirmReject = () => {
+    if (selectedOrder) {
+      setOrders((prev) =>
+        prev.map((o) =>
+          o.id === selectedOrder ? { ...o, status: "Canceled" } : o
+        )
+      );
+    }
+    setShowRejectModal(false);
+    setRejectReason("");
+    setSelectedOrder(null);
+    setExpandedProductKeys((prev) =>
+      prev.filter((k) => !k.startsWith(`${selectedOrder}-`))
+    );
+  };
+
+  const clearFilters = () => {
+    setFilterStatus("All");
+    setSearch("");
+    setFromDate("");
+    setToDate("");
+    setCategoryFilter("All");
+    setItemsPerPage(5);
+    setCurrentPage(1);
+    setShowMobileFilters(false);
+  };
+
+  const isFilterActive =
+    filterStatus !== "All" ||
+    search !== "" ||
+    fromDate !== "" ||
+    toDate !== "" ||
+    categoryFilter !== "All";
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const toggleProductDetail = (orderId: string, productId: string) => {
+    const key = `${orderId}-${productId}`;
+    setExpandedProductKeys((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+    );
+  };
+
+  const isProductExpanded = (orderId: string, productId: string) =>
+    expandedProductKeys.includes(`${orderId}-${productId}`);
+
   return (
-    <div>
-      hello from custom orders
-    </div>
-  )
-}
+    <div className="">
+      <div className="bg-pink-50 section-spacing text-center">
+        <div className="flex flex-col sm:flex-row justify-center items-center mb-4 gap-2">
+          <img
+            src="../../../../assets/cake.png"
+            alt="cake png"
+            className="w-12 h-12 sm:w-14 sm:h-14 object-cover rounded-md mb-3"
+          />
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-kaushan italic mb-3 text-foreground pl-0 sm:pl-2">
+            Orders
+          </h1>
+        </div>
+        <p className="text-muted-foreground text-base sm:text-2xl max-w-3xl mx-auto text-balance -mt-8 md:-mt-4">
+          Order your perfect cake for any ocassion
+        </p>
+      </div>
 
-export default page
+      <div className="border-2 m-4 sm:m-6 rounded-3xl">
+        <div className="overview px-3 sm:px-6 lg:px-10 py-6">
+          <h1 className="text-xl sm:text-2xl font-bold mb-4">All Orders</h1>
+
+          <OrderFilters
+            filterStatus={filterStatus}
+            onFilterStatusChange={setFilterStatus}
+            search={search}
+            onSearchChange={setSearch}
+            fromDate={fromDate}
+            onFromDateChange={setFromDate}
+            toDate={toDate}
+            onToDateChange={setToDate}
+            categoryFilter={categoryFilter}
+            onCategoryFilterChange={setCategoryFilter}
+            itemsPerPage={itemsPerPage}
+            onItemsPerPageChange={setItemsPerPage}
+            categories={categories}
+            isFilterActive={isFilterActive}
+            onClearFilters={clearFilters}
+            showMobileFilters={showMobileFilters}
+            onShowMobileFiltersChange={setShowMobileFilters}
+          />
+
+          {/* Orders List */}
+          <div className="space-y-6">
+            {paginatedOrders.map((order) => (
+              <OrderCard
+                key={order.id}
+                order={order}
+                onStatusChange={handleStatusChange}
+                onReject={handleReject}
+                isProductExpanded={isProductExpanded}
+                onToggleProductDetail={toggleProductDetail}
+              />
+            ))}
+
+            {paginatedOrders.length === 0 && (
+              <p className="text-gray-500 text-center mt-10">
+                No orders found.
+              </p>
+            )}
+          </div>
+
+          {/* Universal Pagination Component */}
+          <Pagination
+            currentPage={currentPage}
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            onPageChange={goToPage}
+            className="mt-6"
+          />
+
+          <RejectModal
+            isOpen={showRejectModal}
+            onClose={() => setShowRejectModal(false)}
+            onConfirm={confirmReject}
+            rejectReason={rejectReason}
+            onRejectReasonChange={setRejectReason}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
