@@ -149,30 +149,32 @@ export default function CategoriesPage() {
       <HeroSection
         title="Categories"
         subtitle="Track all categories in client page in one place"
-        iconSrc="../../../../assets/category-icon.png" // Add your category icon
+        iconSrc="../../../../assets/category-icon.png"
         iconAlt="category icon"
       />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-        <section className="bg-white border-2 rounded-3xl shadow-sm overflow-hidden">
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 mt-4 sm:mt-6">
+        <section className="bg-white border-2 rounded-2xl sm:rounded-3xl shadow-sm overflow-hidden">
           {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 px-6 sm:px-8 lg:px-10 py-6 sm:py-8 w-full">
-            <div>
-              <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-[#C967AC]">
+          <div className="flex flex-col gap-3 sm:gap-4 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 w-full">
+            <div className="text-center sm:text-left">
+              <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-[#C967AC]">
                 All Categories
               </h2>
-              <p className="text-sm text-gray-600 mt-1">
+              <p className="text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2 max-w-2xl mx-auto sm:mx-0">
                 This is your main category management section. You can now
                 manage categories easily using the forms below.
               </p>
             </div>
           </div>
 
-          <div className="p-4 sm:p-6 bg-[#FFFAFF]">
+          <div className="p-3 sm:p-4 lg:p-6 bg-[#FFFAFF]">
             {/* Add/Edit Category Form */}
             {editingCategory ? (
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold mb-4">Edit Category</h3>
+              <div className="mb-6 sm:mb-8">
+                <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">
+                  Edit Category
+                </h3>
                 <CategoryForm
                   onSubmit={handleUpdateCategory}
                   placeholder="Enter category name"
@@ -182,8 +184,10 @@ export default function CategoriesPage() {
                 />
               </div>
             ) : (
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold mb-4">Add New Category</h3>
+              <div className="mb-6 sm:mb-8">
+                <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">
+                  Add New Category
+                </h3>
                 <CategoryForm
                   onSubmit={handleAddCategory}
                   placeholder="Enter category name"
@@ -194,9 +198,12 @@ export default function CategoriesPage() {
 
             {/* Add Sub-category Form */}
             {addingSubCategory && (
-              <div className="mb-8 p-4 border border-gray-200 rounded-lg bg-white">
-                <h3 className="text-lg font-semibold mb-4">
-                  Add Sub-category to {addingSubCategory.name}
+              <div className="mb-6 sm:mb-8 p-3 sm:p-4 border border-gray-200 rounded-lg bg-white">
+                <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">
+                  Add Sub-category to{" "}
+                  <span className="text-[#C967AC]">
+                    {addingSubCategory.name}
+                  </span>
                 </h3>
                 <CategoryForm
                   onSubmit={handleCreateSubCategory}
@@ -209,8 +216,8 @@ export default function CategoriesPage() {
 
             {/* Edit Sub-category Form */}
             {editingSubCategory && (
-              <div className="mb-8 p-4 border border-gray-200 rounded-lg bg-white">
-                <h3 className="text-lg font-semibold mb-4">
+              <div className="mb-6 sm:mb-8 p-3 sm:p-4 border border-gray-200 rounded-lg bg-white">
+                <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">
                   Edit Sub-category
                 </h3>
                 <CategoryForm
