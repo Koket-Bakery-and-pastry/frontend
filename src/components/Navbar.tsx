@@ -29,7 +29,7 @@ function Navbar() {
     { name: "Categories", href: "/admin/categories" },
   ];
 
-  const isAdmin = false;
+  const isAdmin = true;
 
   const linksToDisplay = isAdmin ? AdminLinks : NavLinks;
 
