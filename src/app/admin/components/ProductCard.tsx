@@ -42,11 +42,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
       <div className="p-5">
         <h3 className="font-bold text-2xl mb-1">{name}</h3>
-        <p className="text-gray-500 text-lg mb-4 line-clamp-2">{description}</p>
+        <p className="text-gray-500 text-lg mb-4 line-clamp-1">{description}</p>
 
-        <div className="flex items-center justify-between">
-          <span className="text-[#C967AC] font-bold text-2xl">{price}</span>
-
+        <div className="flex items-center justify-between gap-4">
+          <span className="text-[#c967ac] font-bold text-2xl">{price}</span>
           <div className="flex items-center gap-2">
             <button
               onClick={onEdit}
@@ -54,7 +53,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               aria-label="Edit product"
               title="Edit"
             >
-              <FaEdit />
+              <FaEdit size={30} title="Edit" color="#07753e" />
             </button>
 
             <button
@@ -63,7 +62,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               aria-label="Delete product"
               title="Delete"
             >
-              <FaTrash />
+              <FaTrash size={30} title="Delete" />
             </button>
           </div>
         </div>

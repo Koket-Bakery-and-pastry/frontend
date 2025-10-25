@@ -1,221 +1,125 @@
 "use client";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@radix-ui/react-dropdown-menu";
-import { Link } from "lucide-react";
-import { useMemo, useState } from "react";
-import { FaBars } from "react-icons/fa";
-import StatCard from "../components/DashboardCard";
-import OrderDistributionCard from "../components/DistributionCard";
-import TopSellingProductsCard from "../components/TopSellingProductsCard";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import ProductCard from "../components/ProductCard";
+import { Product } from "../../types/product";
+import { mockProducts } from "../../data/mockProducts";
+import HeroSection from "../components/HeroSection";
+import ProductsHeader from "../components/ProductsHeader";
+import ProductsGrid from "../components/ProductsGrid";
+import Pagination from "../components/Pagination";
+import ConfirmationModal from "../components/ConfirmationModal";
 
-function AdminPage() {
-  const categories = [
-    "All Products",
-    "Cake",
-    "Quick Bread",
-    "Cookies",
-    "Fondant Cake",
-  ];
+export default function AdminProductsPage() {
+  const [products, setProducts] = useState<Product[]>(mockProducts);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(12); // You can make this dynamic if needed
 
-  const [selectedCategory, setSelectedCategory] = useState("All Products");
-  const [reportRange, setReportRange] = useState("Daily Report");
+  // Confirmation modal state
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [productToDeleteIndex, setProductToDeleteIndex] = useState<
+    number | null
+  >(null);
 
-  const items = categories.map((label) => ({
-    id: label.replace(/\s+/g, "-").toLowerCase(),
-    label,
-  }));
-  const activeTabItem =
-    items.find((it) => it.label === selectedCategory) ?? items[0];
+  const totalItems = products.length;
+  const currentProducts = products.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
-  function handleTabClick(label: string) {
-    setSelectedCategory(label);
-  }
-
-  // derive the data shown on the page based on the selected report range
-  const { stats, orderStatuses, topProducts } = useMemo(() => {
-    switch (reportRange) {
-      case "Weekly Report":
-        return {
-          stats: {
-            totalRevenue: "$10,450.00",
-            activeOrders: "8",
-            customRequests: "3",
-            totalProducts: "14",
-            subtextRevenue: "From 28 orders",
-          },
-          orderStatuses: [
-            { label: "Pending", count: 12, color: "#FACC15" },
-            { label: "Confirmed", count: 6, color: "#3B82F6" },
-            { label: "In Progress", count: 5, color: "#D946EF" },
-            { label: "Completed", count: 20, color: "#22C55E" },
-            { label: "Cancelled", count: 2, color: "#EF4444" },
-          ],
-          topProducts: [
-            { name: "Chocolate Cake", revenue: 4200 },
-            { name: "Vanilla Cupcakes", revenue: 2200 },
-            { name: "Red Velvet Cake", revenue: 1350 },
-            { name: "Lemon Tart", revenue: 900 },
-          ],
-        };
-      case "Annual Report":
-        return {
-          stats: {
-            totalRevenue: "$128,200.00",
-            activeOrders: "120",
-            customRequests: "40",
-            totalProducts: "18",
-            subtextRevenue: "From 3,100 orders",
-          },
-          orderStatuses: [
-            { label: "Pending", count: 40, color: "#FACC15" },
-            { label: "Confirmed", count: 200, color: "#3B82F6" },
-            { label: "In Progress", count: 60, color: "#D946EF" },
-            { label: "Completed", count: 2800, color: "#22C55E" },
-            { label: "Cancelled", count: 100, color: "#EF4444" },
-          ],
-          topProducts: [
-            { name: "Chocolate Cake", revenue: 45200 },
-            { name: "Vanilla Cupcakes", revenue: 31200 },
-            { name: "Red Velvet Cake", revenue: 21000 },
-            { name: "Assorted Cookies", revenue: 16000 },
-          ],
-        };
-      case "Daily Report":
-      default:
-        return {
-          stats: {
-            totalRevenue: "$1,500.00",
-            activeOrders: "2",
-            customRequests: "1",
-            totalProducts: "15",
-            subtextRevenue: "From 6 orders",
-          },
-          orderStatuses: [
-            { label: "Pending", count: 5, color: "#FACC15" },
-            { label: "Confirmed", count: 2, color: "#3B82F6" },
-            { label: "In Progress", count: 3, color: "#D946EF" },
-            { label: "Completed", count: 4, color: "#22C55E" },
-            { label: "Cancelled", count: 1, color: "#EF4444" },
-          ],
-          topProducts: [
-            { name: "Chocolate Cake", revenue: 1500 },
-            { name: "Vanilla Cupcakes", revenue: 1200 },
-            { name: "Red Velvet Cake", revenue: 1000 },
-          ],
-        };
+  const handleAddProduct = () => {
+    if (typeof window !== "undefined") {
+      const base = window.location.pathname.replace(/\/$/, "");
+      window.location.href = `${base}/add`;
     }
-  }, [reportRange]);
+  };
 
-  const products = [
-    {
-      id: 1,
-      image: "/assets/img1.png",
-      name: "Mocha Cake",
-      description: "Chocolate Drip Cake with Mocha Buttercream Frosting",
-      price: "$500",
-    },
-    {
-      id: 2,
-      image: "/assets/img2.png",
-      name: "Vanilla Cake",
-      description: "Classic Vanilla Cake with Buttercream Frosting",
-      price: "$450",
-    },
-    {
-      id: 3,
-      image: "/assets/img2.png",
-      name: "Red Velvet Cake",
-      description: "Rich Red Velvet Cake with Cream Cheese Frosting",
-      price: "$550",
-    },
-    {
-      id: 4,
-      image: "/assets/img2.png",
-      name: "Lemon Cake",
-      description: "Zesty Lemon Cake with Lemon Buttercream Frosting",
-      price: "$480",
-    },
-    {
-      id: 5,
-      image: "/assets/img2.png",
-      name: "Carrot Cake",
-      description: "Moist Carrot Cake with Cream Cheese Frosting",
-      price: "$520",
-    },
-    {
-      id: 6,
-      image: "/assets/img2.png",
-      name: "Chocolate Cake",
-      description: "Decadent Chocolate Cake with Chocolate Ganache",
-      price: "$600",
-    },
-  ];
+  const handleEditProduct = (id: number) => {
+    if (typeof window !== "undefined") {
+      const base = window.location.pathname.replace(/\/$/, "");
+      window.location.href = `${base}/edit/${id}`;
+    }
+  };
+
+  const openDeleteConfirm = (index: number) => {
+    setProductToDeleteIndex(index);
+    setConfirmOpen(true);
+  };
+
+  const cancelDelete = () => {
+    setProductToDeleteIndex(null);
+    setConfirmOpen(false);
+  };
+
+  const confirmDelete = () => {
+    if (productToDeleteIndex === null) return;
+
+    setProducts((prev) =>
+      prev.filter((_, idx) => idx !== productToDeleteIndex)
+    );
+    setProductToDeleteIndex(null);
+    setConfirmOpen(false);
+
+    // Reset to first page if current page becomes empty
+    const newTotalItems = products.length - 1;
+    const newTotalPages = Math.ceil(newTotalItems / itemsPerPage);
+    if (currentPage > newTotalPages) {
+      setCurrentPage(Math.max(1, newTotalPages));
+    }
+  };
+
+  const getProductName = () => {
+    if (productToDeleteIndex === null) return "this product";
+    return products[productToDeleteIndex]?.name || "this product";
+  };
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
-    <div>
-      <div className="bg-pink-50 section-spacing text-center">
-        <h1 className="text-4xl md:text-5xl font-kaushan italic mb-3 text-foreground">
-          Our Products
-        </h1>
-        <p className="text-muted-foreground max-w-2xl mx-auto text-balance">
-          Browse our delicious selection of cakes and desserts
-        </p>
-      </div>
-      <div className="border-2 m-6 rounded-3xl">
-        <div className="overview flex flex-row items-center justify-between px-3 sm:px-6 lg:px-10 pt-6">
-          <h1 className="text-sm md:text-2xl font-bold text-[#C967AC]">
-            All Products
-          </h1>
-          <div className="flex items-center gap-4">
-            <Button
-              size="sm"
-              className="bg-[#C967AC] hover:bg-[#da78d6] text-white md:px-3 md:py-5 px-1 py-2 rounded-md flex items-center gap-2 w-fit text-xs md:text-md "
-              aria-label="Add New Product"
-            >
-              <span className="inline-flex items-center justify-center w-5 h-5 text-white bg-white/10 rounded-full">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-3 h-3"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 4v16m8-8H4"
-                  />
-                </svg>
-              </span>
-              <span>Add New Product</span>
-            </Button>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 4xl:grid-cols-4 gap-10 p-8 bg-[#FFFAFF]  ">
-          {products.map((product) => (
-            <ProductCard
-              key={product.id}
-              image={product.image}
-              name={product.name}
-              description={product.description}
-              price={product.price}
-              onView={() => {
-                /* handle view or add to cart */
-              }}
+    <div className="min-h-screen bg-white">
+      <HeroSection
+        title="Customer"
+        subtitle="Track customer details, orders, and updates all in one place"
+        iconSrc="../../../../assets/User.png"
+        iconAlt="user png"
+      />
+
+      <main className="max-w-max mx-auto px-3 sm:px-6 lg:px-8 mt-6">
+        <section className="bg-white border-2 rounded-3xl shadow-sm overflow-hidden">
+          <ProductsHeader
+            title="All Products"
+            onAddProduct={handleAddProduct}
+          />
+
+          <div className="p-4 sm:p-6 bg-[#FFFAFF]">
+            <ProductsGrid
+              products={currentProducts}
+              indexOfFirstProduct={(currentPage - 1) * itemsPerPage}
+              onEdit={handleEditProduct}
+              onDelete={openDeleteConfirm}
             />
-          ))}
-        </div>
-      </div>
+          </div>
+
+          {/* Universal Pagination Component */}
+          <Pagination
+            currentPage={currentPage}
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            onPageChange={goToPage}
+            variant="compact"
+            className="px-4 sm:px-6 py-3 sm:py-4 border-t"
+          />
+        </section>
+      </main>
+
+      <ConfirmationModal
+        isOpen={confirmOpen}
+        title="Confirm Delete"
+        message={`Are you sure you want to delete ${getProductName()}? This action cannot be undone.`}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
     </div>
   );
 }
-
-export default AdminPage;
