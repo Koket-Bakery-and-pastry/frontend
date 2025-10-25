@@ -1,5 +1,6 @@
 // ...existing code...
 import React from "react";
+import Header from "./Header";
 
 const testimonials = [
   {
@@ -31,11 +32,14 @@ const testimonials = [
 function Testimonials() {
   return (
     <section className="bg-[#FFFAFF] section-spacing">
-      <h2 className="text-3xl md:text-4xl font-kaushan text-center mb-12">
-        What Our Customers Say
-      </h2>
+      <div className=" mb-12">
+        <Header
+          text="
+        What Our Customers Say"
+        />
+      </div>
 
-      <div className=" grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-4 gap-6 items-stretch">
+      <div className=" grid grid-cols-1 lg:grid-cols-2 3xl:grid-cols-4 gap-6 items-stretch">
         {testimonials.map((t, i) => (
           <div
             key={i}

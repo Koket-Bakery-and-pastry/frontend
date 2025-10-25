@@ -1,25 +1,25 @@
 import { Cake, Heart, Users, Sparkles } from "lucide-react";
 import { ValueCard, VisitUsCard } from "./components";
+import { Header, PageHeader } from "@/components";
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-white">
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
+    <div className="min-h-screen bg-[#FFFAFF]">
+      <PageHeader
+        title="About Sweet Delights"
+        subtitle="Creating sweet memories since 2020"
+      />
+      <div className="container mx-auto px-4 py-4 max-w-4xl ">
         {/* Header */}
-        <div className="text-center mb-12 ">
-          <h1 className="text-4xl md:text-5xl font-serif italic mb-3 text-foreground">
-            About Sweet Delights
-          </h1>
-          <p className="text-muted-foreground">
-            Creating sweet memories since 2020
-          </p>
-        </div>
 
         {/* Our Story Section */}
         <div className="mb-16">
-          <h2 className="text-3xl font-serif italic text-center mb-6 text-foreground">
-            Our Story
-          </h2>
+          <div className=" mb-6 ">
+            <Header
+              text="
+            Our Story"
+            />
+          </div>
           <div className="space-y-4 text-muted-foreground leading-relaxed">
             <p>
               Sweet Delights was born from a passion for creating beautiful,
@@ -43,9 +43,9 @@ export default function AboutPage() {
 
         {/* Our Values Section */}
         <div className="mb-16">
-          <h2 className="text-3xl font-serif italic text-center mb-8 text-foreground">
-            Our Values
-          </h2>
+          <div className=" mb-8 ">
+            <Header text="Our Values" />
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <ValueCard
               icon={Cake}
@@ -76,9 +76,9 @@ export default function AboutPage() {
 
         {/* Visit Us Section */}
         <div>
-          <h2 className="text-3xl font-serif italic text-center mb-8 text-foreground">
-            Visit Us
-          </h2>
+          <div className="mb-8 ">
+            <Header text="Visit Us" />
+          </div>
           <VisitUsCard />
         </div>
       </div>

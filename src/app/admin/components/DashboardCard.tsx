@@ -1,4 +1,4 @@
-import { FC } from "react";
+import React, { FC, JSX } from "react";
 import { DollarSign, ClipboardList, Gift, Package } from "lucide-react";
 
 type IconType = "revenue" | "orders" | "requests" | "products";

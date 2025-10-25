@@ -8,6 +8,8 @@ import Testimonials from "@/components/Testimonials";
 import Navbar from "@/components/Navbar";
 import PageHeader from "./PageHeader";
 import ProductCard from "./ProductCard";
+import Header from "./Header";
+
 
 
 export {
@@ -20,5 +22,7 @@ export {
   Testimonials,
   Navbar,
   PageHeader,
-  ProductCard
+  ProductCard,
+  Header,
+
 };

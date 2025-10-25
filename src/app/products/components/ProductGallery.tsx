@@ -1,20 +1,26 @@
-"use client"
+// ...existing code...
+"use client";
 
-import { useState } from "react"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export function ProductGallery() {
-  const [currentImage, setCurrentImage] = useState(0)
+  const [currentImage, setCurrentImage] = useState(0);
 
-  const images = ["/black-forest-cake-full-view.jpg", "/black-forest-cake-slice.jpg", "/black-forest-cake-close-up.jpg"]
+  const images = [
+    "/assets/img2.png",
+    "/assets/img1.png",
+    "/assets/img3.jpeg",
+    // "/assets/img3.jpeg",
+  ];
 
   const nextImage = () => {
-    setCurrentImage((prev) => (prev + 1) % images.length)
-  }
+    setCurrentImage((prev) => (prev + 1) % images.length);
+  };
 
   const prevImage = () => {
-    setCurrentImage((prev) => (prev - 1 + images.length) % images.length)
-  }
+    setCurrentImage((prev) => (prev - 1 + images.length) % images.length);
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -23,7 +29,7 @@ export function ProductGallery() {
         <img
           src={images[currentImage] || "/placeholder.svg"}
           alt="Black Forest Cake"
-          className="h-96 w-full object-cover"
+          className="w-full h-[250px] md:h-[420px] object-cover"
         />
         <button
           onClick={prevImage}
@@ -45,8 +51,8 @@ export function ProductGallery() {
           <button
             key={index}
             onClick={() => setCurrentImage(index)}
-            className={`h-20 w-20 overflow-hidden rounded-lg border-2 transition-colors ${
-              currentImage === index ? "border-primary" : "border-border"
+            className={`h-15 w-15 md:h-20 md:w-20 overflow-hidden rounded-lg border-2 transition-colors ${
+              currentImage === index ? "border-[#C967AC]" : "border-border"
             }`}
           >
             <img
@@ -58,5 +64,6 @@ export function ProductGallery() {
         ))}
       </div>
     </div>
-  )
+  );
 }
+// ...existing code...

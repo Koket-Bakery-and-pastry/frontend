@@ -1,34 +1,35 @@
-"use client"
+// ...existing code...
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Star } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { useState } from "react";
+import { Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 interface ReviewFormProps {
-  onSubmit: () => void
+  onSubmit: () => void;
 }
 
 export function ReviewForm({ onSubmit }: ReviewFormProps) {
-  const [rating, setRating] = useState(5)
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [title, setTitle] = useState("")
-  const [review, setReview] = useState("")
+  const [rating, setRating] = useState(5);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [title, setTitle] = useState("");
+  const [review, setReview] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     // Handle form submission
-    console.log({ name, email, rating, title, review })
-    setName("")
-    setEmail("")
-    setTitle("")
-    setReview("")
-    setRating(5)
-    onSubmit()
-  }
+    console.log({ name, email, rating, title, review });
+    setName("");
+    setEmail("");
+    setTitle("");
+    setReview("");
+    setRating(5);
+    onSubmit();
+  };
 
   return (
     <Card className="p-6">
@@ -47,7 +48,9 @@ export function ReviewForm({ onSubmit }: ReviewFormProps) {
             />
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium">Email (Optional)</label>
+            <label className="mb-2 block text-sm font-medium">
+              Email (Optional)
+            </label>
             <input
               type="email"
               value={email}
@@ -62,8 +65,19 @@ export function ReviewForm({ onSubmit }: ReviewFormProps) {
           <label className="mb-2 block text-sm font-medium">Rating</label>
           <div className="flex gap-2">
             {[1, 2, 3, 4, 5].map((star) => (
-              <button key={star} type="button" onClick={() => setRating(star)} className="transition-colors">
-                <Star className={`h-6 w-6 ${star <= rating ? "fill-primary text-primary" : "text-muted-foreground"}`} />
+              <button
+                key={star}
+                type="button"
+                onClick={() => setRating(star)}
+                className="transition-colors"
+              >
+                <Star
+                  className={`h-6 w-6 ${
+                    star <= rating
+                      ? "fill-amber-400 text-amber-400"
+                      : "text-muted-foreground"
+                  }`}
+                />
               </button>
             ))}
           </div>
@@ -94,14 +108,23 @@ export function ReviewForm({ onSubmit }: ReviewFormProps) {
         </div>
 
         <div className="flex gap-3">
-          <Button type="submit" className="bg-primary text-primary-foreground hover:bg-primary/90">
+          <Button
+            type="submit"
+            className="bg-[#C967AC] text-white hover:bg-[#bd5b9e]"
+          >
             Submit Review
           </Button>
-          <Button type="button" variant="outline" onClick={onSubmit} className="border-border bg-transparent">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onSubmit}
+            className="border-border bg-transparent text-sm"
+          >
             Clear
           </Button>
         </div>
       </form>
     </Card>
-  )
+  );
 }
+// ...existing code...
