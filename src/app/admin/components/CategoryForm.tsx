@@ -27,30 +27,35 @@ export default function CategoryForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-3 mb-6">
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col sm:flex-row gap-3 mb-4 sm:mb-6"
+    >
       <input
         type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder={placeholder}
-        className="flex-1 border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+        className="flex-1 border border-gray-300 rounded-md px-3 sm:px-4 py-2 sm:py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
         required
       />
-      <Button
-        type="submit"
-        className="bg-[#C967AC] hover:bg-[#da78d6] text-white px-6 py-2 rounded-md text-sm"
-      >
-        {buttonText}
-      </Button>
-      {onCancel && (
+      <div className="flex gap-2 sm:gap-3">
         <Button
-          type="button"
-          onClick={onCancel}
-          className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-md text-sm"
+          type="submit"
+          className="bg-[#C967AC] hover:bg-[#da78d6] text-white px-4 sm:px-6 py-2 rounded-md text-sm flex-1 sm:flex-none min-w-[120px]"
         >
-          Cancel
+          {buttonText}
         </Button>
-      )}
+        {onCancel && (
+          <Button
+            type="button"
+            onClick={onCancel}
+            className="bg-gray-500 hover:bg-gray-600 text-white px-4 sm:px-6 py-2 rounded-md text-sm flex-1 sm:flex-none min-w-[100px]"
+          >
+            Cancel
+          </Button>
+        )}
+      </div>
     </form>
   );
 }
