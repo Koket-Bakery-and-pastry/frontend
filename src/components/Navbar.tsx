@@ -55,7 +55,7 @@ function Navbar() {
   return (
     <>
       {/* Desktop Navbar */}
-      <nav className="w-full hidden xl:flex py-8 items-center justify-between px-4 lg:px-6 xl:px-10 2xl:px-16 3xl:px-24">
+      <nav className="w-full hidden xl:flex py-8 items-center justify-between px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">
         {/* Logo */}
         <div className="flex flex-col">
           <span className="text-[#C967AC] text-xl 2xl:text-3xl font-kaushan">
