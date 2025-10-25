@@ -27,7 +27,7 @@ export default function CategoryCard({
             {category.name}
           </h3>
           <p className="text-sm text-gray-500 mt-1">
-            {category.subCategories.length} sub-categories
+            {category.subcategories.length} sub-categories
           </p>
         </div>
         <div className="flex gap-2 ml-4">
@@ -53,12 +53,12 @@ export default function CategoryCard({
       </div>
 
       {/* Sub-categories List */}
-      {category.subCategories.length > 0 ? (
+      {category.subcategories.length > 0 ? (
         <div className="space-y-2">
           <h4 className="text-sm font-medium text-gray-700 mb-2">
             Sub-categories:
           </h4>
-          {category.subCategories.map((subCategory) => (
+          {category.subcategories.map((subCategory) => (
             <div
               key={subCategory.id}
               className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-md"
