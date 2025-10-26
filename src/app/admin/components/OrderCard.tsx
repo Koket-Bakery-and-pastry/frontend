@@ -82,22 +82,51 @@ export default function OrderCard({
         ))}
       </div>
 
-      <div className="mt-3 text-right">
-        <p className="font-semibold text-pink-700 text-sm sm:text-base">
-          Total: $
-          {order.products
-            .reduce((sum, p) => sum + p.price * p.quantity, 0)
-            .toFixed(2)}
-        </p>
-        <p className="text-gray-600 text-xs sm:text-sm mt-1">
-          Delivery: {order.deliveryLocation}
-        </p>
-        <p className="text-gray-600 text-xs sm:text-sm">
-          Date: {order.deliveryDate}
-        </p>
-        <p className="text-gray-600 text-xs sm:text-sm">
-          Contact: {order.contact}
-        </p>
+      <div className="mt-3 flex flex-col sm:flex-row items-start sm:items-center sm:justify-between">
+        {/* left: delivery / date / contact */}
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-col  items-start ">
+            <p className="text-gray-600 text-xs sm:text-sm">
+              Delivery:{" "}
+              <span className="font-medium">{order.deliveryLocation}</span>
+            </p>
+            <p className="text-gray-600 text-xs sm:text-sm">
+              Date: <span className="font-medium">{order.deliveryDate}</span>
+            </p>
+            <p className="text-gray-600 text-xs sm:text-sm truncate">
+              Contact: <span className="font-medium">{order.contact}</span>
+            </p>
+          </div>
+        </div>
+
+        {/* right: total and receipt download */}
+        <div className="w-full sm:w-auto text-right">
+          <p className="font-semibold text-pink-700 text-sm sm:text-base">
+            Total: $
+            {order.products
+              .reduce((sum, p) => sum + p.price * p.quantity, 0)
+              .toFixed(2)}
+          </p>
+
+          <div className="mt-2 flex justify-end">
+            {(order as any).receiptUrl ? (
+              <a
+                href={(order as any).receiptUrl}
+                download={`receipt-${order.id}`}
+                className="inline-block bg-gray-500 hover:bg-gray-700 text-white px-3 py-1 rounded-md text-xs sm:text-sm"
+              >
+                Download receipt
+              </a>
+            ) : (
+              <button
+                disabled
+                className="inline-block bg-gray-200 text-gray-500 px-3 py-1 rounded-md text-xs sm:text-sm cursor-not-allowed"
+              >
+                No receipt available
+              </button>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

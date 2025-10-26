@@ -51,13 +51,13 @@ export default function ProductDetail({
       {isExpanded && (
         <div className="bg-gray-50 p-3 rounded-md text-sm text-gray-700 mt-5">
           <div className="flex items-start gap-3">
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <p className="font-semibold">{product.name}</p>
               <p className="text-xs text-gray-500">
                 Qty: {product.quantity} • {product.kilo} kg
               </p>
               {product.message && (
-                <p className="text-xs italic text-gray-600 mt-1 overflow-hidden whitespace-normal break-words max-w-full">
+                <p className="text-xs italic text-gray-600 mt-1 break-words break-all whitespace-pre-wrap overflow-hidden">
                   Message: {product.message}
                 </p>
               )}
@@ -65,7 +65,6 @@ export default function ProductDetail({
                 <p className="font-medium">
                   ${(product.price * product.quantity).toFixed(2)}
                 </p>
-
                 <p className="text-xs text-gray-500">
                   ${product.price.toFixed(2)}
                 </p>

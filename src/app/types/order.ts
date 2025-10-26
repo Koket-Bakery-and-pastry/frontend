@@ -23,6 +23,7 @@ export type Order = {
   deliveryLocation: string;
   contact: string;
   status: OrderStatus;
+  receiptUrl?: string;
   products: Product[];
 };
 
