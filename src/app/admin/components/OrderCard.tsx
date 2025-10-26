@@ -18,7 +18,7 @@ export default function OrderCard({
 }: OrderCardProps) {
   return (
     <div className="border rounded-lg p-4 sm:p-5 bg-white shadow-sm">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+      <div className="flex flex-col xl:flex-row sm:justify-between sm:items-start gap-3">
         <div className="flex-1 min-w-0">
           <h2 className="font-semibold text-base sm:text-lg truncate">
             Order #{order.id}{" "}
