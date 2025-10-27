@@ -1,37 +1,40 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card } from "@/components/ui/card"
-import { Star } from "lucide-react"
-import { ReviewFilterDropdown } from "./ReviewFilterDropdown"
-import { ReviewItemProfile } from "./ReviewItemProfile"
+import { useState } from "react";
+import { Card } from "@/components/ui/card";
+import { Star } from "lucide-react";
+import { ReviewFilterDropdown } from "./ReviewFilterDropdown";
+import { ReviewItemProfile } from "./ReviewItemProfile";
+import { ReviewsList } from "@/app/products/components/ReviewsList";
 
 interface Review {
-  id: string
-  name: string
-  title: string
-  rating: number
-  content: string
-  initials: string
+  id: string;
+  name: string;
+  title: string;
+  rating: number;
+  content: string;
+  initials: string;
 }
 
 interface MyReviewsSectionProps {
-  reviews: Review[]
+  reviews: Review[];
 }
 
 export function MyReviewsSection({ reviews }: MyReviewsSectionProps) {
-  const [selectedRating, setSelectedRating] = useState<number | null>(null)
+  const [selectedRating, setSelectedRating] = useState<number | null>(null);
 
-  const filteredReviews = selectedRating ? reviews.filter((r) => r.rating === selectedRating) : reviews
+  const filteredReviews = selectedRating
+    ? reviews.filter((r) => r.rating === selectedRating)
+    : reviews;
 
   return (
-    <Card className="p-6 border-2 mt-6">
-      <div className="mb-6">
+    <Card className="py-6 border-2 mt-6">
+      <div className="mb-3 px-6">
         <h3 className="text-xl font-bold mb-1">My Reviews</h3>
         <p className="text-sm text-gray-600">My Response to products</p>
       </div>
 
-      <div className="mb-6">
+      <div className="mb-3 px-6">
         <p className="text-sm font-medium mb-3">Filter by Reviews</p>
         <ReviewFilterDropdown onFilterChange={setSelectedRating} />
       </div>
@@ -42,12 +45,10 @@ export function MyReviewsSection({ reviews }: MyReviewsSectionProps) {
           <p className="text-gray-600">No review yet</p>
         </div>
       ) : (
-        <div className="space-y-4">
-          {filteredReviews.map((review) => (
-            <ReviewItemProfile key={review.id} {...review} />
-          ))}
+        <div className="space-y-4 px-2 md:px-6">
+          <ReviewsList />
         </div>
       )}
     </Card>
-  )
+  );
 }
