@@ -9,7 +9,7 @@
   --breakpoint-xss: 320px; /* iPhone 5 / SE (1st gen) */
   --breakpoint-xs: 360px; /* Common small Androids (Pixel 2, Galaxy S7) */
   --breakpoint-sm: 400px; /* Medium phones */
-  --breakpoint-md: 480px; /* Large phones / small phablets */
+  --breakpoint-md: 480px; /* Large phones / small tablets */
   --breakpoint-lg: 640px; /* Small tablets */
   --breakpoint-xl: 768px; /* Tablets (portrait) */
   --breakpoint-2xl: 1024px; /* Small laptops / iPad landscape */
