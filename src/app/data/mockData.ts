@@ -9,6 +9,7 @@ export const mockOrders: Order[] = [
     deliveryLocation: "Addis Ababa, Ayertena",
     contact: "+251900584595",
     status: "Pending",
+    receiptUrl: "/receipts/12456789.pdf",
     products: [
       {
         id: "p1",
@@ -40,6 +41,8 @@ export const mockOrders: Order[] = [
     deliveryLocation: "Addis Ababa, Bole",
     contact: "+251911223344",
     status: "Confirmed",
+    receiptUrl: "/receipts/12456789.pdf",
+
     products: [
       {
         id: "p3",
@@ -50,7 +53,7 @@ export const mockOrders: Order[] = [
           "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=100&h=100",
         kilo: 2,
         message:
-          "Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!",
+          "Congratulations! Congratulations !Congratulations! Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations! Congratulations!Congratulations!Congratulations! Congratulations!Congratulations! cCongratulations!Congratulations!Congratulations! Congratulations!Congratulations!Congratulations! Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!Congratulations!",
       },
     ],
   },
@@ -61,6 +64,8 @@ export const mockOrders: Order[] = [
     deliveryDate: "April 12, 2025 • 2:00 PM - 4:00 PM",
     deliveryLocation: "Addis Ababa, Bole",
     contact: "+251911223344",
+    receiptUrl: "/receipts/12456789.pdf",
+
     status: "Confirmed",
     products: [
       {
@@ -82,6 +87,8 @@ export const mockOrders: Order[] = [
     deliveryDate: "April 12, 2025 • 2:00 PM - 4:00 PM",
     deliveryLocation: "Addis Ababa, Bole",
     contact: "+251911223344",
+    receiptUrl: "/receipts/12456789.pdf",
+
     status: "Confirmed",
     products: [
       {
@@ -104,6 +111,8 @@ export const mockOrders: Order[] = [
     deliveryLocation: "Addis Ababa, Bole",
     contact: "+251911223344",
     status: "Confirmed",
+    receiptUrl: "/receipts/12456789.pdf",
+
     products: [
       {
         id: "p3",
@@ -125,6 +134,8 @@ export const mockOrders: Order[] = [
     deliveryLocation: "Addis Ababa, Bole",
     contact: "+251911223344",
     status: "Confirmed",
+    receiptUrl: "/receipts/12456789.pdf",
+
     products: [
       {
         id: "p3",
@@ -145,6 +156,8 @@ export const mockOrders: Order[] = [
     deliveryDate: "April 12, 2025 • 2:00 PM - 4:00 PM",
     deliveryLocation: "Addis Ababa, Bole",
     contact: "+251911223344",
+    // receiptUrl: "/receipts/12456789.pdf",
+
     status: "Confirmed",
     products: [
       {
