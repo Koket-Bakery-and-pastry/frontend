@@ -9,13 +9,13 @@ import {
 
 export default function Home() {
   return (
-    <>
+    <main className="bg-white">
       <Hero />
       <CategorySection />
       <FeaturedSection />
       <OurValues />
       <Testimonials />
       <CallToAction />
-    </>
+    </main>
   );
 }

@@ -163,8 +163,6 @@ export default function OrdersPage() {
               <OrderCard
                 key={order.id}
                 order={order}
-                onStatusChange={handleStatusChange}
-                onReject={handleReject}
                 isProductExpanded={isProductExpanded}
                 onToggleProductDetail={toggleProductDetail}
               />
