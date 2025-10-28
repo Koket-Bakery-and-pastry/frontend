@@ -80,7 +80,7 @@ export default function ProductFiltration({
   const currentSubcategories = subCategories[category] || ["All Products"];
 
   return (
-    <div className="bg-[#FFFAFF] px-3 xss:px-4 sm:px-6 md:px-10 lg:px-16 xl:px-24 pt-6 xss:pt-8 sm:pt-12 md:pt-16 lg:pt-20 ">
+    <div className="bg-[#FBF6FC] px-3 xss:px-4 sm:px-6 md:px-10 lg:px-16 xl:px-24 pt-6 xss:pt-8 sm:pt-12 md:pt-16 lg:pt-20 ">
       <div className="max-w-7xl ">
         {/* Mobile category selector */}
         <div className="mb-6 block 2xl:hidden">
@@ -88,13 +88,13 @@ export default function ProductFiltration({
             <Link
               href="#"
               onClick={() => setFilters((prev) => ({ ...prev, category }))}
-              className="px-4 py-2 rounded-t-xl border-b-2 border-[#C967AC] bg-[#C967AC]/20 text-[#C967AC] font-bold text-sm"
+              className="px-4 py-2 rounded-t-xl border-b-2 border-primary bg-primary/20 text-primary font-bold text-sm"
             >
               {category}
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-1 border-b-2 border-[#C967AC] bg-[#C967AC]/20 text-[#C967AC] rounded-t-md py-1 px-3 text-sm font-medium">
+                <button className="flex items-center gap-1 border-b-2 border-primary bg-primary/20 text-primary  rounded-t-md py-1 px-3 text-sm font-medium">
                   <FaBars />
                 </button>
               </DropdownMenuTrigger>
@@ -124,8 +124,8 @@ export default function ProductFiltration({
               onClick={() => setFilters((prev) => ({ ...prev, category: cat }))}
               className={`px-4 py-2 rounded-lg font-semibold shadow text-sm transition ${
                 category === cat
-                  ? "bg-pink-400 text-white"
-                  : "bg-white text-black shadow-md"
+                  ? "bg-primary text-white"
+                  : "bg-white text-foreground shadow-md"
               }`}
             >
               {cat}
@@ -159,7 +159,7 @@ export default function ProductFiltration({
                   <span className="line-clamp-1">
                     {sortOptions.find((s) => s.value === sort)?.label}
                   </span>
-                  <span className="ml-2 text-gray-600">&#9662;</span>
+                  <span className="ml-2 text-foreground">&#9662;</span>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>

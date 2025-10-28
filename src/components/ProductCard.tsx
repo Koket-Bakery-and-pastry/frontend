@@ -29,22 +29,22 @@ const ProductCard: React.FC<ProductCardProps> = ({
           />
         </div>
 
-        <div className="p-3 flex-1 flex flex-col">
+        <div className="p-2 md:p-5 flex-1 flex flex-col">
           <h3 className="font-bold text-sm lg:text-lg 2xl:text-2xl line-clamp-1 mb-1">
             {name}
           </h3>
 
-          <p className="text-gray-500 text-xs lg:text-base 2xl:text-lg mb-3 line-clamp-1">
+          <p className="text-foreground text-xs lg:text-base 2xl:text-lg mb-3 line-clamp-1">
             {description}
           </p>
 
-          <div className="mt-auto md:pb-2 lg:pb-5 flex  items-center justify-between gap-2">
-            <span className="text-[#C967AC] font-bold text-sm lg:text-2xl">
+          <div className="mt-auto lg:pt-4 md:pb-2 lg:pb-5 flex  items-center justify-between gap-2">
+            <span className="text-primary font-bold text-sm lg:text-2xl">
               {price}
             </span>
 
             <Link href={`/products/${productId}`} passHref>
-              <button className="flex items-center gap-2 bg-[#C967AC] hover:bg-[#ae5d95] text-white font-semibold px-3 py-1.5 lg:px-6 lg:py-2 rounded-lg transition text-xs">
+              <button className="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white font-semibold px-3 py-1.5 lg:px-6 lg:py-2 rounded-lg transition text-xs">
                 <FaEye className="text-xs lg:text-xl" />
                 <span className="text-xs lg:text-base">View</span>
               </button>

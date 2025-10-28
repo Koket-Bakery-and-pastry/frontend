@@ -193,11 +193,10 @@ function ProductsPage() {
   }, [filters]);
 
   return (
-    <div className="bg-[#FFFAFF] min-h-screen">
+    <div className="bg-background/50 min-h-screen">
       <PageHeader
         title="Our Products"
-        subtitle="        Browse our delicious selection of cakes and desserts
-"
+        subtitle="Browse our delicious selection of cakes and desserts"
       />
 
       <ProductFiltration filters={filters} setFilters={setFilters} />
