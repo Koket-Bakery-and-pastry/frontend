@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FaShoppingCart } from "react-icons/fa";
@@ -25,7 +25,7 @@ import { User, LogOut, Check } from "lucide-react";
 function Navbar() {
   const pathname = usePathname() || "/";
   const isAdmin = false;
-  const isLoggedIn = false; // 👈 Replace later with real auth state
+  const isLoggedIn = true; // later replace with real auth state
 
   const NavLinks = [
     { name: "Home", href: "/" },
@@ -43,33 +43,34 @@ function Navbar() {
 
   const linksToDisplay = isAdmin ? AdminLinks : NavLinks;
 
-  const isActive = (href: string) => {
-    if (href === "/") return pathname === "/";
-    return pathname.startsWith(href);
-  };
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   const desktopLinkClass = (href: string) =>
-    `2xl:text-lg transition ${
+    `2xl:text-lg transition-colors ${
       isActive(href)
-        ? "text-[#C967AC] font-semibold"
-        : "font-normal hover:text-[#C967AC]"
+        ? "text-primary font-semibold"
+        : "text-foreground hover:text-primary"
     }`;
 
   const mobileLinkClass = (href: string) =>
     `text-lg font-medium ${
-      isActive(href) ? "text-[#C967AC]" : "hover:text-[#C967AC] transition"
+      isActive(href)
+        ? "text-primary font-semibold"
+        : "text-foreground hover:text-primary transition-colors"
     }`;
 
   return (
     <>
-      {/* Desktop Navbar */}
-      <nav className="w-full hidden xl:flex py-8 items-center justify-between px-4 lg:px-6 xl:px-10 2xl:px-16 3xl:px-24">
+      {/* ================= Desktop Navbar ================= */}
+      <nav className="bg-white w-full hidden xl:flex py-8 items-center justify-between px-4 lg:px-6 xl:px-10 2xl:px-16 3xl:px-24 ">
         {/* Logo */}
-        <div className="flex flex-col">
-          <span className="text-[#C967AC] text-xl 2xl:text-3xl font-kaushan">
-            Koket Bakery
-          </span>
-        </div>
+        <Link
+          href="/"
+          className="text-primary hover:text-primary-hover text-xl 2xl:text-3xl font-kaushan"
+        >
+          Koket Bakery
+        </Link>
 
         {/* Navigation Links */}
         <div className="flex-1 flex justify-center gap-6 2xl:gap-10">
@@ -84,110 +85,130 @@ function Navbar() {
           ))}
         </div>
 
-        {/* Cart and User */}
-        {isAdmin ? null : (
+        {/* Right Section */}
+        {!isAdmin && (
           <div className="flex items-center gap-4 2xl:gap-8">
+            {/* Cart Icon */}
             <Link
               href="/cart"
-              className="text-[#C967AC] text-xl 2xl:text-2xl transition-colors duration-200 hover:text-[#ae5d95] hover:scale-110 focus:outline-none focus:ring-2 focus:ring-[#C967AC] rounded-full"
+              className="text-primary text-xl 2xl:text-2xl transition-transform duration-200 hover:text-primary-hover hover:scale-110"
             >
               <FaShoppingCart />
             </Link>
 
-            {/* 👇 User Dropdown (Desktop) */}
+            {/* User Dropdown */}
             {isLoggedIn ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="flex items-center justify-center w-9 h-9 rounded-full bg-[#e8c6dc] text-[#C967AC] hover:bg-[#d9a7c8] transition">
+                  <Button className="flex items-center justify-center w-9 h-9 rounded-full bg-primary text-primary-foreground hover:bg-primary-hover transition-colors">
                     <User size={18} />
-                  </button>
+                  </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-40 p-1">
+
+                <DropdownMenuContent
+                  align="end"
+                  className="w-40 p-1 bg-background border border-border text-foreground rounded-md shadow-md"
+                >
+                  {/* Orders */}
                   <DropdownMenuItem asChild>
                     <Link
                       href="/orders"
-                      className={`flex items-center justify-between rounded-md px-2 py-1.5 ${
+                      className={`flex items-center justify-between rounded-md px-2 py-1.5 transition-colors ${
                         pathname.startsWith("/orders")
-                          ? "bg-[#fcd5b5] text-[#222]"
-                          : "hover:bg-[#f2f2f2]"
+                          ? "bg-primary text-primary-foreground"
+                          : "hover:bg-primary-hover hover:text-primary-foreground"
                       }`}
                     >
-                      My Order
+                      My Orders
                       {pathname.startsWith("/orders") && (
-                        <Check size={14} className="text-black" />
+                        <Check size={14} className="text-primary-foreground" />
                       )}
                     </Link>
                   </DropdownMenuItem>
 
+                  {/* Profile */}
                   <DropdownMenuItem asChild>
                     <Link
                       href="/profile"
-                      className="block px-2 py-1.5 hover:bg-[#f2f2f2] rounded-md"
+                      className={`flex items-center justify-between px-2 py-1.5 rounded-md transition-colors ${
+                        pathname.startsWith("/profile")
+                          ? "bg-primary text-primary-foreground"
+                          : "hover:bg-primary-hover hover:text-primary-foreground"
+                      }`}
                     >
                       My Profile
+                      {pathname.startsWith("/profile") && (
+                        <Check size={14} className="text-primary-foreground" />
+                      )}
                     </Link>
                   </DropdownMenuItem>
 
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator className="my-1 bg-border" />
 
+                  {/* Logout */}
                   <DropdownMenuItem asChild>
-                    <button className="flex items-center gap-2 text-red-500 hover:bg-[#fbeaea] px-2 py-1.5 rounded-md w-full">
-                      <LogOut size={14} /> Logout
-                    </button>
+                    <Button className="flex items-center gap-2 px-2 py-1.5 w-full rounded-md bg-secondary text-secondary-foreground hover:bg-secondary-hover transition-colors">
+                      <LogOut size={14} className="text-destructive" /> Logout
+                    </Button>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Link
-                href="/auth/login"
-                className="bg-[#C967AC] hover:bg-[#ae5d95] text-white font-bold px-4 py-1 rounded-full transition"
-              >
-                Login
+              <Link href="/auth/login">
+                <Button className="bg-primary hover:bg-primary-hover text-primary-foreground cursor-pointer font-semibold px-4 py-1 rounded-full transition-colors">
+                  Login
+                </Button>
               </Link>
             )}
           </div>
         )}
       </nav>
 
-      {/* Mobile Navbar */}
-      <nav className="w-full flex xl:hidden px-4 py-4 items-center justify-between bg-white border-b">
+      {/* ================= Mobile Navbar ================= */}
+      <nav className="w-full flex xl:hidden px-4 py-4 items-center justify-between bg-white border-b border-border">
         {/* Logo */}
-        <span className="text-[#C967AC] text-xl font-kaushan">
+        <Link
+          href="/"
+          className="text-primary hover:text-primary-hover text-xl font-kaushan"
+        >
           Koket Bakery
-        </span>
+        </Link>
 
         <div className="flex items-center gap-4">
           {/* Cart */}
           {!isAdmin && (
             <Link
               href="/cart"
-              className="text-[#C967AC] text-xl transition-colors duration-200 hover:text-[#ae5d95]"
+              className="text-primary text-xl transition-colors duration-200 hover:text-primary-hover"
             >
               <FaShoppingCart />
             </Link>
           )}
 
-          {/* 👇 User dropdown for mobile */}
+          {/* Mobile User Dropdown */}
           {isLoggedIn ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center justify-center w-9 h-9 rounded-full bg-[#e8c6dc] text-[#C967AC] hover:bg-[#d9a7c8] transition">
+                <Button className="flex items-center justify-center w-9 h-9 rounded-full bg-primary text-primary-foreground hover:bg-primary-hover transition-colors">
                   <User size={18} />
-                </button>
+                </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-40 p-1">
+              <DropdownMenuContent
+                align="end"
+                className="w-40 p-1 bg-background border border-border text-foreground rounded-md shadow-md"
+              >
                 <DropdownMenuItem asChild>
                   <Link
                     href="/orders"
-                    className={`flex items-center justify-between rounded-md px-2 py-1.5 ${
+                    className={`flex items-center justify-between rounded-md px-2 py-1.5 transition-colors ${
                       pathname.startsWith("/orders")
-                        ? "bg-[#fcd5b5] text-[#222]"
-                        : "hover:bg-[#f2f2f2]"
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-primary-hover hover:text-primary-foreground"
                     }`}
                   >
-                    My Order
+                    My Orders
                     {pathname.startsWith("/orders") && (
-                      <Check size={14} className="text-black" />
+                      <Check size={14} className="text-primary-foreground" />
                     )}
                   </Link>
                 </DropdownMenuItem>
@@ -195,37 +216,44 @@ function Navbar() {
                 <DropdownMenuItem asChild>
                   <Link
                     href="/profile"
-                    className="block px-2 py-1.5 hover:bg-[#f2f2f2] rounded-md"
+                    className={`flex items-center justify-between rounded-md px-2 py-1.5 transition-colors ${
+                      pathname.startsWith("/profile")
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-primary-hover hover:text-primary-foreground"
+                    }`}
                   >
                     My Profile
+                    {pathname.startsWith("/profile") && (
+                      <Check size={14} className="text-primary-foreground" />
+                    )}
                   </Link>
                 </DropdownMenuItem>
 
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className="my-1 bg-border" />
 
                 <DropdownMenuItem asChild>
-                  <button className="flex items-center gap-2 text-red-500 hover:bg-[#fbeaea] px-2 py-1.5 rounded-md w-full">
-                    <LogOut size={14} /> Logout
-                  </button>
+                  <Button className="flex items-center gap-2 px-2 py-1.5 w-full rounded-md bg-secondary text-secondary-foreground hover:bg-secondary-hover transition-colors">
+                    <LogOut size={14} className="text-destructive" /> Logout
+                  </Button>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <Link
               href="/auth/login"
-              className="bg-[#C967AC] hover:bg-[#ae5d95] text-white font-bold px-4 py-1 rounded-full transition"
+              className="bg-primary hover:bg-primary-hover text-primary-foreground font-semibold px-4 py-1 rounded-full transition-colors"
             >
               Login
             </Link>
           )}
 
-          {/* Hamburger Menu */}
+          {/* Mobile Menu (Sheet) */}
           <Sheet>
             <SheetTrigger asChild>
               <Button
                 variant="outline"
                 size="icon"
-                className="border-[#C967AC] text-[#C967AC]"
+                className="border-border text-primary hover:bg-secondary transition-colors cursor-pointer"
               >
                 <svg width="24" height="24" fill="currentColor">
                   <rect x="4" y="7" width="16" height="2" rx="1" />
@@ -233,14 +261,18 @@ function Navbar() {
                 </svg>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="p-6 w-4/5 max-w-xs">
+            <SheetContent
+              side="left"
+              className="p-6 w-4/5 max-w-xs bg-white border-r border-border"
+            >
               <SheetHeader>
                 <SheetTitle>
-                  <span className="text-[#C967AC] text-xl font-kaushan">
+                  <span className="text-primary text-xl font-kaushan">
                     Koket Bakery
                   </span>
                 </SheetTitle>
               </SheetHeader>
+
               <div className="flex flex-col gap-6 mt-4 mb-8">
                 {linksToDisplay.map((link) => (
                   <SheetClose asChild key={link.name}>

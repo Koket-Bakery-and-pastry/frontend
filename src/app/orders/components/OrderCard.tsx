@@ -5,16 +5,13 @@ import { RefreshCcw } from "lucide-react";
 
 interface OrderCardProps {
   order: Order;
-  onStatusChange: (id: string, status: Order["status"]) => void;
-  onReject: (id: string) => void;
+
   isProductExpanded: (orderId: string, productId: string) => boolean;
   onToggleProductDetail: (orderId: string, productId: string) => void;
 }
 
 export default function OrderCard({
   order,
-  onStatusChange,
-  onReject,
   isProductExpanded,
   onToggleProductDetail,
 }: OrderCardProps) {
