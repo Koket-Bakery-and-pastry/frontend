@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FaShoppingCart } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Sheet,
   SheetClose,
@@ -24,8 +25,9 @@ import { User, LogOut, Check } from "lucide-react";
 
 function Navbar() {
   const pathname = usePathname() || "/";
-  const isAdmin = false;
-  const isLoggedIn = true; // later replace with real auth state
+  const isLoggedIn = true; // ✅ Simulated auth state
+  const isAdmin = true; // ✅ Simulated role (comes after login)
+  const cartCount = 5; // ✅ Example count (replace with real state later)
 
   const NavLinks = [
     { name: "Home", href: "/" },
@@ -41,7 +43,7 @@ function Navbar() {
     { name: "Categories", href: "/admin/categories" },
   ];
 
-  const linksToDisplay = isAdmin ? AdminLinks : NavLinks;
+  const linksToDisplay = isLoggedIn && isAdmin ? AdminLinks : NavLinks;
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -63,7 +65,7 @@ function Navbar() {
   return (
     <>
       {/* ================= Desktop Navbar ================= */}
-      <nav className="bg-white w-full hidden xl:flex py-8 items-center justify-between px-4 lg:px-6 xl:px-10 2xl:px-16 3xl:px-24 ">
+      <nav className="bg-white w-full hidden xl:flex py-8 items-center justify-between px-4 lg:px-6 xl:px-10 2xl:px-16 3xl:px-24">
         {/* Logo */}
         <Link
           href="/"
@@ -86,82 +88,122 @@ function Navbar() {
         </div>
 
         {/* Right Section */}
-        {!isAdmin && (
-          <div className="flex items-center gap-4 2xl:gap-8">
-            {/* Cart Icon */}
-            <Link
-              href="/cart"
-              className="text-primary text-xl 2xl:text-2xl transition-transform duration-200 hover:text-primary-hover hover:scale-110"
-            >
-              <FaShoppingCart />
-            </Link>
-
-            {/* User Dropdown */}
-            {isLoggedIn ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button className="flex items-center justify-center w-9 h-9 rounded-full bg-primary text-primary-foreground hover:bg-primary-hover transition-colors">
-                    <User size={18} />
-                  </Button>
-                </DropdownMenuTrigger>
-
-                <DropdownMenuContent
-                  align="end"
-                  className="w-40 p-1 bg-background border border-border text-foreground rounded-md shadow-md"
-                >
-                  {/* Orders */}
-                  <DropdownMenuItem asChild>
-                    <Link
-                      href="/orders"
-                      className={`flex items-center justify-between rounded-md px-2 py-1.5 transition-colors ${
-                        pathname.startsWith("/orders")
-                          ? "bg-primary text-primary-foreground"
-                          : "hover:bg-primary-hover hover:text-primary-foreground"
-                      }`}
-                    >
-                      My Orders
-                      {pathname.startsWith("/orders") && (
-                        <Check size={14} className="text-primary-foreground" />
-                      )}
-                    </Link>
-                  </DropdownMenuItem>
-
-                  {/* Profile */}
-                  <DropdownMenuItem asChild>
-                    <Link
-                      href="/profile"
-                      className={`flex items-center justify-between px-2 py-1.5 rounded-md transition-colors ${
-                        pathname.startsWith("/profile")
-                          ? "bg-primary text-primary-foreground"
-                          : "hover:bg-primary-hover hover:text-primary-foreground"
-                      }`}
-                    >
-                      My Profile
-                      {pathname.startsWith("/profile") && (
-                        <Check size={14} className="text-primary-foreground" />
-                      )}
-                    </Link>
-                  </DropdownMenuItem>
-
-                  <DropdownMenuSeparator className="my-1 bg-border" />
-
-                  {/* Logout */}
-                  <DropdownMenuItem asChild>
-                    <Button className="flex items-center gap-2 px-2 py-1.5 w-full rounded-md bg-secondary text-secondary-foreground hover:bg-secondary-hover transition-colors">
-                      <LogOut size={14} className="text-destructive" /> Logout
-                    </Button>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <Link href="/auth/login">
-                <Button className="bg-primary hover:bg-primary-hover text-primary-foreground cursor-pointer font-semibold px-4 py-1 rounded-full transition-colors">
-                  Login
-                </Button>
+        <div className="flex items-center gap-4 2xl:gap-8">
+          {/* ===== BEFORE LOGIN (Same for both user/admin) ===== */}
+          {!isLoggedIn && (
+            <>
+              <Link
+                href="/cart"
+                className="relative text-primary text-xl 2xl:text-2xl transition-transform duration-200 hover:text-primary-hover hover:scale-110"
+              >
+                <FaShoppingCart size={30} />
+                {cartCount > 0 && (
+                  <Badge className="absolute -top-2 -right-3 text-[13px] font-semibold bg-secondary text-secondary-foreground rounded-full px-1.5 py-0.5 animate-bounce">
+                    {cartCount}
+                  </Badge>
+                )}
               </Link>
-            )}
-          </div>
-        )}
+              <Link
+                href="/auth/login"
+                className="bg-primary hover:bg-primary-hover text-primary-foreground font-semibold px-4 py-1 rounded-full transition-colors"
+              >
+                Login
+              </Link>
+            </>
+          )}
+
+          {/* ===== AFTER LOGIN ===== */}
+          {isLoggedIn && (
+            <>
+              {/* ✅ USER: Cart + Profile Dropdown */}
+              {!isAdmin && (
+                <>
+                  <Link
+                    href="/cart"
+                    className="relative text-primary text-xl 2xl:text-2xl transition-transform duration-200 hover:text-primary-hover hover:scale-110"
+                  >
+                    <FaShoppingCart size={30} />
+                    {cartCount > 0 && (
+                      <Badge className="absolute -top-2 -right-3 text-[13px] font-semibold bg-secondary text-secondary-foreground rounded-full px-1.5 py-0.5 animate-bounce">
+                        {cartCount}
+                      </Badge>
+                    )}
+                  </Link>
+
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button className="flex items-center justify-center w-9 h-9 rounded-full bg-primary text-primary-foreground hover:bg-primary-hover transition-colors">
+                        <User size={18} />
+                      </Button>
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent
+                      align="end"
+                      className="w-40 p-1 bg-background border border-border text-foreground rounded-md shadow-md"
+                    >
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href="/orders"
+                          className={`flex items-center justify-between rounded-md px-2 py-1.5 transition-colors ${
+                            pathname.startsWith("/orders")
+                              ? "bg-primary text-primary-foreground"
+                              : "hover:bg-primary-hover hover:text-primary-foreground"
+                          }`}
+                        >
+                          My Orders
+                          {pathname.startsWith("/orders") && (
+                            <Check
+                              size={14}
+                              className="text-primary-foreground"
+                            />
+                          )}
+                        </Link>
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href="/profile"
+                          className={`flex items-center justify-between px-2 py-1.5 rounded-md transition-colors ${
+                            pathname.startsWith("/profile")
+                              ? "bg-primary text-primary-foreground"
+                              : "hover:bg-primary-hover hover:text-primary-foreground"
+                          }`}
+                        >
+                          My Profile
+                          {pathname.startsWith("/profile") && (
+                            <Check
+                              size={14}
+                              className="text-primary-foreground"
+                            />
+                          )}
+                        </Link>
+                      </DropdownMenuItem>
+
+                      <DropdownMenuSeparator className="my-1 bg-border" />
+
+                      <DropdownMenuItem asChild>
+                        <Button className="flex items-center gap-2 px-2 py-1.5 w-full rounded-md bg-secondary text-secondary-foreground hover:bg-secondary-hover transition-colors">
+                          <LogOut size={14} className="text-destructive" />{" "}
+                          Logout
+                        </Button>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </>
+              )}
+
+              {/* ✅ ADMIN: Only Profile Icon */}
+              {isAdmin && (
+                <Link
+                  href="/admin/profile"
+                  className="flex items-center justify-center w-9 h-9 rounded-full bg-primary text-primary-foreground hover:bg-primary-hover transition-colors"
+                >
+                  <User size={18} />
+                </Link>
+              )}
+            </>
+          )}
+        </div>
       </nav>
 
       {/* ================= Mobile Navbar ================= */}
@@ -175,76 +217,119 @@ function Navbar() {
         </Link>
 
         <div className="flex items-center gap-4">
-          {/* Cart */}
-          {!isAdmin && (
-            <Link
-              href="/cart"
-              className="text-primary text-xl transition-colors duration-200 hover:text-primary-hover"
-            >
-              <FaShoppingCart />
-            </Link>
+          {/* ===== BEFORE LOGIN ===== */}
+          {!isLoggedIn && (
+            <>
+              <Link
+                href="/cart"
+                className="relative text-primary text-xl 2xl:text-2xl transition-transform duration-200 hover:text-primary-hover hover:scale-110"
+              >
+                <FaShoppingCart size={30} />
+                {cartCount > 0 && (
+                  <Badge className="absolute -top-2 -right-3 text-[13px] font-semibold bg-secondary text-secondary-foreground rounded-full px-1.5 py-0.5 animate-bounce">
+                    {cartCount}
+                  </Badge>
+                )}
+              </Link>
+              <Link
+                href="/auth/login"
+                className="bg-primary hover:bg-primary-hover text-primary-foreground font-semibold px-4 py-1 rounded-full transition-colors"
+              >
+                Login
+              </Link>
+            </>
           )}
 
-          {/* Mobile User Dropdown */}
-          {isLoggedIn ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button className="flex items-center justify-center w-9 h-9 rounded-full bg-primary text-primary-foreground hover:bg-primary-hover transition-colors">
+          {/* ===== AFTER LOGIN ===== */}
+          {isLoggedIn && (
+            <>
+              {/* ✅ USER: Cart + Dropdown */}
+              {!isAdmin && (
+                <>
+                  <Link
+                    href="/cart"
+                    className="relative text-primary text-xl transition-colors duration-200 hover:text-primary-hover"
+                  >
+                    <FaShoppingCart size={30} />
+                    {cartCount > 0 && (
+                      <Badge className="absolute -top-2 -right-3 text-[13px] font-semibold bg-secondary text-secondary-foreground rounded-full px-1.5 py-0.5 animate-bounce">
+                        {cartCount}
+                      </Badge>
+                    )}
+                  </Link>
+
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button className="flex items-center justify-center w-9 h-9 rounded-full bg-primary text-primary-foreground hover:bg-primary-hover transition-colors">
+                        <User size={18} />
+                      </Button>
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent
+                      align="end"
+                      className="w-40 p-1 bg-background border border-border text-foreground rounded-md shadow-md"
+                    >
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href="/orders"
+                          className={`flex items-center justify-between rounded-md px-2 py-1.5 transition-colors ${
+                            pathname.startsWith("/orders")
+                              ? "bg-primary text-primary-foreground"
+                              : "hover:bg-primary-hover hover:text-primary-foreground"
+                          }`}
+                        >
+                          My Orders
+                          {pathname.startsWith("/orders") && (
+                            <Check
+                              size={14}
+                              className="text-primary-foreground"
+                            />
+                          )}
+                        </Link>
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href="/profile"
+                          className={`flex items-center justify-between rounded-md px-2 py-1.5 transition-colors ${
+                            pathname.startsWith("/profile")
+                              ? "bg-primary text-primary-foreground"
+                              : "hover:bg-primary-hover hover:text-primary-foreground"
+                          }`}
+                        >
+                          My Profile
+                          {pathname.startsWith("/profile") && (
+                            <Check
+                              size={14}
+                              className="text-primary-foreground"
+                            />
+                          )}
+                        </Link>
+                      </DropdownMenuItem>
+
+                      <DropdownMenuSeparator className="my-1 bg-border" />
+
+                      <DropdownMenuItem asChild>
+                        <Button className="flex items-center gap-2 px-2 py-1.5 w-full rounded-md bg-secondary text-secondary-foreground hover:bg-secondary-hover transition-colors">
+                          <LogOut size={14} className="text-destructive" />{" "}
+                          Logout
+                        </Button>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </>
+              )}
+
+              {/* ✅ ADMIN: Only Profile Icon */}
+              {isAdmin && (
+                <Link
+                  href="/admin/profile"
+                  className="flex items-center justify-center w-9 h-9 rounded-full bg-primary text-primary-foreground hover:bg-primary-hover transition-colors"
+                >
                   <User size={18} />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="w-40 p-1 bg-background border border-border text-foreground rounded-md shadow-md"
-              >
-                <DropdownMenuItem asChild>
-                  <Link
-                    href="/orders"
-                    className={`flex items-center justify-between rounded-md px-2 py-1.5 transition-colors ${
-                      pathname.startsWith("/orders")
-                        ? "bg-primary text-primary-foreground"
-                        : "hover:bg-primary-hover hover:text-primary-foreground"
-                    }`}
-                  >
-                    My Orders
-                    {pathname.startsWith("/orders") && (
-                      <Check size={14} className="text-primary-foreground" />
-                    )}
-                  </Link>
-                </DropdownMenuItem>
-
-                <DropdownMenuItem asChild>
-                  <Link
-                    href="/profile"
-                    className={`flex items-center justify-between rounded-md px-2 py-1.5 transition-colors ${
-                      pathname.startsWith("/profile")
-                        ? "bg-primary text-primary-foreground"
-                        : "hover:bg-primary-hover hover:text-primary-foreground"
-                    }`}
-                  >
-                    My Profile
-                    {pathname.startsWith("/profile") && (
-                      <Check size={14} className="text-primary-foreground" />
-                    )}
-                  </Link>
-                </DropdownMenuItem>
-
-                <DropdownMenuSeparator className="my-1 bg-border" />
-
-                <DropdownMenuItem asChild>
-                  <Button className="flex items-center gap-2 px-2 py-1.5 w-full rounded-md bg-secondary text-secondary-foreground hover:bg-secondary-hover transition-colors">
-                    <LogOut size={14} className="text-destructive" /> Logout
-                  </Button>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <Link
-              href="/auth/login"
-              className="bg-primary hover:bg-primary-hover text-primary-foreground font-semibold px-4 py-1 rounded-full transition-colors"
-            >
-              Login
-            </Link>
+                </Link>
+              )}
+            </>
           )}
 
           {/* Mobile Menu (Sheet) */}
@@ -261,6 +346,7 @@ function Navbar() {
                 </svg>
               </Button>
             </SheetTrigger>
+
             <SheetContent
               side="left"
               className="p-6 w-4/5 max-w-xs bg-white border-r border-border"
