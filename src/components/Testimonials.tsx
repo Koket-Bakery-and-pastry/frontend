@@ -31,7 +31,7 @@ const testimonials = [
 
 function Testimonials() {
   return (
-    <section className="bg-[#FFFAFF] section-spacing">
+    <section className="bg-background/50 section-spacing">
       <div className=" mb-12">
         <Header
           text="
@@ -53,11 +53,11 @@ function Testimonials() {
               ))}
             </div>
 
-            <p className="text-gray-800 mb-4 flex-1 overflow-hidden line-clamp-4">
+            <p className="text-foreground mb-4 flex-1 overflow-hidden line-clamp-4">
               {t.review}
             </p>
 
-            <span className="font-bold text-black mt-4">{t.name}</span>
+            <span className="font-bold text-foreground mt-4">{t.name}</span>
           </div>
         ))}
       </div>

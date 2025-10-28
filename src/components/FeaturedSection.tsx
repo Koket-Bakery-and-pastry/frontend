@@ -3,6 +3,7 @@ import React from "react";
 import ProductCard from "./ProductCard";
 import { Button } from "./ui/button";
 import Header from "./Header";
+import Link from "next/link";
 
 function FeaturedSection() {
   const products = [
@@ -51,7 +52,7 @@ function FeaturedSection() {
   ];
 
   return (
-    <section className=" section-spacing bg-pink-50 mt-8">
+    <section className=" section-spacing bg-background mt-8">
       <div className=" 2xl:pb-16 w-full">
         <Header text="Featured Products" />
       </div>
@@ -76,9 +77,14 @@ function FeaturedSection() {
         ))}
       </div>
       <div className="flex justify-center items-center mb-16 py-6">
-        <Button className="py-3 md:py-6 bg-[#C967AC] hover:bg-[#C967AC] lg:px-10 lg:text-lg 2xl:-mt-20">
-          View All Featured Products
-        </Button>
+        <Link href="/products" className="2xl:-mt-20 cursor-pointer">
+          <Button
+            variant="default"
+            className=" py-3 md:py-6  lg:px-10 lg:text-lg "
+          >
+            View All Featured Products
+          </Button>
+        </Link>
       </div>
     </section>
   );
