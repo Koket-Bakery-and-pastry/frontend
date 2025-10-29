@@ -1,40 +1,190 @@
-import React from "react";
-import { FaEye } from "react-icons/fa";
+"use client";
+import React, { useEffect, useState } from "react";
+import { Order, OrderStatus, statusColors } from "../types/order";
 
-interface ProductCardProps {
-  image: string;
-  name: string;
-  description: string;
-  price: string;
-  onView?: () => void;
-}
+import OrderCard from "./components/OrderCard";
+import Pagination from "./components/Pagination";
+import { mockOrders } from "../data/mockData";
+import { ChevronLeft } from "lucide-react";
 
-const ProductCard: React.FC<ProductCardProps> = ({
-  image,
-  name,
-  description,
-  price,
-  onView,
-}) => {
+export default function OrdersPage() {
+  const [orders, setOrders] = useState<Order[]>(mockOrders);
+  const [filterStatus, setFilterStatus] = useState<OrderStatus | "All">("All");
+  const [search, setSearch] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("All");
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+  const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
+  const [expandedProductKeys, setExpandedProductKeys] = useState<string[]>([]);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
+  // Extract unique categories from products
+  const categories = [
+    "All",
+    ...new Set(
+      orders.flatMap((order) =>
+        order.products.map((product) => product.name.split(" ")[0])
+      )
+    ),
+  ];
+
+  const parseDate = (dateString: string) => {
+    const datePart = dateString.split(" at ")[0];
+    return new Date(datePart);
+  };
+
+  const filteredOrders = orders.filter((order) => {
+    const matchesStatus =
+      filterStatus === "All" || order.status === filterStatus;
+    const matchesSearch = order.customer
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+    const orderDate = parseDate(order.date);
+    const from = fromDate ? new Date(fromDate) : null;
+    const to = toDate ? new Date(toDate) : null;
+    const matchesFromDate = !from || orderDate >= from;
+    const matchesToDate = !to || orderDate <= to;
+
+    const matchesCategory =
+      categoryFilter === "All" ||
+      order.products.some((product) =>
+        product.name.toLowerCase().includes(categoryFilter.toLowerCase())
+      );
+
+    return (
+      matchesStatus &&
+      matchesSearch &&
+      matchesFromDate &&
+      matchesToDate &&
+      matchesCategory
+    );
+  });
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [
+    filterStatus,
+    search,
+    fromDate,
+    toDate,
+    categoryFilter,
+    itemsPerPage,
+    orders,
+  ]);
+
+  const totalItems = filteredOrders.length;
+  const paginatedOrders = filteredOrders.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handleStatusChange = (id: string, status: OrderStatus) => {
+    setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)));
+  };
+
+  const handleReject = (id: string) => {
+    setSelectedOrder(id);
+    setShowRejectModal(true);
+  };
+
+  const confirmReject = () => {
+    if (selectedOrder) {
+      setOrders((prev) =>
+        prev.map((o) =>
+          o.id === selectedOrder ? { ...o, status: "Canceled" } : o
+        )
+      );
+    }
+    setShowRejectModal(false);
+    setRejectReason("");
+    setSelectedOrder(null);
+    setExpandedProductKeys((prev) =>
+      prev.filter((k) => !k.startsWith(`${selectedOrder}-`))
+    );
+  };
+
+  const clearFilters = () => {
+    setFilterStatus("All");
+    setSearch("");
+    setFromDate("");
+    setToDate("");
+    setCategoryFilter("All");
+    setItemsPerPage(5);
+    setCurrentPage(1);
+    setShowMobileFilters(false);
+  };
+
+  const isFilterActive =
+    filterStatus !== "All" ||
+    search !== "" ||
+    fromDate !== "" ||
+    toDate !== "" ||
+    categoryFilter !== "All";
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const toggleProductDetail = (orderId: string, productId: string) => {
+    const key = `${orderId}-${productId}`;
+    setExpandedProductKeys((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+    );
+  };
+
+  const isProductExpanded = (orderId: string, productId: string) =>
+    expandedProductKeys.includes(`${orderId}-${productId}`);
+
   return (
-    <div className=" rounded-2xl overflow-hidden bg-white shadow-md max-w-sm">
-      <img src={image} alt={name} className="w-full h-72 object-cover" />
-      <div className="p-5">
-        <h3 className="font-bold text-2xl mb-1">{name}</h3>
-        <p className="text-gray-500 text-lg mb-4 line-clamp-2">{description}</p>
-        <div className="flex items-center justify-between">
-          <span className="text-[#C967AC] font-bold text-2xl">{price}</span>
-          <button
-            onClick={onView}
-            className="flex items-center gap-2 bg-[#C967AC] hover:bg-[#ae5d95] text-white font-semibold px-6 py-2 rounded-lg transition"
-          >
-            <FaEye className="text-xl" />
-            View
-          </button>
+    <div className="">
+      <header className="border-b border-border bg-card">
+        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <ChevronLeft className="h-5 w-5" />
+              <span className="text-sm text-muted-foreground">
+                Back to Products
+              </span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="">
+        <div className="overview px-3 sm:px-6 lg:px-10 py-6">
+          {/* Orders List */}
+          <div className="space-y-6">
+            {paginatedOrders.map((order) => (
+              <OrderCard
+                key={order.id}
+                order={order}
+                isProductExpanded={isProductExpanded}
+                onToggleProductDetail={toggleProductDetail}
+              />
+            ))}
+
+            {paginatedOrders.length === 0 && (
+              <p className="text-gray-500 text-center mt-10">
+                No orders found.
+              </p>
+            )}
+          </div>
+
+          {/* Universal Pagination Component */}
+          <Pagination
+            currentPage={currentPage}
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            onPageChange={goToPage}
+            className="mt-6"
+          />
         </div>
       </div>
     </div>
   );
-};
-
-export default ProductCard;
+}

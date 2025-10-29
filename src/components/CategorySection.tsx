@@ -55,7 +55,7 @@ const cardVariants: Variants = {
 
 function CategorySection() {
   return (
-    <section className=" bg-[linear-gradient(135deg,#FBEFF7_0%,#F8EFFA_50%,#F8EFFA_100%)] mt-8 section-spacing min-h-screen">
+    <section className=" bg-background mt-8 section-spacing min-h-screen">
       <div className="mx-auto max-w-7xl">
         {/* Section heading */}
         <motion.h2
@@ -92,7 +92,7 @@ function CategorySection() {
                     fill
                     className="object-cover transition-transform group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
 
                 {/* Category name */}
@@ -102,7 +102,7 @@ function CategorySection() {
               </Card>
 
               {/* Tagline box */}
-              <div className="flex items-center justify-center rounded-lg py-4 px-4 md:px-1 lg:px-4 text-center -mt-8 max-w-[180px] xs:max-w-[200px] sm:max-w-[220px]  2xl:max-w-[230px] 3xl:max-w-[300px] bg-[#E8BEDB]   mx-auto">
+              <div className="flex items-center justify-center rounded-lg py-4 px-4 md:px-1 lg:px-4 text-center -mt-8 max-w-[180px] xs:max-w-[200px] sm:max-w-[220px]  2xl:max-w-[230px] 3xl:max-w-[300px] bg-primary/50 mx-auto">
                 <p className="text-xs lg:text-sm 2xl:text-base 3xl:text-xl font-semibold text-secondary-foreground leading-relaxed md:max-w-[170px] xl:max-w-[250px]">
                   {category.tagline}
                 </p>

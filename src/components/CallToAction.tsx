@@ -34,7 +34,7 @@ function CallToAction() {
 
           <Link
             href="/custom-cake"
-            className="w-full sm:w-auto text-center bg-[#C967AC] hover:bg-[#b65a98] text-white font-bold px-6 py-2 rounded-lg shadow transition"
+            className="w-full sm:w-auto text-center bg-primary hover:bg-primary-hover text-white font-bold px-6 py-2 rounded-lg shadow transition"
           >
             Design Custom Cake
           </Link>
