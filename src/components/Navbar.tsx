@@ -26,7 +26,7 @@ import { User, LogOut, Check } from "lucide-react";
 function Navbar() {
   const pathname = usePathname() || "/";
   const isLoggedIn = true; // ✅ Simulated auth state
-  const isAdmin = false; // ✅ Simulated role (comes after login)
+  const isAdmin = true; // ✅ Simulated role (comes after login)
   const cartCount = 5; // ✅ Example count (replace with real state later)
 
   const NavLinks = [
