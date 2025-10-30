@@ -9,7 +9,7 @@ import { Header, PageHeader } from "@/components";
 
 export default function ContactPage() {
   return (
-    <div className="bg-[#FFFAFF]">
+    <div className="bg-background ">
       <PageHeader
         title="Get in Touch"
         subtitle="Have a question about cakes our cakes or want to discuss a custom order? We’d love to hear from you!"
@@ -57,7 +57,7 @@ export default function ContactPage() {
             <ContactForm />
 
             {/* Location Section */}
-            <div className="bg-[#FFFAFF]">
+            <div className="bg-background">
               <div className="mb-8">
                 <Header text=" Find Our Bakery" />
               </div>
