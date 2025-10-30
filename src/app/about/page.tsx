@@ -4,7 +4,7 @@ import { Header, PageHeader } from "@/components";
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-[#FFFAFF]">
+    <div className="min-h-screen bg-background">
       <PageHeader
         title="About Sweet Delights"
         subtitle="Creating sweet memories since 2020"
