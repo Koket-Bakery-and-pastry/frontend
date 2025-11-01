@@ -21,7 +21,7 @@ export function OrderSummary({ subtotal, total }: OrderSummaryProps) {
         </div>
         <div className="border-t border-border pt-4 flex justify-between font-semibold text-lg">
           <span className="text-foreground">Total</span>
-          <span className="text-pink-500">${total.toFixed(2)}</span>
+          <span className="text-primary">${total.toFixed(2)}</span>
         </div>
       </div>
 
