@@ -193,7 +193,7 @@ function ProductsPage() {
   }, [filters]);
 
   return (
-    <div className="bg-background/50 min-h-screen">
+    <div className="bg-[#FFFAFF] min-h-screen">
       <PageHeader
         title="Our Products"
         subtitle="Browse our delicious selection of cakes and desserts"
@@ -235,7 +235,7 @@ function ProductsPage() {
               key={i + 1}
               className={`px-3 py-1 rounded ${
                 page === i + 1
-                  ? "bg-[#C967AC] text-white"
+                  ? "bg-primary text-white"
                   : "bg-gray-100 text-gray-700"
               }`}
               onClick={() => setPage(i + 1)}

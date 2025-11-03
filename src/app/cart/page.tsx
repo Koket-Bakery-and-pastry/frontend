@@ -72,7 +72,7 @@ export default function ShoppingCartPage() {
   const total = subtotal;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#FFFAFF]">
       <div>
         <div className="mb-12">
           <PageHeader
