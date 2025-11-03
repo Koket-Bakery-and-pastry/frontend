@@ -37,7 +37,7 @@ function FeaturedSection() {
         <Header text="Featured Products" />
       </div>
 
-      <div className=" 2xl:my-16 grid grid-cols-1 xs:grid-cols-2  2xl:grid-cols-3 gap-6 3xl:gap-10 ">
+      <div className=" 2xl:my-16 grid grid-cols-1 sm:grid-cols-2  2xl:grid-cols-3 gap-6 3xl:gap-10 ">
         {products.map((product, index) => (
           <div
             className={`${
