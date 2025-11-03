@@ -1,334 +1,109 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { Product, UpdateProductDto } from "../../../../types/product";
 
-type Subcat = { id: string; name: string };
-type Category = {
-  id: string;
+const API_BASE_URL = "http://localhost:5001";
+
+interface Category {
+  _id: string;
   name: string;
-  subcategories?: Subcat[];
-};
-type Product = {
-  id: string | number;
+}
+
+interface SubCategory {
+  _id: string;
   name: string;
-  description: string;
-  price: string;
-  category: string;
-  subCategory?: string | null;
-  image?: string;
-  featured: boolean;
-  inStock: boolean;
-};
+  category_id: string;
+}
 
 export default function EditProductPage() {
-  const products = [
-    {
-      id: 14,
-      name: "Chocolate Cake",
-      description: "Rich chocolate cake with ganache frosting",
-      price: "450",
-      category: "cakes",
-      subCategory: "chocolate",
-      image: "/assets/img1.png",
-      featured: true,
-      inStock: true,
-    },
-    {
-      id: 15,
-      name: "Chocolate Cake",
-      description: "Rich chocolate cake with ganache frosting",
-      price: "450",
-      category: "cakes",
-      subCategory: "chocolate",
-      image: "/assets/img2.png",
-      featured: true,
-      inStock: true,
-    },
-    {
-      id: 16,
-      name: "Chocolate Cake",
-      description: "Rich chocolate cake with ganache frosting",
-      price: "450",
-      category: "cakes",
-      subCategory: "chocolate",
-      image: "/assets/img3.png",
-      featured: true,
-      inStock: true,
-    },
-    {
-      id: 17,
-      name: "Chocolate Cake",
-      description: "Rich chocolate cake with ganache frosting",
-      price: "450",
-      category: "cakes",
-      subCategory: "chocolate",
-      image: "/assets/img4.png",
-      featured: true,
-      inStock: true,
-    },
-    {
-      id: 18,
-      name: "Chocolate Cake",
-      description: "Rich chocolate cake with ganache frosting",
-      price: "450",
-      category: "cakes",
-      subCategory: "chocolate",
-      image: "/assets/img5.png",
-      featured: true,
-      inStock: true,
-    },
-    {
-      id: 14,
-      name: "Chocolate Cake",
-      description: "Rich chocolate cake with ganache frosting",
-      price: "450",
-      category: "cakes",
-      subCategory: "chocolate",
-      image: "/assets/img6.png",
-      featured: true,
-      inStock: true,
-    },
-    {
-      id: 15,
-      name: "Chocolate Cake",
-      description: "Rich chocolate cake with ganache frosting",
-      price: "450",
-      category: "cakes",
-      subCategory: "chocolate",
-      image: "/assets/img7.png",
-      featured: true,
-      inStock: true,
-    },
-    {
-      id: 16,
-      name: "Chocolate Cake",
-      description: "Rich chocolate cake with ganache frosting",
-      price: "450",
-      category: "cakes",
-      subCategory: "chocolate",
-      image: "/assets/img8.png",
-      featured: true,
-      inStock: true,
-    },
-    {
-      id: 14,
-      name: "Chocolate Cake",
-      description: "Rich chocolate cake with ganache frosting",
-      price: "450",
-      category: "cakes",
-      subCategory: "chocolate",
-      image: "/assets/img1.png",
-      featured: true,
-      inStock: true,
-    },
-    {
-      id: 15,
-      name: "Chocolate Cake",
-      description: "Rich chocolate cake with ganache frosting",
-      price: "450",
-      category: "cakes",
-      subCategory: "chocolate",
-      image: "/assets/img2.png",
-      featured: true,
-      inStock: true,
-    },
-    {
-      id: 16,
-      name: "Chocolate Cake",
-      description: "Rich chocolate cake with ganache frosting",
-      price: "450",
-      category: "cakes",
-      subCategory: "chocolate",
-      image: "/assets/img3.png",
-      featured: true,
-      inStock: true,
-    },
-    {
-      id: 17,
-      name: "Chocolate Cake",
-      description: "Rich chocolate cake with ganache frosting",
-      price: "450",
-      category: "cakes",
-      subCategory: "chocolate",
-      image: "/assets/img4.png",
-      featured: true,
-      inStock: true,
-    },
-    {
-      id: 18,
-      name: "Chocolate Cake",
-      description: "Rich chocolate cake with ganache frosting",
-      price: "450",
-      category: "cakes",
-      subCategory: "chocolate",
-      image: "/assets/img5.png",
-      featured: true,
-      inStock: true,
-    },
-    {
-      id: 14,
-      name: "Chocolate Cake",
-      description: "Rich chocolate cake with ganache frosting",
-      price: "450",
-      category: "cakes",
-      subCategory: "chocolate",
-      image: "/assets/img6.png",
-      featured: true,
-      inStock: true,
-    },
-    {
-      id: 15,
-      name: "Chocolate Cake",
-      description: "Rich chocolate cake with ganache frosting",
-      price: "450",
-      category: "cakes",
-      subCategory: "chocolate",
-      image: "/assets/img7.png",
-      featured: true,
-      inStock: true,
-    },
-    {
-      id: 16,
-      name: "Chocolate Cake",
-      description: "Rich chocolate cake with ganache frosting",
-      price: "450",
-      category: "cakes",
-      subCategory: "chocolate",
-      image: "/assets/img8.png",
-      featured: true,
-      inStock: true,
-    },
-    {
-      id: 14,
-      name: "Chocolate Cake",
-      description: "Rich chocolate cake with ganache frosting",
-      price: "450",
-      category: "cakes",
-      subCategory: "chocolate",
-      image: "/assets/img1.png",
-      featured: true,
-      inStock: true,
-    },
-    {
-      id: 15,
-      name: "Chocolate Cake",
-      description: "Rich chocolate cake with ganache frosting",
-      price: "450",
-      category: "cakes",
-      subCategory: "chocolate",
-      image: "/assets/img2.png",
-      featured: true,
-      inStock: true,
-    },
-    {
-      id: 16,
-      name: "Chocolate Cake",
-      description: "Rich chocolate cake with ganache frosting",
-      price: "450",
-      category: "cakes",
-      subCategory: "chocolate",
-      image: "/assets/img3.png",
-      featured: true,
-      inStock: true,
-    },
-    {
-      id: 17,
-      name: "Chocolate Cake",
-      description: "Rich chocolate cake with ganache frosting",
-      price: "450",
-      category: "cakes",
-      subCategory: "chocolate",
-      image: "/assets/img4.png",
-      featured: true,
-      inStock: true,
-    },
-    {
-      id: 18,
-      name: "Chocolate Cake",
-      description: "Rich chocolate cake with ganache frosting",
-      price: "450",
-      category: "cakes",
-      subCategory: "chocolate",
-      image: "/assets/img5.png",
-      featured: true,
-      inStock: true,
-    },
-    {
-      id: 14,
-      name: "Chocolate Cake",
-      description: "Rich chocolate cake with ganache frosting",
-      price: "450",
-      category: "cakes",
-      subCategory: "chocolate",
-      image: "/assets/img6.png",
-      featured: true,
-      inStock: true,
-    },
-    {
-      id: 15,
-      name: "Chocolate Cake",
-      description: "Rich chocolate cake with ganache frosting",
-      price: "450",
-      category: "cakes",
-      subCategory: "chocolate",
-      image: "/assets/img7.png",
-      featured: true,
-      inStock: true,
-    },
-    {
-      id: 16,
-      name: "Chocolate Cake",
-      description: "Rich chocolate cake with ganache frosting",
-      price: "450",
-      category: "cakes",
-      subCategory: "chocolate",
-      image: "/assets/img8.png",
-      featured: true,
-      inStock: true,
-    },
-  ];
+  const router = useRouter();
   const { id } = useParams();
-  const [product, setProduct] = useState<Product | null>(
-    products.find((p) => p.id === Number(id)) || null
-  );
+  const [product, setProduct] = useState<Product | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [subcategories, setSubcategories] = useState<SubCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  const categories: Category[] = [
-    {
-      id: "cakes",
-      name: "Cakes",
-      subcategories: [
-        { id: "blackforest", name: "Black Forest" },
-        { id: "chocolate", name: "Chocolate Cake" },
-        { id: "vanilla", name: "Vanilla Cake" },
-      ],
-    },
-    {
-      id: "cookies",
-      name: "Cookies",
-      subcategories: [
-        { id: "choc_chip", name: "Chocolate Chip" },
-        { id: "oatmeal", name: "Oatmeal Raisin" },
-      ],
-    },
-  ];
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState("");
 
-  // Simulate fetching product data by id
+  // Fetch product data, categories, and subcategories
   useEffect(() => {
-    async function fetchProduct() {
-      setLoading(true);
-      // TODO: replace this mock fetch with an actual API call
-      await new Promise((r) => setTimeout(r, 400));
+    const fetchData = async () => {
+      try {
+        setLoading(true);
 
-      setProduct(product);
-      setLoading(false);
-    }
-    fetchProduct();
+        // Fetch product
+        const productResponse = await fetch(
+          `${API_BASE_URL}/api/v1/products/${id}`
+        );
+        if (!productResponse.ok) throw new Error("Failed to fetch product");
+        const productData = await productResponse.json();
+        setProduct(productData.product || productData.data || productData);
+
+        // Fetch categories
+        const categoriesResponse = await fetch(
+          `${API_BASE_URL}/api/v1/categories`
+        );
+        if (categoriesResponse.ok) {
+          const categoriesData = await categoriesResponse.json();
+          setCategories(
+            categoriesData.categories || categoriesData.data || categoriesData
+          );
+        }
+
+        // Fetch subcategories
+        const subcategoriesResponse = await fetch(
+          `${API_BASE_URL}/api/v1/subcategories`
+        );
+        if (subcategoriesResponse.ok) {
+          const subcategoriesData = await subcategoriesResponse.json();
+          setSubcategories(
+            subcategoriesData.subcategories ||
+              subcategoriesData.data ||
+              subcategoriesData
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        alert("Failed to load product data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) fetchData();
   }, [id]);
 
-  const handleChange = (field: keyof Product, value: any) => {
-    if (product) setProduct({ ...product, [field]: value });
+  const handleInputChange = (field: keyof UpdateProductDto, value: string) => {
+    if (product) {
+      setProduct((prev) => (prev ? { ...prev, [field]: value } : null));
+    }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      setImageFile(null);
+      setImagePreview("");
+      return;
+    }
+
+    setImageFile(file);
+
+    // Create preview URL
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreview(previewUrl);
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview("");
+    const fileInput = document.getElementById(
+      "product-image"
+    ) as HTMLInputElement;
+    if (fileInput) fileInput.value = "";
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -336,21 +111,82 @@ export default function EditProductPage() {
     if (!product) return;
     setSubmitting(true);
 
-    // Simulate API PUT call
-    await new Promise((r) => setTimeout(r, 600));
-    console.log("Updated product:", product);
-    alert(`Product "${product.name}" updated!`);
-    setSubmitting(false);
+    try {
+      const formData = new FormData();
+
+      // Append updated product data
+      if (product.name) formData.append("name", product.name);
+      if (product.description)
+        formData.append("description", product.description);
+      if (product.category_id)
+        formData.append("category_id", product.category_id);
+      if (product.subcategory_id)
+        formData.append("subcategory_id", product.subcategory_id);
+
+      // Append image file if selected
+      if (imageFile) {
+        formData.append("image", imageFile);
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/v1/products/${id}`, {
+        method: "PUT",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update product");
+      }
+
+      const result = await response.json();
+      alert("Product updated successfully!");
+      router.push("/admin/products");
+    } catch (error) {
+      console.error("Error updating product:", error);
+      alert(
+        error instanceof Error ? error.message : "Failed to update product"
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  if (loading || !product)
+  // Get filtered subcategories based on selected category
+  const filteredSubcategories = product?.category_id
+    ? subcategories.filter((sub) => sub.category_id === product.category_id)
+    : [];
+
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-gray-500">
-        Loading product details...
+      <div className="min-h-screen bg-pink-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading product details...</p>
+        </div>
       </div>
     );
+  }
 
-  const selectedCategory = categories.find((c) => c.id === product.category);
+  if (!product) {
+    return (
+      <div className="min-h-screen bg-pink-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-red-600 mb-2">
+            Product Not Found
+          </h2>
+          <p className="text-gray-600 mb-4">
+            The product you're looking for doesn't exist.
+          </p>
+          <button
+            onClick={() => router.push("/admin/products")}
+            className="px-4 py-2 rounded-full bg-pink-500 text-white text-sm hover:bg-pink-600"
+          >
+            Back to Products
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-pink-50 p-8">
@@ -371,8 +207,9 @@ export default function EditProductPage() {
             </label>
             <input
               value={product.name}
-              onChange={(e) => handleChange("name", e.target.value)}
+              onChange={(e) => handleInputChange("name", e.target.value)}
               className="w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-200"
+              required
             />
           </div>
 
@@ -382,37 +219,29 @@ export default function EditProductPage() {
               Description <span className="text-red-500">*</span>
             </label>
             <textarea
-              value={product.description}
-              onChange={(e) => handleChange("description", e.target.value)}
+              value={product.description || ""}
+              onChange={(e) => handleInputChange("description", e.target.value)}
               rows={4}
               className="w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-200"
-            />
-          </div>
-
-          {/* Price */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">
-              Price ($) <span className="text-red-500">*</span>
-            </label>
-            <input
-              value={product.price}
-              onChange={(e) => handleChange("price", e.target.value)}
-              className="w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-200"
+              required
             />
           </div>
 
           {/* Category */}
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Category</label>
+            <label className="block text-sm font-medium mb-1">
+              Category <span className="text-red-500">*</span>
+            </label>
             <select
-              value={product.category}
-              onChange={(e) => handleChange("category", e.target.value)}
+              value={product.category_id}
+              onChange={(e) => handleInputChange("category_id", e.target.value)}
               className="w-full border rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-pink-200"
+              required
             >
               <option value="">Select category</option>
-              {categories.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
+              {categories.map((category) => (
+                <option key={category._id} value={category._id}>
+                  {category.name}
                 </option>
               ))}
             </select>
@@ -421,90 +250,90 @@ export default function EditProductPage() {
           {/* Subcategory */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">
-              Subcategory
+              Subcategory <span className="text-red-500">*</span>
             </label>
             <select
-              value={product.subCategory || ""}
-              onChange={(e) => handleChange("subCategory", e.target.value)}
-              disabled={!selectedCategory?.subcategories?.length}
+              value={product.subcategory_id}
+              onChange={(e) =>
+                handleInputChange("subcategory_id", e.target.value)
+              }
               className="w-full border rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-pink-200"
+              disabled={
+                !product.category_id || filteredSubcategories.length === 0
+              }
+              required
             >
               <option value="">
-                {selectedCategory?.subcategories?.length
+                {product.category_id && filteredSubcategories.length > 0
                   ? "Select subcategory"
-                  : "No subcategories"}
+                  : product.category_id
+                  ? "No subcategories available"
+                  : "Select a category first"}
               </option>
-              {selectedCategory?.subcategories?.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
+              {filteredSubcategories.map((subcategory) => (
+                <option key={subcategory._id} value={subcategory._id}>
+                  {subcategory.name}
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Image */}
+          {/* Image Upload */}
           <div className="mb-6">
-            <label className="block text-sm font-medium mb-1">Image</label>
-            <div className="flex items-center gap-3">
-              {product.image && (
+            <label className="block text-sm font-medium mb-1">
+              Product Image
+            </label>
+
+            {/* Current Image */}
+            {product.image_url && !imagePreview && (
+              <div className="mb-3 flex items-start gap-3">
                 <img
-                  src={product.image}
-                  alt="Preview"
-                  className="w-20 h-20 object-cover rounded"
+                  src={`${API_BASE_URL}${product.image_url}`}
+                  alt="Current product"
+                  className="w-28 h-28 object-cover rounded border"
                 />
-              )}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    const preview = URL.createObjectURL(file);
-                    handleChange("image", preview);
-                  }
-                }}
-              />
-            </div>
+                <p className="text-sm text-gray-700">Current image</p>
+              </div>
+            )}
+
+            {/* New Image Upload */}
+            <input
+              id="product-image"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-200 bg-white"
+            />
+
+            {/* New Image Preview */}
+            {imagePreview && (
+              <div className="mt-3 flex items-start gap-3">
+                <img
+                  src={imagePreview}
+                  alt="New preview"
+                  className="w-28 h-28 object-cover rounded border"
+                />
+                <div className="flex-1">
+                  <p className="text-sm text-gray-700 mb-2">
+                    {imageFile?.name || "New image preview"}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    className="px-3 py-1 rounded-full border bg-white text-sm hover:bg-gray-50"
+                  >
+                    Remove New Image
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Toggles */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Featured Product
-              </label>
-              <select
-                value={product.featured ? "Yes" : "No"}
-                onChange={(e) =>
-                  handleChange("featured", e.target.value === "Yes")
-                }
-                className="w-full border rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-pink-200"
-              >
-                <option>No</option>
-                <option>Yes</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">In Stock</label>
-              <select
-                value={product.inStock ? "Yes" : "No"}
-                onChange={(e) =>
-                  handleChange("inStock", e.target.value === "Yes")
-                }
-                className="w-full border rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-pink-200"
-              >
-                <option>Yes</option>
-                <option>No</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Buttons */}
+          {/* Action Buttons */}
           <div className="flex justify-end gap-3">
             <button
               type="button"
-              onClick={() => history.back()}
+              onClick={() => router.push("/admin/products")}
               className="px-4 py-2 rounded-full border bg-white text-sm hover:bg-gray-50"
               disabled={submitting}
             >

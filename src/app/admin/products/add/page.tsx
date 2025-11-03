@@ -1,83 +1,196 @@
 "use client";
-import { initialCategories } from "@/app/data/mockCategories";
-import { Category } from "@/app/types/category";
-import { init } from "next/dist/compiled/webpack/webpack";
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { CreateProductDto } from "../../../types/product";
+
+const API_BASE_URL = "http://localhost:5001";
+
+interface Category {
+  _id: string;
+  name: string;
+  subcategories?: SubCategory[];
+}
+
+interface SubCategory {
+  _id: string;
+  name: string;
+  category_id: string;
+}
 
 export default function AddProductPage() {
-  const categories = initialCategories;
-
-  const [productName, setProductName] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [category, setCategory] = useState("");
-  const [subCategory, setSubCategory] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-  const [featured, setFeatured] = useState("No");
-  const [inStock, setInStock] = useState("Yes");
+  const router = useRouter();
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [subcategories, setSubcategories] = useState<SubCategory[]>([]);
+  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  // clear subcategory when category changes
-  useEffect(() => {
-    setSubCategory("");
-  }, [category]);
+  const [productData, setProductData] = useState<CreateProductDto>({
+    name: "",
+    description: "",
+    category_id: "",
+    subcategory_id: "",
+    image_url: "",
+  });
 
-  const resetForm = () => {
-    setProductName("");
-    setDescription("");
-    setPrice("");
-    setCategory("");
-    setSubCategory("");
-    setImageUrl("");
-    setFeatured("No");
-    setInStock("Yes");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState("");
+
+  // Fetch categories and subcategories
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        // Fetch categories
+        const categoriesResponse = await fetch(
+          `${API_BASE_URL}/api/v1/categories`
+        );
+        if (categoriesResponse.ok) {
+          const categoriesData = await categoriesResponse.json();
+          setCategories(
+            categoriesData.categories || categoriesData.data || categoriesData
+          );
+        }
+
+        // Fetch subcategories
+        const subcategoriesResponse = await fetch(
+          `${API_BASE_URL}/api/v1/subcategories`
+        );
+        if (subcategoriesResponse.ok) {
+          const subcategoriesData = await subcategoriesResponse.json();
+          setSubcategories(
+            subcategoriesData.subcategories ||
+              subcategoriesData.data ||
+              subcategoriesData
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        alert("Failed to load categories and subcategories");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Clear subcategory when category changes
+  useEffect(() => {
+    setProductData((prev) => ({ ...prev, subcategory_id: "" }));
+  }, [productData.category_id]);
+
+  const handleInputChange = (field: keyof CreateProductDto, value: string) => {
+    setProductData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      setImageFile(null);
+      setImagePreview("");
+      return;
+    }
+
+    setImageFile(file);
+
+    // Create preview URL
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreview(previewUrl);
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview("");
+    const fileInput = document.getElementById(
+      "product-image"
+    ) as HTMLInputElement;
+    if (fileInput) fileInput.value = "";
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
 
-    const selectedCategory = categories.find((c) => c.id === category);
-    const requiresSub = Boolean(
-      selectedCategory &&
-        selectedCategory.subcategories &&
-        selectedCategory.subcategories.length > 0
-    );
-
+    // Validation
     if (
-      !productName.trim() ||
-      !description.trim() ||
-      !price.trim() ||
-      !category ||
-      (requiresSub && !subCategory)
+      !(productData.name ?? "").trim() ||
+      !(productData.description ?? "").trim() ||
+      !productData.category_id ||
+      !productData.subcategory_id
     ) {
       alert(
-        "Please fill required fields: Product Name, Description, Price, Category" +
-          (requiresSub ? " and Subcategory." : ".")
+        "Please fill all required fields: Product Name, Description, Category, and Subcategory"
       );
       setSubmitting(false);
       return;
     }
 
-    const payload = {
-      productName,
-      description,
-      price,
-      category,
-      subCategory: subCategory || null,
-      imageUrl,
-      featured: featured === "Yes",
-      inStock: inStock === "Yes",
-    };
+    try {
+      const formData = new FormData();
 
-    console.log("Submitting product:", payload);
-    await new Promise((r) => setTimeout(r, 600));
-    alert("Product submitted (check console)");
-    resetForm();
-    setSubmitting(false);
+      // Append product data
+      formData.append("name", productData.name ?? "");
+      formData.append("description", productData.description ?? "");
+      formData.append("category_id", productData.category_id ?? "");
+      formData.append("subcategory_id", productData.subcategory_id ?? "");
+
+      // Append image file if selected
+      if (imageFile) {
+        formData.append("image", imageFile);
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/v1/products`, {
+        method: "POST",
+        body: formData,
+        // Note: Don't set Content-Type header when using FormData - browser will set it automatically with boundary
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to create product");
+      }
+
+      const result = await response.json();
+      alert("Product created successfully!");
+      router.push("/admin/products");
+    } catch (error) {
+      console.error("Error creating product:", error);
+      alert(
+        error instanceof Error ? error.message : "Failed to create product"
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const selectedCategory = categories.find((c) => c.id === category);
+  const resetForm = () => {
+    setProductData({
+      name: "",
+      description: "",
+      category_id: "",
+      subcategory_id: "",
+      image_url: "",
+    });
+    setImageFile(null);
+    setImagePreview("");
+  };
+
+  // Get filtered subcategories based on selected category
+  const filteredSubcategories = productData.category_id
+    ? subcategories.filter((sub) => sub.category_id === productData.category_id)
+    : [];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-pink-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading categories...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-pink-50 p-8">
@@ -90,201 +203,124 @@ export default function AddProductPage() {
           <p className="text-sm text-gray-600 mb-6">
             Fill in the details to add a new product to your shop
           </p>
+
+          {/* Product Name */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">
               Product Name <span className="text-red-500">*</span>
             </label>
             <input
-              value={productName}
-              onChange={(e) => setProductName(e.target.value)}
-              placeholder="eg. Cakes, Quick Bread, Cookies and Fondant Cake."
+              value={productData.name}
+              onChange={(e) => handleInputChange("name", e.target.value)}
+              placeholder="eg. Chocolate Cake, Vanilla Cake, etc."
               className="w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-200"
+              required
             />
           </div>
 
+          {/* Description */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">
               Description <span className="text-red-500">*</span>
             </label>
             <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Colourful layers of vanilla cake with butter cream"
+              value={productData.description}
+              onChange={(e) => handleInputChange("description", e.target.value)}
+              placeholder="Describe your product..."
               rows={4}
               className="w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-200"
+              required
             />
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">
-              Price ($) <span className="text-red-500">*</span>
-            </label>
-            <input
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              placeholder="$300"
-              className="w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-200"
-            />
-          </div>
-
+          {/* Category */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">
               Category <span className="text-red-500">*</span>
             </label>
             <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              value={productData.category_id}
+              onChange={(e) => handleInputChange("category_id", e.target.value)}
               className="w-full border rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-pink-200"
+              required
             >
               <option value="">Select category</option>
-              {categories.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
+              {categories.map((category) => (
+                <option key={category._id} value={category._id}>
+                  {category.name}
                 </option>
               ))}
             </select>
           </div>
 
+          {/* Subcategory */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">
-              Subcategory{" "}
-              {selectedCategory &&
-              selectedCategory.subcategories &&
-              selectedCategory.subcategories.length > 0 ? (
-                <span className="text-red-500">*</span>
-              ) : null}
+              Subcategory <span className="text-red-500">*</span>
             </label>
             <select
-              value={subCategory}
-              onChange={(e) => setSubCategory(e.target.value)}
+              value={productData.subcategory_id}
+              onChange={(e) =>
+                handleInputChange("subcategory_id", e.target.value)
+              }
               className="w-full border rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-pink-200"
               disabled={
-                !selectedCategory ||
-                !selectedCategory.subcategories ||
-                selectedCategory.subcategories.length === 0
+                !productData.category_id || filteredSubcategories.length === 0
               }
+              required
             >
               <option value="">
-                {selectedCategory &&
-                selectedCategory.subcategories &&
-                selectedCategory.subcategories.length > 0
+                {productData.category_id && filteredSubcategories.length > 0
                   ? "Select subcategory"
-                  : "No subcategories"}
+                  : productData.category_id
+                  ? "No subcategories available"
+                  : "Select a category first"}
               </option>
-              {selectedCategory?.subcategories?.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
+              {filteredSubcategories.map((subcategory) => (
+                <option key={subcategory._id} value={subcategory._id}>
+                  {subcategory.name}
                 </option>
               ))}
             </select>
           </div>
 
+          {/* Image Upload */}
           <div className="mb-6">
             <label className="block text-sm font-medium mb-1">
-              Image Upload (Optional)
+              Product Image
             </label>
-
             <input
               id="product-image"
               type="file"
               accept="image/*"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (!file) {
-                  // clear preview if no file
-                  if (imageUrl && imageUrl.startsWith("blob:"))
-                    URL.revokeObjectURL(imageUrl);
-                  setImageUrl("");
-                  return;
-                }
-
-                // revoke previous object URL to avoid memory leaks
-                if (imageUrl && imageUrl.startsWith("blob:"))
-                  URL.revokeObjectURL(imageUrl);
-
-                // store a preview URL in imageUrl (string) for now;
-                // later you can read the File from the input (#product-image) and append to FormData
-                const previewUrl = URL.createObjectURL(file);
-                setImageUrl(previewUrl);
-              }}
+              onChange={handleImageChange}
               className="w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-200 bg-white"
             />
 
-            {imageUrl ? (
+            {imagePreview && (
               <div className="mt-3 flex items-start gap-3">
                 <img
-                  src={imageUrl}
+                  src={imagePreview}
                   alt="Preview"
                   className="w-28 h-28 object-cover rounded border"
                 />
                 <div className="flex-1">
                   <p className="text-sm text-gray-700 mb-2">
-                    {(
-                      document.getElementById(
-                        "product-image"
-                      ) as HTMLInputElement | null
-                    )?.files?.[0]?.name ?? "Selected image"}
+                    {imageFile?.name || "Selected image"}
                   </p>
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (imageUrl && imageUrl.startsWith("blob:"))
-                          URL.revokeObjectURL(imageUrl);
-                        setImageUrl("");
-                        const fileInput = document.getElementById(
-                          "product-image"
-                        ) as HTMLInputElement | null;
-                        if (fileInput) fileInput.value = "";
-                      }}
-                      className="px-3 py-1 rounded-full border bg-white text-sm hover:bg-gray-50"
-                    >
-                      Remove
-                    </button>
-                    <p className="text-xs text-gray-500 self-center">
-                      File will be available from the input with
-                      id="product-image". When ready, use FormData to send the
-                      file to your backend.
-                    </p>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    className="px-3 py-1 rounded-full border bg-white text-sm hover:bg-gray-50"
+                  >
+                    Remove
+                  </button>
                 </div>
               </div>
-            ) : (
-              <p className="text-xs text-gray-500 mt-2">
-                Choose an image to upload (preview shown). Backend integration:
-                read the file from the file input and append to FormData.
-              </p>
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Featured Product
-              </label>
-              <select
-                value={featured}
-                onChange={(e) => setFeatured(e.target.value)}
-                className="w-full border rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-pink-200"
-              >
-                <option>No</option>
-                <option>Yes</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">In Stock</label>
-              <select
-                value={inStock}
-                onChange={(e) => setInStock(e.target.value)}
-                className="w-full border rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-pink-200"
-              >
-                <option>Yes</option>
-                <option>No</option>
-              </select>
-            </div>
-          </div>
-
+          {/* Action Buttons */}
           <div className="flex items-center justify-end gap-3">
             <button
               type="button"
@@ -292,7 +328,7 @@ export default function AddProductPage() {
               className="px-4 py-2 rounded-full border bg-white text-sm hover:bg-gray-50"
               disabled={submitting}
             >
-              Cancel
+              Reset
             </button>
             <button
               type="submit"

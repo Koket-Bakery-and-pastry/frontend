@@ -28,10 +28,10 @@ export default function CategoriesGrid({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4 sm:gap-6 xl:gap-8">
       {categories.map((category) => (
         <CategoryCard
-          key={category.id}
+          key={category._id}
           category={category}
           onEdit={onEditCategory}
           onDelete={onDeleteCategory}

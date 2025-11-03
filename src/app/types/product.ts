@@ -1,13 +1,40 @@
 export type Product = {
-  id: number;
+  _id: string;
   name: string;
-  description: string;
-  price: string;
-  category: string;
-  subCategory: string;
-  image: string;
-  featured: boolean;
-  inStock: boolean;
+  image_url?: string;
+  category_id: string;
+  subcategory_id: string;
+  description?: string;
+  // Enriched fields from subcategory
+  kilo_to_price_map?: {
+    [key: string]: number;
+  };
+  upfront_payment?: number;
+  is_pieceable?: boolean;
+  price?: number;
+  status?: string;
+  created_at?: string;
+};
+
+export type CreateProductDto = {
+  name: string;
+  image_url?: string;
+  category_id: string;
+  subcategory_id: string;
+  description?: string;
+};
+
+export type UpdateProductDto = {
+  name?: string;
+  image_url?: string;
+  category_id?: string;
+  subcategory_id?: string;
+  description?: string;
+};
+
+export type ProductFilters = {
+  categoryId?: string;
+  subcategoryId?: string;
 };
 
 export type ProductCardProps = {
