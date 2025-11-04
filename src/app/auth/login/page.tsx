@@ -24,10 +24,10 @@ function LoginPage() {
       console.log("Login successful:", response);
 
       // Store tokens (you can choose localStorage, sessionStorage, or cookies)
-      localStorage.setItem("accessToken", response.tokens.accessToken);
-      if (response.tokens.refreshToken) {
-        localStorage.setItem("refreshToken", response.tokens.refreshToken);
-      }
+      // localStorage.setItem("accessToken", response.tokens.accessToken);
+      // if (response.tokens.refreshToken) {
+      //   localStorage.setItem("refreshToken", response.tokens.refreshToken);
+      // }
 
       // Optionally, store user info
       localStorage.setItem("user", JSON.stringify(response.user));
