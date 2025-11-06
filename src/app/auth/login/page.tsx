@@ -46,7 +46,7 @@ function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-purple-50 to-pink-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md">
         <div className="bg-white rounded-lg shadow-lg p-8">
           <div className="text-center mb-8">
@@ -96,7 +96,7 @@ function LoginPage() {
 
             <Button
               type="submit"
-              className="w-full bg-pink-500 hover:bg-pink-600 text-white font-medium py-6 text-base"
+              className="w-full bg-primary hover:bg-primary-hover text-white font-medium py-6 text-base"
               disabled={loading}
             >
               {loading ? "Logging in..." : "Log in"}
@@ -107,7 +107,7 @@ function LoginPage() {
             Don't have an account?{" "}
             <Link
               href="/auth/signup"
-              className="text-pink-500 hover:text-pink-600 font-medium"
+              className="text-primary hover:text-primary-hover font-medium"
             >
               Sign up
             </Link>

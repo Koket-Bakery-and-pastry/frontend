@@ -39,8 +39,6 @@ function SignUpPage() {
       console.log("Registration successful:", response);
       setSuccess(true);
       // optionally, redirect the user or save tokens
-      
-    
     } catch (err: any) {
       setError(err.response?.data?.message || "Registration failed");
     } finally {
@@ -49,7 +47,7 @@ function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-purple-50 to-pink-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md">
         <div className="bg-white rounded-lg shadow-lg p-8">
           <div className="text-center mb-8">
