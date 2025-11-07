@@ -62,7 +62,7 @@ function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label>Email</Label>
+              <Label className="pb-2">Email</Label>
               <Input
                 type="email"
                 value={email}
@@ -72,7 +72,7 @@ function LoginPage() {
             </div>
 
             <div>
-              <Label>Password</Label>
+              <Label className="pb-2">Password</Label>
               <Input
                 type="password"
                 value={password}
@@ -85,7 +85,7 @@ function LoginPage() {
 
             <Button
               type="submit"
-              className="w-full bg-primary hover:bg-primary-hover text-white font-medium py-6 text-base"
+              className="w-full bg-primary hover:bg-primary-hover text-white font-medium py-6 text-base cursor-pointer"
               disabled={loading}
             >
               {loading ? "Logging in..." : "Log in"}

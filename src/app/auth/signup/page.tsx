@@ -80,7 +80,9 @@ function SignUpPage() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="fullName">Full Name</Label>
+              <Label className="pb-2" htmlFor="fullName">
+                Full Name
+              </Label>
               <Input
                 id="fullName"
                 type="text"
@@ -92,7 +94,9 @@ function SignUpPage() {
             </div>
 
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label className="pb-2" htmlFor="email">
+                Email
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -104,7 +108,9 @@ function SignUpPage() {
             </div>
 
             <div>
-              <Label htmlFor="password">Password</Label>
+              <Label className="pb-2" htmlFor="password">
+                Password
+              </Label>
               <Input
                 id="password"
                 type="password"
@@ -116,7 +122,9 @@ function SignUpPage() {
             </div>
 
             <div>
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Label className="pb-2" htmlFor="confirmPassword">
+                Confirm Password
+              </Label>
               <Input
                 id="confirmPassword"
                 type="password"
@@ -131,7 +139,7 @@ function SignUpPage() {
 
             <Button
               type="submit"
-              className="w-full bg-primary hover:bg-primary-hover text-white font-medium py-6 text-base"
+              className="w-full bg-primary hover:bg-primary-hover text-white font-medium py-6 text-base cursor-pointer "
               disabled={loading}
             >
               {loading ? "Signing up..." : "Sign Up"}
