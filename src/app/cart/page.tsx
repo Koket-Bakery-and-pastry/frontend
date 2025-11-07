@@ -72,7 +72,7 @@ export default function ShoppingCartPage() {
   const total = subtotal;
 
   return (
-    <div className="min-h-screen bg-[#FFFAFF]">
+    <div className="min-h-screen bg-white">
       <div>
         <div className="mb-12">
           <PageHeader
@@ -104,7 +104,7 @@ export default function ShoppingCartPage() {
               )}
             </div>
 
-            {items.length > 0 ? (
+            {items.length < 0 ? (
               <>
                 {items.map((item) => (
                   <div
@@ -137,9 +137,14 @@ export default function ShoppingCartPage() {
                 </Link>
               </>
             ) : (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground text-lg">
-                  Your cart is empty
+              <div className="flex flex-col items-center justify-center mt-10 ">
+                <img
+                  src="/assets/empty.gif"
+                  alt="No Products Found"
+                  className="w-1/2  md:w-1/5 bg-background"
+                />
+                <p className="text-foreground mt-4 text-center">
+                  <b>No product</b> <br /> found in your cart.
                 </p>
               </div>
             )}
