@@ -1,27 +1,28 @@
 "use client";
 
-import type React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleAuthButton, AuthDivider } from "../components";
 import { registerUser } from "@/app/services/authService";
+import { useAuth } from "@/app/context/AuthContext";
 
 function SignUpPage() {
+  const { login } = useAuth();
+  const router = useRouter();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setSuccess(false);
 
     if (password !== confirmPassword) {
       setError("Passwords do not match");
@@ -36,11 +37,25 @@ function SignUpPage() {
         password,
       });
 
-      console.log("Registration successful:", response);
-      setSuccess(true);
-      // optionally, redirect the user or save tokens
+      const role: "admin" | "user" =
+        response.user.role === "admin" ? "admin" : "user";
+
+      // Save user & tokens in context/localStorage
+      login(
+        {
+          role,
+          name: response.user.name ?? "",
+          email: response.user.email ?? "",
+        },
+        response.tokens
+      );
+
+      // Redirect after registration
+      router.push(role === "admin" ? "/admin" : "/");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Registration failed");
+      setError(
+        err.response?.data?.message || "Registration failed. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -50,97 +65,81 @@ function SignUpPage() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md">
         <div className="bg-white rounded-lg shadow-lg p-8">
+          {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Create account
+              Create Account
             </h1>
             <p className="text-gray-600">Join Yellow Cakes today</p>
           </div>
 
+          {/* Google Button */}
           <GoogleAuthButton />
           <AuthDivider />
 
+          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="fullName" className="text-foreground font-medium">
-                Full Name
-              </Label>
+              <Label htmlFor="fullName">Full Name</Label>
               <Input
                 id="fullName"
                 type="text"
                 placeholder="John Doe"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="mt-1"
                 required
               />
             </div>
 
             <div>
-              <Label htmlFor="email" className="text-foreground font-medium">
-                Email
-              </Label>
+              <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1"
                 required
               />
             </div>
 
             <div>
-              <Label htmlFor="password" className="text-foreground font-medium">
-                Password
-              </Label>
+              <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1"
                 required
               />
             </div>
 
             <div>
-              <Label
-                htmlFor="confirmPassword"
-                className="text-foreground font-medium"
-              >
-                Confirm Password
-              </Label>
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
               <Input
                 id="confirmPassword"
                 type="password"
-                placeholder="Enter your password"
+                placeholder="Re-enter your password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="mt-1"
                 required
               />
             </div>
 
             {error && <p className="text-destructive text-sm mt-1">{error}</p>}
-            {success && (
-              <p className="text-green-600 text-sm mt-1">
-                Registration successful!
-              </p>
-            )}
 
             <Button
               type="submit"
               className="w-full bg-primary hover:bg-primary-hover text-white font-medium py-6 text-base"
               disabled={loading}
             >
-              {loading ? "Signing up..." : "Sign up"}
+              {loading ? "Signing up..." : "Sign Up"}
             </Button>
           </form>
 
-          <p className="text-center mt-6 text-foreground">
+          {/* Redirect to login */}
+          <p className="text-center mt-6 text-gray-600">
             Already have an account?{" "}
             <Link
               href="/auth/login"
