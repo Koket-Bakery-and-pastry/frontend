@@ -350,7 +350,7 @@ function Navbar() {
                       <DropdownMenuSeparator className="my-1 bg-border" />
 
                       <DropdownMenuItem asChild>
-                        <Button className="flex items-center gap-2 px-2 py-1.5 w-full rounded-md bg-secondary text-secondary-foreground hover:bg-secondary-hover transition-colors">
+                        <Button onClick={logout} className="flex items-center gap-2 px-2 py-1.5 w-full rounded-md bg-secondary text-secondary-foreground hover:bg-secondary-hover transition-colors">
                           <LogOut size={14} className="text-destructive" />{" "}
                           Logout
                         </Button>
@@ -362,12 +362,48 @@ function Navbar() {
 
               {/* ✅ ADMIN: Only Profile Icon */}
               {isAdmin && (
-                <Link
-                  href="/admin/profile"
-                  className="flex items-center justify-center w-9 h-9 rounded-full bg-primary text-primary-foreground hover:bg-primary-hover transition-colors"
-                >
-                  <User size={18} />
-                </Link>
+               <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button className="flex items-center justify-center w-9 h-9 rounded-full bg-primary text-primary-foreground hover:bg-primary-hover transition-colors">
+                        <User size={18} />
+                      </Button>
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent
+                      align="end"
+                      className="w-40 p-1 bg-background border border-border text-foreground rounded-md shadow-md"
+                    >
+                     
+
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href="/admin/profile"
+                          className={`flex items-center justify-between rounded-md px-2 py-1.5 transition-colors ${
+                            pathname.startsWith("/profile")
+                              ? "bg-primary text-primary-foreground"
+                              : "hover:bg-primary-hover hover:text-primary-foreground"
+                          }`}
+                        >
+                          My Profile
+                          {pathname.startsWith("/profile") && (
+                            <Check
+                              size={14}
+                              className="text-primary-foreground"
+                            />
+                          )}
+                        </Link>
+                      </DropdownMenuItem>
+
+                      <DropdownMenuSeparator className="my-1 bg-border" />
+
+                      <DropdownMenuItem asChild>
+                        <Button onClick={logout} className="flex items-center gap-2 px-2 py-1.5 w-full rounded-md bg-secondary text-secondary-foreground hover:bg-secondary-hover transition-colors">
+                          <LogOut size={14} className="text-destructive" />{" "}
+                          Logout
+                        </Button>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
               )}
             </>
           )}
