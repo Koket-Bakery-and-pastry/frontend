@@ -28,8 +28,14 @@ function FeaturedSection() {
     fetchProducts();
   }, []);
 
-  if (loading) return <p className="text-center py-16">Loading products...</p>;
-  if (error) return <p className="text-center py-16 text-red-500">{error}</p>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-screen bg-background">
+        <p className="text-foreground">loading ...</p>
+      </div>
+    );
+  if (error)
+    return <p className="text-center py-16 text-destructive">{error}</p>;
 
   return (
     <section className=" section-spacing bg-background mt-8">
@@ -42,7 +48,7 @@ function FeaturedSection() {
           <div
             className={`${
               index === 1 || index === 4 ? "2xl:-mt-28" : " "
-            } mx-auto`}
+            } sm:mx-auto `}
             key={product.id}
           >
             <ProductCard
