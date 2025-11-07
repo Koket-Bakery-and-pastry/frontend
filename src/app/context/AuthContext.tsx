@@ -7,6 +7,7 @@ import {
   useState,
   ReactNode,
 } from "react";
+import { useRouter } from "next/navigation";
 
 type User = {
   role: "admin" | "user";
@@ -17,13 +18,17 @@ type User = {
 type AuthContextType = {
   user: User;
   isLoggedIn: boolean;
-  login: (userData: User, tokens?: { accessToken: string; refreshToken?: string }) => void;
+  login: (
+    userData: User,
+    tokens?: { accessToken: string; refreshToken?: string }
+  ) => void;
   logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const router = useRouter();
   const [user, setUser] = useState<User>(null);
 
   useEffect(() => {
@@ -32,7 +37,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (storedUser) setUser(JSON.parse(storedUser));
   }, []);
 
-  const login = (userData: User, tokens?: { accessToken: string; refreshToken?: string }) => {
+  const login = (
+    userData: User,
+    tokens?: { accessToken: string; refreshToken?: string }
+  ) => {
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
     if (tokens) {
@@ -47,6 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("user");
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
+    router.push("/");
   };
 
   return (
