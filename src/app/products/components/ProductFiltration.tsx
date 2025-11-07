@@ -80,7 +80,7 @@ export default function ProductFiltration({
   const currentSubcategories = subCategories[category] || ["All Products"];
 
   return (
-    <div className="bg-background/50 px-3 xss:px-4 sm:px-6 md:px-10 lg:px-16 xl:px-24 pt-6 xss:pt-8 sm:pt-12 md:pt-16 lg:pt-20 ">
+    <div className="bg-background-2 px-3 xss:px-4 sm:px-6 md:px-10 lg:px-16 xl:px-24 pt-6 xss:pt-8 sm:pt-12 md:pt-16 lg:pt-20 ">
       <div className="max-w-7xl ">
         {/* Mobile category selector */}
         <div className="mb-6 block 2xl:hidden">
