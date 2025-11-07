@@ -39,7 +39,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   if (requireAdmin && user?.role !== "admin") {
     return (
       <div className="flex items-center justify-center h-screen">
-        <p className="text-red-600 font-medium">
+        <p className="text-destructive font-medium">
           Access denied. Admins only.
         </p>
       </div>
