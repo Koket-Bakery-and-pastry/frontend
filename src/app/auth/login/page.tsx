@@ -7,8 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleAuthButton, AuthDivider } from "../components";
 import { loginUser } from "@/app/services/loginService";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/context/AuthContext";
 
 function LoginPage() {
+  const { login } = useAuth();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -21,23 +25,18 @@ function LoginPage() {
 
     try {
       const response = await loginUser({ email, password });
-      console.log("Login successful:", response);
+      const role: "admin" | "user" =
+        response.user.role === "admin" ? "admin" : "user";
+      login(
+        {
+          role,
+          name: response.user.name,
+          email: response.user.email,
+        },
+        response.tokens
+      );
 
-      // Store tokens (you can choose localStorage, sessionStorage, or cookies)
-      localStorage.setItem("accessToken", response.tokens.accessToken);
-      if (response.tokens.refreshToken) {
-        localStorage.setItem("refreshToken", response.tokens.refreshToken);
-      }
-
-      // Optionally, store user info
-      localStorage.setItem("user", JSON.stringify(response.user));
-
-      // Redirect user based on role
-      // if (response.user.role === "admin") {
-      //   window.location.href = "/admin/dashboard";
-      // } else {
-      //   window.location.href = "/dashboard";
-      // }
+      router.push(role === "admin" ? "/admin" : "/");
     } catch (err: any) {
       setError(err.response?.data?.message || "Login failed");
     } finally {
@@ -63,31 +62,21 @@ function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="email" className="text-gray-700 font-medium">
-                Email
-              </Label>
+              <Label>Email</Label>
               <Input
-                id="email"
                 type="email"
-                placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1"
                 required
               />
             </div>
 
             <div>
-              <Label htmlFor="password" className="text-gray-700 font-medium">
-                Password
-              </Label>
+              <Label>Password</Label>
               <Input
-                id="password"
                 type="password"
-                placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1"
                 required
               />
             </div>
