@@ -106,7 +106,7 @@ function ProductsPage() {
   }, [filters]);
 
   return (
-    <div className="bg-[#FFFAFF] min-h-screen">
+    <div className="bg-background-2 min-h-screen">
       <PageHeader
         title="Our Products"
         subtitle="Browse our delicious selection of cakes and desserts"
@@ -116,7 +116,7 @@ function ProductsPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-4 gap-4 section-spacing bg-[#FFFAFF] px-4 sm:px-8 md:px-12 lg:px-16">
         {loading && (
-          <div className="col-span-full text-center py-10 text-gray-600">
+          <div className="col-span-full text-center py-10 text-gray-600 h-screen">
             Loading products...
           </div>
         )}

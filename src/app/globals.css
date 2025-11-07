@@ -16,6 +16,7 @@
   --breakpoint-3xl: 1280px; /* Desktops */
   --breakpoint-4xl: 1536px;
   --color-background: var(--background);
+  --color-background-2: var(--background-2);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -57,6 +58,7 @@
   /* === Base === */
   --radius: 0.625rem;
   --background: #f8effa;
+  --background-2: #fffaff;
   --foreground: #000000;
   --foreground-hover: #1a1a1a;
 

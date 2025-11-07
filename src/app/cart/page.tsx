@@ -72,7 +72,7 @@ export default function ShoppingCartPage() {
   const total = subtotal;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white ">
       <div>
         <div className="mb-12">
           <PageHeader
@@ -85,24 +85,27 @@ export default function ShoppingCartPage() {
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
             {/* 🆕 Selection Info Bar */}
-            <div className="flex items-center justify-between bg-pink-100/70 border border-pink-200 text-sm text-pink-700 px-4 py-2 rounded-md mb-4">
-              <p>
-                Tap on an item to select it.{" "}
-                <span className="font-semibold">
-                  {selectedIds.length} selected
-                </span>
-              </p>
-              {selectedIds.length > 0 && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="border-pink-300 text-pink-600 hover:bg-pink-50 bg-transparent"
-                  onClick={() => setSelectedIds([])}
-                >
-                  Clear
-                </Button>
-              )}
-            </div>
+
+            {items.length < 0 && (
+              <div className="flex items-center justify-between bg-pink-100/70 border border-pink-200 text-sm text-pink-700 px-4 py-2 rounded-md mb-4">
+                <p>
+                  Tap on an item to select it.{" "}
+                  <span className="font-semibold">
+                    {selectedIds.length} selected
+                  </span>
+                </p>
+                {selectedIds.length > 0 && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="border-pink-300 text-pink-600 hover:bg-pink-50 bg-transparent"
+                    onClick={() => setSelectedIds([])}
+                  >
+                    Clear
+                  </Button>
+                )}
+              </div>
+            )}
 
             {items.length < 0 ? (
               <>
