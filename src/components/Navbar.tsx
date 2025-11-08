@@ -73,7 +73,7 @@ function Navbar() {
           <Image
             src="/assets/logo.jpg"
             alt="Koket Bakery Logo"
-            className="h-[60px] w-[120px] "
+            className="h-[50px] w-auto "
             width={100}
             height={100}
           />
@@ -110,7 +110,7 @@ function Navbar() {
               </Link>
               <Link
                 href="/auth/login"
-                className="bg-primary hover:bg-primary-hover text-primary-foreground font-semibold px-4 py-1 rounded-full transition-colors cursor-pointer"
+                className="bg-primary hover:bg-primary-hover text-primary-foreground font-semibold px-4 py-1 rounded-full transition-colors cursor-pointer "
               >
                 Login
               </Link>
@@ -257,7 +257,7 @@ function Navbar() {
           <Image
             src="/assets/logo.jpg"
             alt="Koket Bakery Logo"
-            className="xl:h-[60px] xl:w-[120px] "
+            className="h-[40px] w-auto"
             width={100}
             height={100}
           />
@@ -271,16 +271,16 @@ function Navbar() {
                 href="/cart"
                 className="relative text-primary text-xl 2xl:text-2xl transition-transform duration-200 hover:text-primary-hover hover:scale-110 cursor-pointer"
               >
-                <FaShoppingCart size={30} />
+                <FaShoppingCart size={27} />
                 {cartCount > 0 && (
-                  <Badge className="absolute -top-2 -right-3 text-[13px] font-semibold bg-secondary text-secondary-foreground rounded-full px-1.5 py-0.5 animate-bounce">
+                  <Badge className="absolute -top-2 -right-3 text-[10px] lg:text-[13px] font-semibold bg-secondary text-secondary-foreground rounded-full px-1.5 py-0.5 animate-bounce">
                     {cartCount}
                   </Badge>
                 )}
               </Link>
               <Link
                 href="/auth/login"
-                className="bg-primary hover:bg-primary-hover text-primary-foreground font-semibold px-4 py-1 rounded-full transition-colors cursor-pointer"
+                className="bg-primary hover:bg-primary-hover text-primary-foreground font-semibold px-2 md:px-4 py-1 rounded-full transition-colors cursor-pointer text-xs md:text-sm"
               >
                 Login
               </Link>
