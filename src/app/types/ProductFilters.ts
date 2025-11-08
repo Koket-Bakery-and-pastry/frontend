@@ -1,13 +1,6 @@
-export type Category =
-  | "All Products"
-  | "Cake"
-  | "Quick Bread"
-  | "Cookies"
-  | "Fondant Cake";
-
-export type ProductFilters = {
-  category: Category;
+export interface ProductFilters {
+  category: string;
   subcategory: string;
   search: string;
   sort: string;
-};
+}

@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect } from "react";
+
+import React, { useEffect, useState } from "react";
 import { FaSearch, FaBars } from "react-icons/fa";
 import Link from "next/link";
 import {
@@ -8,48 +9,19 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import { getCategories } from "@/app/services/categoryService";
 
-type Category =
-  | "All Products"
-  | "Cake"
-  | "Quick Bread"
-  | "Cookies"
-  | "Fondant Cake";
-
-type SubCategories = {
-  [key in Category]: string[];
+// ✅ Define flexible Category type from backend
+export type Category = {
+  _id: string;
+  name: string;
+  description?: string;
+  subcategories?: { name: string }[];
 };
 
-const categories: Category[] = [
-  "All Products",
-  "Cake",
-  "Quick Bread",
-  "Cookies",
-  "Fondant Cake",
-];
-
-const subCategories: SubCategories = {
-  "All Products": ["All Products"],
-  Cake: [
-    "All Cakes",
-    "Chocolate cakes",
-    "Caramel cakes",
-    "Red velvet cakes",
-    "Vanilla cakes",
-  ],
-  "Quick Bread": ["All Quick Bread", "Banana bread", "Muffin", "Marble cake"],
-  Cookies: ["All Cookies", "½kg - 250 birr", "2 kg - 500 birr"],
-  "Fondant Cake": [],
-};
-
-const sortOptions = [
-  { label: "Price", value: "name" },
-  { label: "Low to High", value: "priceAsc" },
-  { label: "High to Low", value: "priceDesc" },
-];
-
+// ✅ Define filters with dynamic types
 type ProductFilters = {
-  category: Category;
+  category: string;
   subcategory: string;
   search: string;
   sort: string;
@@ -60,29 +32,78 @@ type ProductFiltrationProps = {
   setFilters: React.Dispatch<React.SetStateAction<ProductFilters>>;
 };
 
+const sortOptions = [
+  { label: "Price", value: "name" },
+  { label: "Low to High", value: "priceAsc" },
+  { label: "High to Low", value: "priceDesc" },
+];
+
 export default function ProductFiltration({
   filters,
   setFilters,
 }: ProductFiltrationProps) {
   const { category, subcategory, search, sort } = filters;
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Keep subcategory list synced with selected category
+  // ✅ Fetch categories dynamically
   useEffect(() => {
-    const availableSubs = subCategories[category] || ["All Products"];
-    if (!availableSubs.includes(subcategory)) {
+    const fetchData = async () => {
+      try {
+        const data: any = await getCategories();
+        // Ensure fallback in case API structure differs
+        const formatted = Array.isArray(data)
+          ? data
+          : data && typeof data === "object" && Array.isArray(data.categories)
+          ? data.categories
+          : [];
+
+        setCategories([
+          { _id: "all", name: "All Products", subcategories: [] },
+          ...formatted,
+        ]);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        setCategories([
+          { _id: "all", name: "All Products", subcategories: [] },
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // ✅ Get subcategories of current category
+  const currentSubcategories =
+    categories
+      .find((cat) => cat.name === category)
+      ?.subcategories?.map((s) => s.name) || [];
+
+  // ✅ Keep subcategory consistent
+  useEffect(() => {
+    if (subcategory && !currentSubcategories.includes(subcategory)) {
       setFilters((prev) => ({
         ...prev,
-        subcategory: availableSubs[0],
+        subcategory: currentSubcategories[0] || "",
       }));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category]);
 
-  const currentSubcategories = subCategories[category] || ["All Products"];
+  if (loading)
+    return (
+      <div className="text-center py-10 text-gray-600">
+        Loading categories...
+      </div>
+    );
 
+  // ✅ UI (unchanged)
   return (
-    <div className="bg-background-2 px-3 xss:px-4 sm:px-6 md:px-10 lg:px-16 xl:px-24 pt-6 xss:pt-8 sm:pt-12 md:pt-16 lg:pt-20 ">
-      <div className="max-w-7xl ">
-        {/* Mobile category selector */}
+    <div className="bg-background-2 px-3 sm:px-6 lg:px-16 pt-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Mobile */}
         <div className="mb-6 block 2xl:hidden">
           <div className="flex justify-between items-center">
             <Link
@@ -94,21 +115,25 @@ export default function ProductFiltration({
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-1 border-b-2 border-primary bg-primary/20 text-primary  rounded-t-md py-1 px-3 text-sm font-medium">
+                <button className="flex items-center gap-1 border-b-2 border-primary bg-primary/20 text-primary rounded-t-md py-1 px-3 text-sm font-medium">
                   <FaBars />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 {categories
-                  .filter((c) => c !== category)
+                  .filter((c) => c.name !== category)
                   .map((c) => (
                     <DropdownMenuItem
-                      key={c}
+                      key={c._id}
                       onClick={() =>
-                        setFilters((prev) => ({ ...prev, category: c }))
+                        setFilters((prev) => ({
+                          ...prev,
+                          category: c.name,
+                          subcategory: "",
+                        }))
                       }
                     >
-                      {c}
+                      {c.name}
                     </DropdownMenuItem>
                   ))}
               </DropdownMenuContent>
@@ -116,24 +141,30 @@ export default function ProductFiltration({
           </div>
         </div>
 
-        {/* Desktop category tabs */}
+        {/* Desktop */}
         <div className="hidden 2xl:flex gap-4 overflow-x-auto no-scrollbar mb-6 py-2">
           {categories.map((cat) => (
             <button
-              key={cat}
-              onClick={() => setFilters((prev) => ({ ...prev, category: cat }))}
+              key={cat._id}
+              onClick={() =>
+                setFilters((prev) => ({
+                  ...prev,
+                  category: cat.name,
+                  subcategory: "",
+                }))
+              }
               className={`px-4 py-2 rounded-lg font-semibold shadow text-sm transition ${
-                category === cat
+                category === cat.name
                   ? "bg-primary text-white"
                   : "bg-white text-foreground shadow-md"
               }`}
             >
-              {cat}
+              {cat.name}
             </button>
           ))}
         </div>
 
-        {/* Search, Sort, and Subcategory Filter */}
+        {/* Search + Sort + Subcategory */}
         <div className="grid grid-cols-2 2xl:grid-cols-5 gap-3 items-center">
           {/* Search */}
           <div className="col-span-2 2xl:col-span-3">
@@ -157,7 +188,8 @@ export default function ProductFiltration({
               <DropdownMenuTrigger asChild>
                 <button className="w-full bg-white border rounded-lg px-2 md:px-4 py-3 flex items-center justify-between">
                   <span className="line-clamp-1">
-                    {sortOptions.find((s) => s.value === sort)?.label}
+                    {sortOptions.find((s) => s.value === sort)?.label ||
+                      "Sort by"}
                   </span>
                   <span className="ml-2 text-foreground">&#9662;</span>
                 </button>
@@ -185,24 +217,30 @@ export default function ProductFiltration({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="w-full bg-white border rounded-lg px-2 md:px-4 py-3 flex items-center justify-between">
-                  <span className="line-clamp-1">{subcategory}</span>
+                  <span className="line-clamp-1">
+                    {subcategory || "All Products"}
+                  </span>
                   <span className="ml-2 text-gray-600">&#9662;</span>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                {currentSubcategories.map((sub) => (
-                  <DropdownMenuItem
-                    key={sub}
-                    onClick={() =>
-                      setFilters((prev) => ({ ...prev, subcategory: sub }))
-                    }
-                  >
-                    {sub}
-                    {subcategory === sub && (
-                      <span className="ml-auto text-green-600">✓</span>
-                    )}
-                  </DropdownMenuItem>
-                ))}
+                {currentSubcategories.length > 0 ? (
+                  currentSubcategories.map((sub) => (
+                    <DropdownMenuItem
+                      key={sub}
+                      onClick={() =>
+                        setFilters((prev) => ({ ...prev, subcategory: sub }))
+                      }
+                    >
+                      {sub}
+                      {subcategory === sub && (
+                        <span className="ml-auto text-green-600">✓</span>
+                      )}
+                    </DropdownMenuItem>
+                  ))
+                ) : (
+                  <DropdownMenuItem disabled>No subcategories</DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
