@@ -1,6 +1,7 @@
 import Link from "next/link";
 import React from "react";
 import { FaEye } from "react-icons/fa";
+import { Button } from "./ui/button";
 
 interface ProductCardProps {
   image: string;
@@ -44,10 +45,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </span>
 
             <Link href={`/products/${productId}`} passHref>
-              <button className="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white font-semibold px-3 py-1.5 lg:px-6 lg:py-2 rounded-lg transition text-xs">
+              <Button className="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white font-semibold px-3 py-1.5 lg:px-6 lg:py-2 rounded-lg transition text-xs cursor-pointer">
                 <FaEye className="text-xs lg:text-xl" />
                 <span className="text-xs lg:text-base">View</span>
-              </button>
+              </Button>
             </Link>
           </div>
         </div>

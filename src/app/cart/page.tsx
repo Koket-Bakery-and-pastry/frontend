@@ -72,7 +72,7 @@ export default function ShoppingCartPage() {
   const total = subtotal;
 
   return (
-    <div className="min-h-screen bg-[#FFFAFF]">
+    <div className="min-h-screen bg-white ">
       <div>
         <div className="mb-12">
           <PageHeader
@@ -85,26 +85,29 @@ export default function ShoppingCartPage() {
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
             {/* 🆕 Selection Info Bar */}
-            <div className="flex items-center justify-between bg-pink-100/70 border border-pink-200 text-sm text-pink-700 px-4 py-2 rounded-md mb-4">
-              <p>
-                Tap on an item to select it.{" "}
-                <span className="font-semibold">
-                  {selectedIds.length} selected
-                </span>
-              </p>
-              {selectedIds.length > 0 && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="border-pink-300 text-pink-600 hover:bg-pink-50 bg-transparent"
-                  onClick={() => setSelectedIds([])}
-                >
-                  Clear
-                </Button>
-              )}
-            </div>
 
-            {items.length > 0 ? (
+            {items.length < 0 && (
+              <div className="flex items-center justify-between bg-pink-100/70 border border-pink-200 text-sm text-pink-700 px-4 py-2 rounded-md mb-4">
+                <p>
+                  Tap on an item to select it.{" "}
+                  <span className="font-semibold">
+                    {selectedIds.length} selected
+                  </span>
+                </p>
+                {selectedIds.length > 0 && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="border-pink-300 text-pink-600 hover:bg-pink-50 bg-transparent"
+                    onClick={() => setSelectedIds([])}
+                  >
+                    Clear
+                  </Button>
+                )}
+              </div>
+            )}
+
+            {items.length < 0 ? (
               <>
                 {items.map((item) => (
                   <div
@@ -137,9 +140,14 @@ export default function ShoppingCartPage() {
                 </Link>
               </>
             ) : (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground text-lg">
-                  Your cart is empty
+              <div className="flex flex-col items-center justify-center mt-10 ">
+                <img
+                  src="/assets/empty.gif"
+                  alt="No Products Found"
+                  className="w-1/2  md:w-1/5 bg-background"
+                />
+                <p className="text-foreground mt-4 text-center">
+                  <b>No product</b> <br /> found in your cart.
                 </p>
               </div>
             )}

@@ -1,54 +1,86 @@
 "use client";
 
-import type React from "react";
-
-import { useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleAuthButton, AuthDivider } from "../components";
+import { registerUser } from "@/app/services/authService";
+import { useAuth } from "@/app/context/AuthContext";
 
 function SignUpPage() {
+  const { login } = useAuth();
+  const router = useRouter();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
 
     if (password !== confirmPassword) {
-      console.log("[v0] Passwords do not match");
+      setError("Passwords do not match");
       return;
     }
 
-    console.log("[v0] Sign up submitted:", { fullName, email, password });
-    // Handle sign up logic here
+    setLoading(true);
+    try {
+      const response = await registerUser({
+        name: fullName,
+        email,
+        password,
+      });
+
+      const role: "admin" | "user" =
+        response.user.role === "admin" ? "admin" : "user";
+
+      // Save user & tokens in context/localStorage
+      login(
+        {
+          role,
+          name: response.user.name ?? "",
+          email: response.user.email ?? "",
+        },
+        response.tokens
+      );
+
+      // Redirect after registration
+      router.push(role === "admin" ? "/admin" : "/");
+    } catch (err: any) {
+      setError(
+        err.response?.data?.message || "Registration failed. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-purple-50 to-pink-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md">
         <div className="bg-white rounded-lg shadow-lg p-8">
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Create account
+              Create Account
             </h1>
             <p className="text-gray-600">Join Yellow Cakes today</p>
           </div>
 
-          {/* Google Auth Button */}
+          {/* Google Button */}
           <GoogleAuthButton />
-
-          {/* Divider */}
           <AuthDivider />
 
-          {/* Sign Up Form */}
+          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="fullName" className="text-gray-700 font-medium">
+              <Label className="pb-2" htmlFor="fullName">
                 Full Name
               </Label>
               <Input
@@ -57,13 +89,12 @@ function SignUpPage() {
                 placeholder="John Doe"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="mt-1"
                 required
               />
             </div>
 
             <div>
-              <Label htmlFor="email" className="text-gray-700 font-medium">
+              <Label className="pb-2" htmlFor="email">
                 Email
               </Label>
               <Input
@@ -72,13 +103,12 @@ function SignUpPage() {
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1"
                 required
               />
             </div>
 
             <div>
-              <Label htmlFor="password" className="text-gray-700 font-medium">
+              <Label className="pb-2" htmlFor="password">
                 Password
               </Label>
               <Input
@@ -87,43 +117,41 @@ function SignUpPage() {
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1"
                 required
               />
             </div>
 
             <div>
-              <Label
-                htmlFor="confirmPassword"
-                className="text-gray-700 font-medium"
-              >
+              <Label className="pb-2" htmlFor="confirmPassword">
                 Confirm Password
               </Label>
               <Input
                 id="confirmPassword"
                 type="password"
-                placeholder="Enter your password"
+                placeholder="Re-enter your password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="mt-1"
                 required
               />
             </div>
 
+            {error && <p className="text-destructive text-sm mt-1">{error}</p>}
+
             <Button
               type="submit"
-              className="w-full bg-pink-500 hover:bg-pink-600 text-white font-medium py-6 text-base"
+              className="w-full bg-primary hover:bg-primary-hover text-white font-medium py-6 text-base cursor-pointer "
+              disabled={loading}
             >
-              Sign up
+              {loading ? "Signing up..." : "Sign Up"}
             </Button>
           </form>
 
-          {/* Login Link */}
+          {/* Redirect to login */}
           <p className="text-center mt-6 text-gray-600">
             Already have an account?{" "}
             <Link
               href="/auth/login"
-              className="text-pink-500 hover:text-pink-600 font-medium"
+              className="text-primary hover:text-primary-hover font-medium"
             >
               Log in
             </Link>
@@ -133,4 +161,5 @@ function SignUpPage() {
     </div>
   );
 }
+
 export default SignUpPage;

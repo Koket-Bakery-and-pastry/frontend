@@ -11,6 +11,7 @@ import { FaBars } from "react-icons/fa";
 import StatCard from "./components/DashboardCard";
 import OrderDistributionCard from "./components/DistributionCard";
 import TopSellingProductsCard from "./components/TopSellingProductsCard";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 function AdminPage() {
   const categories = [
@@ -111,103 +112,107 @@ function AdminPage() {
   }, [reportRange]);
 
   return (
-    <div>
-      <div className="bg-pink-50 section-spacing text-center">
-        <h1 className="text-4xl md:text-5xl font-kaushan italic mb-3 text-foreground">
-          Admin Dashboard
-        </h1>
-        <p className="text-muted-foreground max-w-2xl mx-auto text-balance">
-          Manage your cake shop and track performance
-        </p>
-      </div>
+    <ProtectedRoute requireAdmin>
+      <div>
+        <div className="bg-pink-50 section-spacing text-center">
+          <h1 className="text-4xl md:text-5xl font-kaushan italic mb-3 text-foreground">
+            Admin Dashboard
+          </h1>
+          <p className="text-muted-foreground max-w-2xl mx-auto text-balance">
+            Manage your cake shop and track performance
+          </p>
+        </div>
 
-      <div className="overview flex flex-row items-center justify-between px-4 sm:px-6 lg:px-16 py-8">
-        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">Overview</h1>
-        <div className="flex items-center gap-4">
-          <label htmlFor="report-range" className="sr-only">
-            Report range
-          </label>
-          {/* Desktop: regular select (shown on sm and up) */}
-          <label htmlFor="report-range" className="sr-only">
-            Report range
-          </label>
+        <div className="overview flex flex-row items-center justify-between px-4 sm:px-6 lg:px-16 py-8">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">
+            Overview
+          </h1>
+          <div className="flex items-center gap-4">
+            <label htmlFor="report-range" className="sr-only">
+              Report range
+            </label>
+            {/* Desktop: regular select (shown on sm and up) */}
+            <label htmlFor="report-range" className="sr-only">
+              Report range
+            </label>
 
-          <select
-            id="report-range"
-            value={reportRange}
-            onChange={(e) => setReportRange(e.target.value)}
-            className="hidden sm:inline-block px-3 py-2 bg-[#F8EFFA] border border-gray-200 rounded-md shadow-sm text-sm"
-          >
-            <option>Daily Report</option>
-            <option>Weekly Report</option>
-            <option>Annual Report</option>
-          </select>
-
-          {/* Mobile: hamburger dropdown (shown below sm) */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                aria-label="Open report menu"
-                className="inline-flex items-center gap-2 sm:hidden px-3 py-2 bg-[#F8EFFA] border border-gray-200 rounded-md shadow-sm text-sm"
-              >
-                <FaBars />
-                <span className="truncate max-w-[8rem]">{reportRange}</span>
-              </button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent
-              align="end"
-              sideOffset={8}
-              className="w-44 bg-white rounded-md shadow-md p-1"
+            <select
+              id="report-range"
+              value={reportRange}
+              onChange={(e) => setReportRange(e.target.value)}
+              className="hidden sm:inline-block px-3 py-2 bg-[#F8EFFA] border border-gray-200 rounded-md shadow-sm text-sm"
             >
-              {["Daily Report", "Weekly Report", "Annual Report"].map((r) => (
-                <DropdownMenuItem
-                  key={r}
-                  onClick={() => setReportRange(r)}
-                  className={`cursor-pointer px-3 py-2 text-sm ${
-                    reportRange === r ? "bg-gray-100 font-medium" : ""
-                  }`}
+              <option>Daily Report</option>
+              <option>Weekly Report</option>
+              <option>Annual Report</option>
+            </select>
+
+            {/* Mobile: hamburger dropdown (shown below sm) */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  aria-label="Open report menu"
+                  className="inline-flex items-center gap-2 sm:hidden px-3 py-2 bg-[#F8EFFA] border border-gray-200 rounded-md shadow-sm text-sm"
                 >
-                  {r}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                  <FaBars />
+                  <span className="truncate max-w-[8rem]">{reportRange}</span>
+                </button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent
+                align="end"
+                sideOffset={8}
+                className="w-44 bg-white rounded-md shadow-md p-1"
+              >
+                {["Daily Report", "Weekly Report", "Annual Report"].map((r) => (
+                  <DropdownMenuItem
+                    key={r}
+                    onClick={() => setReportRange(r)}
+                    className={`cursor-pointer px-3 py-2 text-sm ${
+                      reportRange === r ? "bg-gray-100 font-medium" : ""
+                    }`}
+                  >
+                    {r}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:grid-cols-2 gap-4 px-4 sm:px-6 lg:px-16 mb-8">
+          <StatCard
+            title="Total Revenue"
+            value={stats.totalRevenue}
+            subtext={stats.subtextRevenue}
+            iconType="revenue"
+          />
+          <StatCard
+            title="Active Orders"
+            value={stats.activeOrders}
+            subtext="Needs attention"
+            iconType="orders"
+          />
+          <StatCard
+            title="Custom Requests"
+            value={stats.customRequests}
+            subtext="Pending Requests"
+            iconType="requests"
+          />
+          <StatCard
+            title="Total Products"
+            value={stats.totalProducts}
+            subtext={`${stats.totalProducts} in stock`}
+            iconType="products"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 px-4 sm:px-6 lg:px-16 mb-8">
+          <OrderDistributionCard statuses={orderStatuses} />
+          <TopSellingProductsCard products={topProducts} />
         </div>
       </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:grid-cols-2 gap-4 px-4 sm:px-6 lg:px-16 mb-8">
-        <StatCard
-          title="Total Revenue"
-          value={stats.totalRevenue}
-          subtext={stats.subtextRevenue}
-          iconType="revenue"
-        />
-        <StatCard
-          title="Active Orders"
-          value={stats.activeOrders}
-          subtext="Needs attention"
-          iconType="orders"
-        />
-        <StatCard
-          title="Custom Requests"
-          value={stats.customRequests}
-          subtext="Pending Requests"
-          iconType="requests"
-        />
-        <StatCard
-          title="Total Products"
-          value={stats.totalProducts}
-          subtext={`${stats.totalProducts} in stock`}
-          iconType="products"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 px-4 sm:px-6 lg:px-16 mb-8">
-        <OrderDistributionCard statuses={orderStatuses} />
-        <TopSellingProductsCard products={topProducts} />
-      </div>
-    </div>
+    </ProtectedRoute>
   );
 }
 

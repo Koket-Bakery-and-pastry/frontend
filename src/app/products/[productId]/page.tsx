@@ -102,11 +102,11 @@ export default function ProductPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-background px-4 lg:px-6 xl:px-10 2xl:px-16 3xl:px-24">
+    <main className="min-h-screen bg-background-2 px-4 lg:px-6 xl:px-10 2xl:px-16 3xl:px-24">
       {/* Logo *">
       {/* Header */}
-      <header className="border-b border-border bg-card">
-        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+      <header className="border-b border-border py-4">
+        <div className="mx- max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <ChevronLeft className="h-5 w-5" />
@@ -120,7 +120,7 @@ export default function ProductPage() {
 
       {/* Product Section */}
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 xl:px-0">
-        <div className="grid gap-8 xl:grid-cols-2">
+        <div className="grid gap-8 4xl:gap-20 xl:grid-cols-2">
           {/* Product Gallery */}
           <ProductGallery />
 

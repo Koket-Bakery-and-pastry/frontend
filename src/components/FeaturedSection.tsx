@@ -1,55 +1,41 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
 import { Button } from "./ui/button";
 import Header from "./Header";
 import Link from "next/link";
+import { getProducts, Product } from "@/app/services/productService";
 
 function FeaturedSection() {
-  const products = [
-    {
-      id: 1,
-      image: "/assets/img1.png",
-      name: "Mocha Cake",
-      description: "Chocolate Drip Cake with Mocha Buttercream Frosting",
-      price: "$500",
-    },
-    {
-      id: 2,
-      image: "/assets/img2.png",
-      name: "Vanilla Cake",
-      description: "Classic Vanilla Cake with Buttercream Frosting",
-      price: "$450",
-    },
-    {
-      id: 3,
-      image: "/assets/img2.png",
-      name: "Red Velvet Cake",
-      description: "Rich Red Velvet Cake with Cream Cheese Frosting",
-      price: "$550",
-    },
-    {
-      id: 4,
-      image: "/assets/img2.png",
-      name: "Lemon Cake",
-      description: "Zesty Lemon Cake with Lemon Buttercream Frosting",
-      price: "$480",
-    },
-    {
-      id: 5,
-      image: "/assets/img2.png",
-      name: "Carrot Cake",
-      description: "Moist Carrot Cake with Cream Cheese Frosting",
-      price: "$520",
-    },
-    {
-      id: 6,
-      image: "/assets/img2.png",
-      name: "Chocolate Cake",
-      description: "Decadent Chocolate Cake with Chocolate Ganache",
-      price: "$600",
-    },
-  ];
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await getProducts();
+        setProducts(data);
+      } catch (err: any) {
+        setError("Failed to load products.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-screen bg-background">
+        <p className="text-foreground">loading ...</p>
+      </div>
+    );
+  if (error)
+    return <p className="text-center py-16 text-destructive">{error}</p>;
 
   return (
     <section className=" section-spacing bg-background mt-8">
@@ -57,21 +43,21 @@ function FeaturedSection() {
         <Header text="Featured Products" />
       </div>
 
-      <div className=" 2xl:my-16 grid grid-cols-2  2xl:grid-cols-3 gap-6 3xl:gap-10 ">
+      <div className=" 2xl:my-16 grid grid-cols-1 sm:grid-cols-2  2xl:grid-cols-3 gap-6 3xl:gap-10 ">
         {products.map((product, index) => (
           <div
             className={`${
               index === 1 || index === 4 ? "2xl:-mt-28" : " "
-            } mx-auto`}
+            } sm:mx-auto `}
             key={product.id}
           >
             <ProductCard
               key={product.id}
-              image={product.image}
-              name={product.name}
-              description={product.description}
-              price={product.price}
-              productId={product.id.toString()}
+              image={"assets/img1.png"}
+              name={"Chocolate Cake"}
+              description={"Moist Carrot Cake with Cream Cheese Frosting"}
+              price={product.price ? `$${product.price}` : "$0.00"}
+              productId={product._id}
             />
           </div>
         ))}
