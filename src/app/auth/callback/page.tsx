@@ -1,30 +1,37 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
 
 export default function AuthCallback() {
   const router = useRouter();
   const { login } = useAuth();
+  const hasRun = useRef(false); // 👈 prevents multiple runs
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const userParam = urlParams.get("user");
-    // const accessToken = urlParams.get("accessToken");
-    // const refreshToken = urlParams.get("refreshToken");
-    const tokens = urlParams.get("token");
+    if (hasRun.current) return;
+    hasRun.current = true; // ✅ runs only once even in strict mode
 
-    if (userParam && tokens) {
+    const handleAuth = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const userParam = urlParams.get("user");
+      const tokens = urlParams.get("token");
+
+      if (!userParam || !tokens) {
+        console.error("❌ Missing user or tokens in callback URL");
+        router.replace("/auth/login");
+        return;
+      }
+
       try {
         const parsedUser = JSON.parse(decodeURIComponent(userParam));
         const parsedTokens = JSON.parse(decodeURIComponent(tokens));
 
-        // Determine role
         const role: "admin" | "user" =
           parsedUser.role === "admin" ? "admin" : "user";
 
-        // Store in context (and automatically in localStorage if your context does that)
+        // Save in context
         login(
           {
             role,
@@ -36,16 +43,17 @@ export default function AuthCallback() {
 
         console.log("✅ Google login successful:", parsedUser);
 
-        // Redirect based on role
-        router.push(role === "admin" ? "/admin" : "/");
+        // Small delay ensures context is updated before redirect
+        setTimeout(() => {
+          router.replace(role === "admin" ? "/admin" : "/");
+        }, 300);
       } catch (error) {
         console.error("❌ Failed to parse user data:", error);
-        router.push("/auth/login");
+        router.replace("/auth/login");
       }
-    } else {
-      console.error("❌ Missing user or tokens in callback URL");
-      router.push("/auth/login");
-    }
+    };
+
+    handleAuth();
   }, [login, router]);
 
   return (
