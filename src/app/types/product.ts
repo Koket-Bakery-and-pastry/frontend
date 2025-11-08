@@ -22,6 +22,7 @@ export type CreateProductDto = {
   category_id: string;
   subcategory_id: string;
   description?: string;
+  is_pieceable?: boolean;
 };
 
 export type UpdateProductDto = {

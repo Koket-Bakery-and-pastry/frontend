@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { CreateProductDto } from "../../../types/product";
 
 const API_BASE_URL = "http://localhost:5001";
 
@@ -15,6 +14,24 @@ interface SubCategory {
   _id: string;
   name: string;
   category_id: string;
+  status: string;
+  kilo_to_price_map?: Record<string, number>;
+  upfront_payment: number;
+  is_pieceable: boolean;
+  price: number;
+  created_at: string;
+}
+
+interface CreateProductDto {
+  name: string;
+  description: string;
+  price: number;
+  categoryId: string;
+  subcategoryId: string;
+  images: string[];
+  stock: number;
+  size?: string; // For weight-based products
+  quantity?: number; // For pieceable products
 }
 
 export default function AddProductPage() {
@@ -23,15 +40,22 @@ export default function AddProductPage() {
   const [subcategories, setSubcategories] = useState<SubCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [productData, setProductData] = useState<CreateProductDto>({
     name: "",
     description: "",
-    category_id: "",
-    subcategory_id: "",
-    image_url: "",
+    price: 0,
+    categoryId: "",
+    subcategoryId: "",
+    images: [],
+    stock: 0,
+    size: "",
+    quantity: 1,
   });
 
+  const [selectedSubcategory, setSelectedSubcategory] =
+    useState<SubCategory | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState("");
 
@@ -40,33 +64,40 @@ export default function AddProductPage() {
     const fetchData = async () => {
       try {
         setLoading(true);
+        setError(null);
 
         // Fetch categories
         const categoriesResponse = await fetch(
           `${API_BASE_URL}/api/v1/categories`
         );
-        if (categoriesResponse.ok) {
-          const categoriesData = await categoriesResponse.json();
-          setCategories(
-            categoriesData.categories || categoriesData.data || categoriesData
-          );
+        if (!categoriesResponse.ok) {
+          throw new Error("Failed to fetch categories");
         }
+        const categoriesData = await categoriesResponse.json();
+        setCategories(
+          categoriesData.categories || categoriesData.data || categoriesData
+        );
 
         // Fetch subcategories
         const subcategoriesResponse = await fetch(
           `${API_BASE_URL}/api/v1/subcategories`
         );
-        if (subcategoriesResponse.ok) {
-          const subcategoriesData = await subcategoriesResponse.json();
-          setSubcategories(
-            subcategoriesData.subcategories ||
-              subcategoriesData.data ||
-              subcategoriesData
-          );
+        if (!subcategoriesResponse.ok) {
+          throw new Error("Failed to fetch subcategories");
         }
+        const subcategoriesData = await subcategoriesResponse.json();
+        setSubcategories(
+          subcategoriesData.subcategories ||
+            subcategoriesData.data ||
+            subcategoriesData
+        );
       } catch (error) {
         console.error("Error fetching data:", error);
-        alert("Failed to load categories and subcategories");
+        setError(
+          error instanceof Error
+            ? error.message
+            : "Failed to load categories and subcategories"
+        );
       } finally {
         setLoading(false);
       }
@@ -75,13 +106,54 @@ export default function AddProductPage() {
     fetchData();
   }, []);
 
+  // Handle subcategory selection
+  useEffect(() => {
+    if (productData.subcategoryId) {
+      const subcategory = subcategories.find(
+        (sub) => sub._id === productData.subcategoryId
+      );
+      setSelectedSubcategory(subcategory || null);
+
+      // Reset size and quantity when subcategory changes
+      setProductData((prev) => ({
+        ...prev,
+        size: "",
+        quantity: 1,
+        price: subcategory?.price || 0,
+      }));
+    } else {
+      setSelectedSubcategory(null);
+    }
+  }, [productData.subcategoryId, subcategories]);
+
   // Clear subcategory when category changes
   useEffect(() => {
-    setProductData((prev) => ({ ...prev, subcategory_id: "" }));
-  }, [productData.category_id]);
+    setProductData((prev) => ({
+      ...prev,
+      subcategoryId: "",
+      size: "",
+      quantity: 1,
+      price: 0,
+    }));
+    setSelectedSubcategory(null);
+  }, [productData.categoryId]);
 
-  const handleInputChange = (field: keyof CreateProductDto, value: string) => {
+  const handleInputChange = (
+    field: keyof CreateProductDto,
+    value: string | number
+  ) => {
     setProductData((prev) => ({ ...prev, [field]: value }));
+
+    // Recalculate price if size changes for weight-based products
+    if (field === "size" && selectedSubcategory?.kilo_to_price_map && value) {
+      const newPrice = selectedSubcategory.kilo_to_price_map[value as string];
+      if (newPrice) {
+        setProductData((prev) => ({ ...prev, price: newPrice }));
+      }
+    }
+
+    // Clear error when user starts typing
+    if (error) setError(null);
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -92,7 +164,20 @@ export default function AddProductPage() {
       return;
     }
 
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      setError("Please select a valid image file");
+      return;
+    }
+
+    // Validate file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Image size should be less than 5MB");
+      return;
+    }
+
     setImageFile(file);
+    setError(null);
 
     // Create preview URL
     const previewUrl = URL.createObjectURL(file);
@@ -106,44 +191,86 @@ export default function AddProductPage() {
       "product-image"
     ) as HTMLInputElement;
     if (fileInput) fileInput.value = "";
+    setError(null);
+  };
+
+  const uploadImage = async (file: File): Promise<string> => {
+    // For now, we'll create a placeholder URL
+    // In a real application, you would upload to your CDN/cloud storage
+    return URL.createObjectURL(file);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
+    setError(null);
 
     // Validation
     if (
-      !(productData.name ?? "").trim() ||
-      !(productData.description ?? "").trim() ||
-      !productData.category_id ||
-      !productData.subcategory_id
+      !productData.name?.trim() ||
+      !productData.description?.trim() ||
+      !productData.categoryId ||
+      !productData.subcategoryId ||
+      productData.price <= 0
     ) {
-      alert(
+      setError(
         "Please fill all required fields: Product Name, Description, Category, and Subcategory"
       );
       setSubmitting(false);
       return;
     }
 
+    // Additional validation based on subcategory type
+    if (!selectedSubcategory?.is_pieceable && !productData.size) {
+      setError("Please select a size for this product");
+      setSubmitting(false);
+      return;
+    }
+
+    if (
+      selectedSubcategory?.is_pieceable &&
+      (!productData.quantity || productData.quantity < 1)
+    ) {
+      setError("Please enter a valid quantity");
+      setSubmitting(false);
+      return;
+    }
+
     try {
-      const formData = new FormData();
+      let imageUrls: string[] = [];
 
-      // Append product data
-      formData.append("name", productData.name ?? "");
-      formData.append("description", productData.description ?? "");
-      formData.append("category_id", productData.category_id ?? "");
-      formData.append("subcategory_id", productData.subcategory_id ?? "");
-
-      // Append image file if selected
+      // Upload image if selected
       if (imageFile) {
-        formData.append("image", imageFile);
+        const imageUrl = await uploadImage(imageFile);
+        imageUrls = [imageUrl];
       }
+
+      // Prepare request body according to API schema
+      const requestBody = {
+        name: productData.name,
+        description: productData.description,
+        price: productData.price,
+        categoryId: productData.categoryId,
+        subcategoryId: productData.subcategoryId,
+        images: imageUrls,
+        stock: productData.stock || 0,
+        // Include additional fields based on subcategory type
+        ...(selectedSubcategory && {
+          is_pieceable: selectedSubcategory.is_pieceable,
+          upfront_payment: selectedSubcategory.upfront_payment,
+          ...(!selectedSubcategory.is_pieceable &&
+            productData.size && { size: productData.size }),
+          ...(selectedSubcategory.is_pieceable &&
+            productData.quantity && { quantity: productData.quantity }),
+        }),
+      };
 
       const response = await fetch(`${API_BASE_URL}/api/v1/products`, {
         method: "POST",
-        body: formData,
-        // Note: Don't set Content-Type header when using FormData - browser will set it automatically with boundary
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
@@ -156,7 +283,7 @@ export default function AddProductPage() {
       router.push("/admin/products");
     } catch (error) {
       console.error("Error creating product:", error);
-      alert(
+      setError(
         error instanceof Error ? error.message : "Failed to create product"
       );
     } finally {
@@ -168,17 +295,28 @@ export default function AddProductPage() {
     setProductData({
       name: "",
       description: "",
-      category_id: "",
-      subcategory_id: "",
-      image_url: "",
+      price: 0,
+      categoryId: "",
+      subcategoryId: "",
+      images: [],
+      stock: 0,
+      size: "",
+      quantity: 1,
     });
+    setSelectedSubcategory(null);
     setImageFile(null);
     setImagePreview("");
+    setError(null);
   };
 
   // Get filtered subcategories based on selected category
-  const filteredSubcategories = productData.category_id
-    ? subcategories.filter((sub) => sub.category_id === productData.category_id)
+  const filteredSubcategories = productData.categoryId
+    ? subcategories.filter((sub) => sub.category_id === productData.categoryId)
+    : [];
+
+  // Get available sizes for weight-based products
+  const availableSizes = selectedSubcategory?.kilo_to_price_map
+    ? Object.keys(selectedSubcategory.kilo_to_price_map)
     : [];
 
   if (loading) {
@@ -203,6 +341,13 @@ export default function AddProductPage() {
           <p className="text-sm text-gray-600 mb-6">
             Fill in the details to add a new product to your shop
           </p>
+
+          {/* Error Message */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-700 text-sm">{error}</p>
+            </div>
+          )}
 
           {/* Product Name */}
           <div className="mb-4">
@@ -239,8 +384,8 @@ export default function AddProductPage() {
               Category <span className="text-red-500">*</span>
             </label>
             <select
-              value={productData.category_id}
-              onChange={(e) => handleInputChange("category_id", e.target.value)}
+              value={productData.categoryId}
+              onChange={(e) => handleInputChange("categoryId", e.target.value)}
               className="w-full border rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-pink-200"
               required
             >
@@ -259,29 +404,140 @@ export default function AddProductPage() {
               Subcategory <span className="text-red-500">*</span>
             </label>
             <select
-              value={productData.subcategory_id}
+              value={productData.subcategoryId}
               onChange={(e) =>
-                handleInputChange("subcategory_id", e.target.value)
+                handleInputChange("subcategoryId", e.target.value)
               }
               className="w-full border rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-pink-200"
               disabled={
-                !productData.category_id || filteredSubcategories.length === 0
+                !productData.categoryId || filteredSubcategories.length === 0
               }
               required
             >
               <option value="">
-                {productData.category_id && filteredSubcategories.length > 0
+                {productData.categoryId && filteredSubcategories.length > 0
                   ? "Select subcategory"
-                  : productData.category_id
+                  : productData.categoryId
                   ? "No subcategories available"
                   : "Select a category first"}
               </option>
               {filteredSubcategories.map((subcategory) => (
                 <option key={subcategory._id} value={subcategory._id}>
-                  {subcategory.name}
+                  {subcategory.name}{" "}
+                  {subcategory.is_pieceable ? "(Pieceable)" : "(Weight-based)"}
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* Subcategory Information */}
+          {selectedSubcategory && (
+            <div className="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <h3 className="font-medium text-blue-800 mb-2">
+                Subcategory Details
+              </h3>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div>
+                  <span className="text-gray-600">Type:</span>
+                  <span className="ml-2 font-medium">
+                    {selectedSubcategory.is_pieceable
+                      ? "Pieceable"
+                      : "Weight-based"}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-gray-600">Upfront Payment:</span>
+                  <span className="ml-2 font-medium">
+                    ${selectedSubcategory.upfront_payment}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-gray-600">Base Price:</span>
+                  <span className="ml-2 font-medium">
+                    ${selectedSubcategory.price}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-gray-600">Status:</span>
+                  <span className="ml-2 font-medium capitalize">
+                    {selectedSubcategory.status}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Size Selection for Weight-based Products */}
+          {selectedSubcategory &&
+            !selectedSubcategory.is_pieceable &&
+            availableSizes.length > 0 && (
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">
+                  Select Size <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={productData.size}
+                  onChange={(e) => handleInputChange("size", e.target.value)}
+                  className="w-full border rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-pink-200"
+                  required
+                >
+                  <option value="">Select a size</option>
+                  {availableSizes.map((size) => (
+                    <option key={size} value={size}>
+                      {size} - ${selectedSubcategory.kilo_to_price_map![size]}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+          {/* Quantity for Pieceable Products */}
+          {selectedSubcategory && selectedSubcategory.is_pieceable && (
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">
+                Quantity <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                min="1"
+                value={productData.quantity}
+                onChange={(e) =>
+                  handleInputChange("quantity", parseInt(e.target.value))
+                }
+                className="w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-200"
+                required
+              />
+            </div>
+          )}
+
+          {/* Price Display */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">
+              Price <span className="text-red-500">*</span>
+            </label>
+            <div className="w-full border rounded-lg px-4 py-2 text-sm bg-gray-50">
+              ${productData.price.toFixed(2)}
+            </div>
+            <p className="text-xs text-gray-500 mt-1">
+              {selectedSubcategory?.is_pieceable
+                ? `Price per piece: $${selectedSubcategory.price}`
+                : "Price is determined by selected size"}
+            </p>
+          </div>
+
+          {/* Stock */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">Stock</label>
+            <input
+              type="number"
+              min="0"
+              value={productData.stock}
+              onChange={(e) =>
+                handleInputChange("stock", parseInt(e.target.value))
+              }
+              placeholder="0"
+              className="w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-200"
+            />
           </div>
 
           {/* Image Upload */}
@@ -296,6 +552,9 @@ export default function AddProductPage() {
               onChange={handleImageChange}
               className="w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-200 bg-white"
             />
+            <p className="text-xs text-gray-500 mt-1">
+              Supported formats: JPG, PNG, WebP. Max size: 5MB
+            </p>
 
             {imagePreview && (
               <div className="mt-3 flex items-start gap-3">
