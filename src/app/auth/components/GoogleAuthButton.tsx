@@ -1,16 +1,22 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
- function GoogleAuthButton() {
+function GoogleAuthButton() {
+  const router = useRouter();
+
+  const handleGoogleLogin = () => {
+    console.log("[v1] Google auth clicked");
+    // Use window.location.assign to ensure a proper redirect
+    router.push("https://backend-om79.onrender.com/api/v1/auth/google");
+  };
+
   return (
     <Button
       variant="outline"
       className="w-full bg-white border-gray-300 hover:bg-gray-50 text-gray-700 font-medium"
-      onClick={() => {
-        // Handle Google authentication
-        console.log("[v0] Google auth clicked")
-      }}
+      onClick={handleGoogleLogin}
     >
       <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
         <path
@@ -32,6 +38,7 @@ import { Button } from "@/components/ui/button"
       </svg>
       Continue with Google
     </Button>
-  )
+  );
 }
-export default GoogleAuthButton
+
+export default GoogleAuthButton;
