@@ -283,11 +283,11 @@ function Navbar() {
                 className="bg-primary hover:bg-primary-hover text-primary-foreground font-semibold px-2 md:px-4 py-1 rounded-full transition-colors cursor-pointer text-xs md:text-sm"
               >
                 Login
-              </Link>
+              </Link> 
             </>
           )}
 
-          {/* ===== AFTER LOGIN ===== */}
+          {/* ===== AFTER LOGIN  ===== */}
           {isLoggedIn && (
             <>
               {/* ✅ USER: Cart + Dropdown */}
