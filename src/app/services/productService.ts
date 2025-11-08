@@ -1,4 +1,3 @@
-// services/productService.ts
 import axios from "axios";
 
 const API_URL = "https://backend-om79.onrender.com/api/v1/products";
@@ -8,8 +7,17 @@ export interface Product {
   name: string;
   image_url?: string;
   description: string;
-  price?: string; // optional, depending on your backend
+  price?: number;
   is_pieceable: boolean;
+  category_id: {
+    _id: string;
+    name: string;
+    description: string;
+  };
+  subcategory_id?: {
+    _id: string;
+    name: string;
+  };
   [key: string]: any;
 }
 

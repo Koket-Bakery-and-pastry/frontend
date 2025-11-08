@@ -1,13 +1,10 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { ProductHeader, ProductFiltration } from "./components";
 import { PageHeader, ProductCard } from "@/components";
+import ProductFiltration from "./components/ProductFiltration";
 import { ProductFilters } from "../types/ProductFilters";
-import {
-  getProducts,
-  Product as APIProduct,
-} from "@/app/services/productService";
+import { getProducts, Product as APIProduct } from "@/app/services/productService";
 
 const PAGE_SIZE = 6;
 
@@ -15,7 +12,7 @@ function ProductsPage() {
   const [allProducts, setAllProducts] = useState<APIProduct[]>([]);
   const [filters, setFilters] = useState<ProductFilters>({
     category: "All Products",
-    subcategory: "All Products",
+    subcategory: "All Subcategories",
     search: "",
     sort: "name",
   });
@@ -23,7 +20,7 @@ function ProductsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch products from API
+  // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
@@ -37,33 +34,33 @@ function ProductsPage() {
         setLoading(false);
       }
     };
+
     fetchProducts();
   }, []);
 
-  // Filter, search, and sort
+  // Filtering logic
   const filteredProducts = useMemo(() => {
     let products = [...allProducts];
 
-    // Filter by category
+    // Category filter
     if (filters.category !== "All Products") {
       products = products.filter(
-        (p) => p.category?.toLowerCase() === filters.category.toLowerCase()
+        (p) =>
+          p.category_id?.name?.trim().toLowerCase() ===
+          filters.category.trim().toLowerCase()
       );
     }
 
-    // Filter by subcategory
-    if (
-      filters.subcategory &&
-      filters.subcategory !== "All Products" &&
-      !filters.subcategory.startsWith("All ")
-    ) {
+    // Subcategory filter
+    if (filters.subcategory && filters.subcategory !== "All Subcategories") {
       products = products.filter(
         (p) =>
-          p.subcategory?.toLowerCase() === filters.subcategory.toLowerCase()
+          p.subcategory_id?.name?.trim().toLowerCase() ===
+          filters.subcategory.trim().toLowerCase()
       );
     }
 
-    // Search by name or description
+    // Search filter
     if (filters.search.trim() !== "") {
       const q = filters.search.toLowerCase();
       products = products.filter(
@@ -73,19 +70,11 @@ function ProductsPage() {
       );
     }
 
-    // Sort
+    // Sorting
     if (filters.sort === "priceAsc") {
-      products.sort((a, b) => {
-        const pa = Number(a.price ?? 0);
-        const pb = Number(b.price ?? 0);
-        return pa - pb;
-      });
+      products.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
     } else if (filters.sort === "priceDesc") {
-      products.sort((a, b) => {
-        const pa = Number(a.price ?? 0);
-        const pb = Number(b.price ?? 0);
-        return pb - pa;
-      });
+      products.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
     } else {
       products.sort((a, b) => a.name.localeCompare(b.name));
     }
@@ -93,17 +82,14 @@ function ProductsPage() {
     return products;
   }, [filters, allProducts]);
 
-  // Pagination logic
+  // Pagination
   const totalPages = Math.ceil(filteredProducts.length / PAGE_SIZE);
   const paginatedProducts = filteredProducts.slice(
     (page - 1) * PAGE_SIZE,
     page * PAGE_SIZE
   );
 
-  // Reset page when filters change
-  useEffect(() => {
-    setPage(1);
-  }, [filters]);
+  useEffect(() => setPage(1), [filters]);
 
   return (
     <div className="bg-background-2 min-h-screen">
@@ -138,10 +124,20 @@ function ProductsPage() {
           paginatedProducts.map((product) => (
             <ProductCard
               key={product._id}
-              image={"/assets/img1.png"}
+              image={
+                product.image_url
+                  ? `https://backend-om79.onrender.com${product.image_url}`
+                  : "/assets/img1.png"
+              }
               name={product.name}
               description={product.description}
-              price={product.price ? `$${product.price}` : "$0.00"}
+              price={
+                product.price
+                  ? `$${product.price}`
+                  : product.is_pieceable
+                  ? "Per Piece"
+                  : "By Kilo"
+              }
               productId={product._id}
             />
           ))}
