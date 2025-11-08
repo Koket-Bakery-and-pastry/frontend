@@ -1,14 +1,26 @@
 "use client";
-import { useState } from "react";
-import { Category, SubCategory } from "../../types/category";
+import { useState, useEffect } from "react";
+import {
+  Category,
+  CreateCategoryDto,
+  CreateSubCategoryDto,
+  UpdateSubCategoryDto,
+} from "../../types/category";
 import HeroSection from "../components/HeroSection";
 import CategoryForm from "../components/CategoryForm";
+import SubCategoryForm, {
+  SubCategoryFormData,
+} from "../components/SubCategoryForm";
 import CategoriesGrid from "../components/CategoriesGrid";
 import ConfirmationModal from "../components/ConfirmationModal";
-import { initialCategories } from "@/app/data/mockCategories";
+
+const API_BASE_URL = "http://localhost:5001";
 
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [addingSubCategory, setAddingSubCategory] = useState<Category | null>(
     null
@@ -16,6 +28,7 @@ export default function CategoriesPage() {
   const [editingSubCategory, setEditingSubCategory] = useState<{
     category: Category;
     subCategoryId: string;
+    subCategoryData: any;
   } | null>(null);
 
   // Delete modals
@@ -26,15 +39,64 @@ export default function CategoriesPage() {
     subCategoryId: string;
   } | null>(null);
 
-  // Add new category
-  const handleAddCategory = (name: string) => {
-    const newCategory: Category = {
-      id: Date.now().toString(),
-      name,
-      subcategories: [],
-      createdAt: new Date().toISOString(),
+  // Fetch data from API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const categoriesResponse = await fetch(
+          `${API_BASE_URL}/api/v1/categories`
+        );
+        if (!categoriesResponse.ok)
+          throw new Error("Failed to fetch categories");
+
+        const categoriesData = await categoriesResponse.json();
+        setCategories(
+          categoriesData.categories || categoriesData.data || categoriesData
+        );
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setError(err instanceof Error ? err.message : "Failed to fetch data");
+      } finally {
+        setLoading(false);
+      }
     };
-    setCategories((prev) => [...prev, newCategory]);
+
+    fetchData();
+  }, []);
+
+  // Add new category
+  const handleAddCategory = async (name: string) => {
+    try {
+      const createCategoryDto: CreateCategoryDto = {
+        name: name.trim(),
+        description: `Category for ${name}`,
+      };
+
+      const response = await fetch(`${API_BASE_URL}/api/v1/categories`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(createCategoryDto),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to create category");
+      }
+
+      const newCategory = await response.json();
+      setCategories((prev) => [
+        ...prev,
+        newCategory.category || newCategory.data || newCategory,
+      ]);
+    } catch (err) {
+      console.error("Error creating category:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to create category"
+      );
+    }
   };
 
   // Edit category
@@ -42,24 +104,79 @@ export default function CategoriesPage() {
     setEditingCategory(category);
   };
 
-  const handleUpdateCategory = (name: string) => {
-    if (editingCategory) {
+  const handleUpdateCategory = async (name: string) => {
+    if (!editingCategory) return;
+
+    try {
+      const updateCategoryDto = {
+        name: name.trim(),
+        description: `Updated category for ${name}`,
+      };
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/v1/categories/${editingCategory._id}`,
+        {
+          method: "PUT", // Changed to PUT based on your route
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updateCategoryDto),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update category");
+      }
+
+      const updatedCategory = await response.json();
       setCategories((prev) =>
         prev.map((cat) =>
-          cat.id === editingCategory.id ? { ...cat, name } : cat
+          cat._id === editingCategory._id
+            ? {
+                ...cat,
+                ...(updatedCategory.category ||
+                  updatedCategory.data ||
+                  updatedCategory),
+              }
+            : cat
         )
       );
       setEditingCategory(null);
+    } catch (err) {
+      console.error("Error updating category:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to update category"
+      );
     }
   };
 
   // Delete category
-  const handleDeleteCategory = () => {
-    if (deleteCategoryModal) {
+  const handleDeleteCategory = async () => {
+    if (!deleteCategoryModal) return;
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/v1/categories/${deleteCategoryModal._id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to delete category");
+      }
+
       setCategories((prev) =>
-        prev.filter((cat) => cat.id !== deleteCategoryModal.id)
+        prev.filter((cat) => cat._id !== deleteCategoryModal._id)
       );
       setDeleteCategoryModal(null);
+    } catch (err) {
+      console.error("Error deleting category:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to delete category"
+      );
     }
   };
 
@@ -68,81 +185,219 @@ export default function CategoriesPage() {
     setAddingSubCategory(category);
   };
 
-  const handleCreateSubCategory = (name: string) => {
-    if (addingSubCategory) {
-      const newSubCategory: SubCategory = {
-        id: `${addingSubCategory.id}-${Date.now()}`,
-        name,
-        parentCategory: addingSubCategory.id,
-        createdAt: new Date().toISOString(),
+  const handleCreateSubCategory = async (formData: SubCategoryFormData) => {
+    if (!addingSubCategory) return;
+
+    try {
+      // Convert array of size-price objects to record
+      const kilo_to_price_map: Record<string, number> = {};
+      formData.kilo_to_price_map.forEach((item) => {
+        if (item.size.trim() && item.price > 0) {
+          kilo_to_price_map[item.size] = item.price;
+        }
+      });
+
+      const createSubCategoryDto: CreateSubCategoryDto = {
+        category_id: addingSubCategory._id,
+        name: formData.name.trim(),
+        status: formData.status,
+        upfront_payment: formData.upfront_payment,
+        is_pieceable: formData.is_pieceable,
+        price: formData.price,
+        ...(!formData.is_pieceable &&
+          Object.keys(kilo_to_price_map).length > 0 && { kilo_to_price_map }),
       };
 
-      setCategories((prev) =>
-        prev.map((cat) =>
-          cat.id === addingSubCategory.id
-            ? { ...cat, subcategories: [...cat.subcategories, newSubCategory] }
-            : cat
-        )
+      const response = await fetch(`${API_BASE_URL}/api/v1/subcategories`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(createSubCategoryDto),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to create sub-category");
+      }
+
+      const newSubCategory = await response.json();
+
+      // Refresh categories to get updated data with subcategories
+      const categoriesResponse = await fetch(
+        `${API_BASE_URL}/api/v1/categories`
       );
+      if (categoriesResponse.ok) {
+        const categoriesData = await categoriesResponse.json();
+        setCategories(
+          categoriesData.categories || categoriesData.data || categoriesData
+        );
+      }
+
       setAddingSubCategory(null);
+    } catch (err) {
+      console.error("Error creating sub-category:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to create sub-category"
+      );
     }
   };
 
   // Edit sub-category
   const handleEditSubCategory = (category: Category, subCategoryId: string) => {
-    setEditingSubCategory({ category, subCategoryId });
+    const subCategory = category.subcategories?.find(
+      (sub) => sub._id === subCategoryId
+    );
+    if (subCategory) {
+      // Convert kilo_to_price_map object to array for the form
+      const kilo_to_price_map = subCategory.kilo_to_price_map
+        ? Object.entries(subCategory.kilo_to_price_map).map(
+            ([size, price]) => ({
+              size,
+              price,
+            })
+          )
+        : [{ size: "", price: 0 }];
+
+      setEditingSubCategory({
+        category,
+        subCategoryId,
+        subCategoryData: {
+          name: subCategory.name,
+          status: subCategory.status,
+          upfront_payment: subCategory.upfront_payment,
+          price: subCategory.price,
+          is_pieceable: subCategory.is_pieceable,
+          kilo_to_price_map,
+        },
+      });
+    }
   };
 
-  const handleUpdateSubCategory = (name: string) => {
-    if (editingSubCategory) {
-      setCategories((prev) =>
-        prev.map((cat) =>
-          cat.id === editingSubCategory.category.id
-            ? {
-                ...cat,
-                subcategories: cat.subcategories.map((sub) =>
-                  sub.id === editingSubCategory.subCategoryId
-                    ? { ...sub, name }
-                    : sub
-                ),
-              }
-            : cat
-        )
+  const handleUpdateSubCategory = async (formData: SubCategoryFormData) => {
+    if (!editingSubCategory) return;
+
+    try {
+      // Convert array of size-price objects to record
+      const kilo_to_price_map: Record<string, number> = {};
+      formData.kilo_to_price_map.forEach((item) => {
+        if (item.size.trim() && item.price > 0) {
+          kilo_to_price_map[item.size] = item.price;
+        }
+      });
+
+      const updateSubCategoryDto: UpdateSubCategoryDto = {
+        name: formData.name.trim(),
+        status: formData.status,
+        upfront_payment: formData.upfront_payment,
+        is_pieceable: formData.is_pieceable,
+        price: formData.price,
+        ...(!formData.is_pieceable &&
+          Object.keys(kilo_to_price_map).length > 0 && { kilo_to_price_map }),
+      };
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/v1/subcategories/${editingSubCategory.subCategoryId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updateSubCategoryDto),
+        }
       );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update sub-category");
+      }
+
+      const updatedSubCategory = await response.json();
+
+      // Refresh categories to get updated data
+      const categoriesResponse = await fetch(
+        `${API_BASE_URL}/api/v1/categories`
+      );
+      if (categoriesResponse.ok) {
+        const categoriesData = await categoriesResponse.json();
+        setCategories(
+          categoriesData.categories || categoriesData.data || categoriesData
+        );
+      }
+
       setEditingSubCategory(null);
+    } catch (err) {
+      console.error("Error updating sub-category:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to update sub-category"
+      );
     }
   };
 
   // Delete sub-category
-  const handleDeleteSubCategory = () => {
-    if (deleteSubCategoryModal) {
-      setCategories((prev) =>
-        prev.map((cat) =>
-          cat.id === deleteSubCategoryModal.category.id
-            ? {
-                ...cat,
-                subcategories: cat.subcategories.filter(
-                  (sub) => sub.id !== deleteSubCategoryModal.subCategoryId
-                ),
-              }
-            : cat
-        )
+  const handleDeleteSubCategory = async () => {
+    if (!deleteSubCategoryModal) return;
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/v1/subcategories/${deleteSubCategoryModal.subCategoryId}`,
+        {
+          method: "DELETE",
+        }
       );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to delete sub-category");
+      }
+
+      // Refresh categories to get updated data
+      const categoriesResponse = await fetch(
+        `${API_BASE_URL}/api/v1/categories`
+      );
+      if (categoriesResponse.ok) {
+        const categoriesData = await categoriesResponse.json();
+        setCategories(
+          categoriesData.categories || categoriesData.data || categoriesData
+        );
+      }
+
       setDeleteSubCategoryModal(null);
+    } catch (err) {
+      console.error("Error deleting sub-category:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to delete sub-category"
+      );
     }
   };
 
-  // Get current sub-category name for editing
-  const getEditingSubCategoryName = () => {
-    if (!editingSubCategory) return "";
-    const category = categories.find(
-      (cat) => cat.id === editingSubCategory.category.id
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading categories...</p>
+        </div>
+      </div>
     );
-    const subCategory = category?.subcategories.find(
-      (sub) => sub.id === editingSubCategory.subCategoryId
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-red-600 mb-2">Error</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-md"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
     );
-    return subCategory?.name || "";
-  };
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -198,34 +453,24 @@ export default function CategoriesPage() {
 
             {/* Add Sub-category Form */}
             {addingSubCategory && (
-              <div className="mb-6 sm:mb-8 p-3 sm:p-4 border border-gray-200 rounded-lg bg-white">
-                <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">
-                  Add Sub-category to{" "}
-                  <span className="text-[#C967AC]">
-                    {addingSubCategory.name}
-                  </span>
-                </h3>
-                <CategoryForm
+              <div className="mb-6 sm:mb-8 p-4 sm:p-6 border border-gray-200 rounded-lg bg-white">
+                <SubCategoryForm
                   onSubmit={handleCreateSubCategory}
-                  placeholder="Enter sub-category name"
-                  buttonText="Add Sub-category"
                   onCancel={() => setAddingSubCategory(null)}
+                  categoryName={addingSubCategory.name}
                 />
               </div>
             )}
 
             {/* Edit Sub-category Form */}
             {editingSubCategory && (
-              <div className="mb-6 sm:mb-8 p-3 sm:p-4 border border-gray-200 rounded-lg bg-white">
-                <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">
-                  Edit Sub-category
-                </h3>
-                <CategoryForm
+              <div className="mb-6 sm:mb-8 p-4 sm:p-6 border border-gray-200 rounded-lg bg-white">
+                <SubCategoryForm
                   onSubmit={handleUpdateSubCategory}
-                  placeholder="Enter sub-category name"
-                  buttonText="Update Sub-category"
-                  initialValue={getEditingSubCategoryName()}
                   onCancel={() => setEditingSubCategory(null)}
+                  initialData={editingSubCategory.subCategoryData}
+                  categoryName={editingSubCategory.category.name}
+                  isEditing={true}
                 />
               </div>
             )}
