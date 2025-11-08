@@ -2,30 +2,42 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function AuthCallback() {
   const router = useRouter();
+  const { login } = useAuth();
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const userParam = urlParams.get("user");
-    const accessToken = urlParams.get("accessToken");
-    const refreshToken = urlParams.get("refreshToken");
+    // const accessToken = urlParams.get("accessToken");
+    // const refreshToken = urlParams.get("refreshToken");
+    const tokens = urlParams.get("token");
 
-    if (userParam && accessToken && refreshToken) {
+    if (userParam && tokens) {
       try {
         const parsedUser = JSON.parse(decodeURIComponent(userParam));
+        const parsedTokens = JSON.parse(decodeURIComponent(tokens));
 
-        // Save to localStorage
-        localStorage.setItem("user", JSON.stringify(parsedUser));
-        localStorage.setItem(
-          "tokens",
-          JSON.stringify({ accessToken, refreshToken })
+        // Determine role
+        const role: "admin" | "user" =
+          parsedUser.role === "admin" ? "admin" : "user";
+
+        // Store in context (and automatically in localStorage if your context does that)
+        login(
+          {
+            role,
+            name: parsedUser.name,
+            email: parsedUser.email,
+          },
+          parsedTokens
         );
 
-        console.log("✅ User logged in:", parsedUser);
+        console.log("✅ Google login successful:", parsedUser);
 
-        router.push("/"); // redirect to homepage or dashboard
+        // Redirect based on role
+        router.push(role === "admin" ? "/admin" : "/");
       } catch (error) {
         console.error("❌ Failed to parse user data:", error);
         router.push("/auth/login");
@@ -34,7 +46,7 @@ export default function AuthCallback() {
       console.error("❌ Missing user or tokens in callback URL");
       router.push("/auth/login");
     }
-  }, [router]);
+  }, [login, router]);
 
   return (
     <div className="flex h-screen items-center justify-center">
