@@ -4,12 +4,13 @@ import React, { useEffect, useMemo, useState } from "react";
 import { PageHeader, ProductCard } from "@/components";
 import ProductFiltration from "./components/ProductFiltration";
 import { ProductFilters } from "../types/ProductFilters";
-import { getProducts, Product as APIProduct } from "@/app/services/productService";
+import { getProducts } from "@/app/services/productService";
+import type { ProductSummary } from "@/app/types/product";
 
 const PAGE_SIZE = 6;
 
 function ProductsPage() {
-  const [allProducts, setAllProducts] = useState<APIProduct[]>([]);
+  const [allProducts, setAllProducts] = useState<ProductSummary[]>([]);
   const [filters, setFilters] = useState<ProductFilters>({
     category: "All Products",
     subcategory: "All Subcategories",
@@ -65,8 +66,8 @@ function ProductsPage() {
       const q = filters.search.toLowerCase();
       products = products.filter(
         (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q)
+          (p.name ?? "").toLowerCase().includes(q) ||
+          (p.description ?? "").toLowerCase().includes(q)
       );
     }
 
@@ -130,7 +131,7 @@ function ProductsPage() {
                   : "/assets/img1.png"
               }
               name={product.name}
-              description={product.description}
+              description={product.description ?? ""}
               price={
                 product.price
                   ? `$${product.price}`

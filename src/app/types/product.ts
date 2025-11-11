@@ -44,3 +44,74 @@ export type ProductCardProps = {
   onEdit: () => void;
   onDelete: () => void;
 };
+
+export interface ProductCategoryDetail {
+  _id: string;
+  name: string;
+  description?: string;
+  created_at?: string;
+  updated_at?: string;
+  __v?: number;
+}
+
+export interface ProductSubcategoryDetail {
+  _id: string;
+  name: string;
+  category_id?: string;
+  description?: string;
+  status?: string;
+  is_pieceable?: boolean;
+  kilo_to_price_map?: Record<string, number>;
+  pricing?: string;
+  stock?: number;
+  created_at?: string;
+  updated_at?: string;
+  __v?: number;
+}
+
+export interface ProductSummary {
+  _id: string;
+  name: string;
+  image_url?: string;
+  category_id: ProductCategoryDetail;
+  subcategory_id: ProductSubcategoryDetail;
+  description?: string;
+  kilo_to_price_map?: Record<string, number>;
+  is_pieceable?: boolean;
+  price?: number;
+  pricing?: string;
+  stock?: number;
+  created_at?: string;
+  updated_at?: string;
+  __v?: number;
+}
+
+export interface ProductReview {
+  _id: string;
+  product_id: string | ProductSummary;
+  user_id?: string;
+  name?: string;
+  rating: number;
+  comment?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface ProductDetail {
+  _id: string;
+  name: string;
+  image_url?: string;
+  category_id: ProductCategoryDetail;
+  subcategory_id: ProductSubcategoryDetail;
+  description: string;
+  kilo_to_price_map: Record<string, number>;
+  is_pieceable: boolean;
+  related_products: ProductSummary[];
+  reviews?: ProductReview[];
+  price?: number;
+  pricing?: string;
+  stock?: number;
+  created_at?: string;
+  updated_at?: string;
+  __v?: number;
+}

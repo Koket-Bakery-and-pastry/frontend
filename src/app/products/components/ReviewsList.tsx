@@ -1,106 +1,84 @@
 import { Star } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import type { ProductReview } from "@/app/types/product";
 
-interface Review {
-  id: string;
-  author: string;
-  title: string;
-  content: string;
-  rating: number;
-  avatar: string;
+interface ReviewsListProps {
+  reviews?: ProductReview[];
 }
 
-const reviews: Review[] = [
-  {
-    id: "1",
-    author: "Your name",
-    title: "Title goes here",
-    content:
-      "I ordered a chocolate fudge cake for my birthday and it was beyond amazing! 🎂 The texture was soft, rich, and just the right amount of sweet. Everyone at the party kept asking where I got it from. The design was elegant and exactly like the photo. Definitely ordering again soon!",
-    rating: 5,
-    avatar: "Y",
-  },
-  {
-    id: "2",
-    author: "Alex Texas",
-    title: "Absolutely perfect for my Wedding!",
-    content:
-      "I ordered a chocolate fudge cake for my birthday and it was beyond amazing! 🎂 The texture was soft, rich, and just the right amount of sweet. Everyone at the party kept asking where I got it from. The design was elegant and exactly like the photo. Definitely ordering again soon!",
-    rating: 5,
-    avatar: "A",
-  },
-  {
-    id: "3",
-    author: "Lana Max",
-    title: "Delicious but arrived slightly late",
-    content:
-      "The cake tasted amazing — soft sponge and fresh cream that melted in the mouth! 😋 However, delivery was about 30 minutes late. Still, the taste totally made up for it. I'll definitely give them another try, maybe for my next anniversary.",
-    rating: 4,
-    avatar: "L",
-  },
-  {
-    id: "4",
-    author: "Daniel K.",
-    title: "Best red velvet cake in town!",
-    content:
-      "I've tried red velvet from many bakeries, but this one takes the crown. 👑 Moist layers, creamy frosting, and that rich flavor you can't forget. Delivery was quick and the packaging was beautiful. Perfect from start to finish!",
-    rating: 5,
-    avatar: "D",
-  },
-];
+const getInitials = (input?: string) => {
+  if (!input) return "?";
+  const trimmed = input.trim();
+  if (!trimmed) return "?";
+  return (
+    trimmed
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase() ?? "")
+      .join("")
+      .slice(0, 2) || "?"
+  );
+};
 
-export function ReviewsList() {
+const formatDate = (date?: string) => {
+  if (!date) return "";
+  const parsed = new Date(date);
+  if (Number.isNaN(parsed.getTime())) return "";
+  return parsed.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+};
+
+export function ReviewsList({ reviews }: ReviewsListProps) {
+  const list = reviews ?? [];
+
   return (
     <div className="relative">
-      {/* Floating add review button */}
-      {/* <div className="absolute right-0 -top-8">
-        <Button className="bg-[#C967AC] hover:bg-[#bd5b9e] text-white rounded-full px-4 py-2">
-          + Add Review
-        </Button>
-      </div> */}
-
-      <div className="space-y-4 mt-6">
-        {reviews.length === 0 ? (
-          <div className="rounded-lg border border-border p-8 text-center bg-white">
+      <div className="mt-6 space-y-4">
+        {list.length === 0 ? (
+          <div className="rounded-lg border border-border bg-white p-8 text-center">
             <p className="text-muted-foreground">
               No reviews yet. Be the first to review! 🍰
             </p>
           </div>
         ) : (
-          reviews.map((review) => (
-            <Card
-              key={review.id}
-              className="p-6 border border-border rounded-lg"
-            >
-              <div className="flex flex-col gap-4">
-                {/* Avatar */}
-                {/* <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-pink-100 text-pink-600 font-semibold">
-                  {review.avatar}
-                </div> */}
+          list.map((review) => {
+            const ratingValue = Math.max(0, Math.min(5, review.rating ?? 0));
+            const displayName = review.name ?? review.user_id ?? "Anonymous";
+            const avatar = getInitials(displayName);
+            const subtitle = formatDate(review.created_at);
 
-                {/* Review Content */}
-                <div className="flex-1">
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+            return (
+              <Card
+                key={review._id}
+                className="rounded-lg border border-border p-6"
+              >
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                     <div className="flex items-center gap-3">
                       <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-pink-100 text-pink-600 font-semibold">
-                        {review.avatar}
+                        {avatar}
                       </div>
                       <div>
-                        <p className=" font-semibold text-[#C967AC]">
-                          {review.author}
+                        <p className="font-semibold text-[#C967AC]">
+                          {displayName}
                         </p>
-                        <p className="text-xs md:text-sm text-muted-foreground">
-                          {review.title}
-                        </p>
+                        {subtitle && (
+                          <p className="text-xs text-muted-foreground">
+                            {subtitle}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div className="flex gap-1">
-                      {[...Array(5)].map((_, i) => (
+                      {[...Array(5)].map((_, index) => (
                         <Star
-                          key={i}
+                          key={index}
                           className={`h-4 w-4 ${
-                            i < review.rating
+                            index < ratingValue
                               ? "fill-amber-400 text-amber-400"
                               : "text-muted-foreground"
                           }`}
@@ -108,13 +86,15 @@ export function ReviewsList() {
                       ))}
                     </div>
                   </div>
-                  <p className="mt-3 text-xs md:text-sm leading-relaxed text-foreground">
-                    {review.content}
-                  </p>
+                  {review.comment && (
+                    <p className="text-xs leading-relaxed text-foreground md:text-sm">
+                      {review.comment}
+                    </p>
+                  )}
                 </div>
-              </div>
-            </Card>
-          ))
+              </Card>
+            );
+          })
         )}
       </div>
     </div>
