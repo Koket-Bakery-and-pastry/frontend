@@ -1,25 +1,38 @@
 // ...existing code...
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export function ProductGallery() {
+interface ProductGalleryProps {
+  images?: string[];
+  name?: string;
+}
+
+const FALLBACK_IMAGES = [
+  "/assets/img2.png",
+  "/assets/img1.png",
+  "/assets/img3.jpeg",
+];
+
+export function ProductGallery({ images, name }: ProductGalleryProps) {
   const [currentImage, setCurrentImage] = useState(0);
 
-  const images = [
-    "/assets/img2.png",
-    "/assets/img1.png",
-    "/assets/img3.jpeg",
-    // "/assets/img3.jpeg",
-  ];
+  const galleryImages = useMemo(() => {
+    if (images && images.length > 0) {
+      return images;
+    }
+    return FALLBACK_IMAGES;
+  }, [images]);
 
   const nextImage = () => {
-    setCurrentImage((prev) => (prev + 1) % images.length);
+    setCurrentImage((prev) => (prev + 1) % galleryImages.length);
   };
 
   const prevImage = () => {
-    setCurrentImage((prev) => (prev - 1 + images.length) % images.length);
+    setCurrentImage(
+      (prev) => (prev - 1 + galleryImages.length) % galleryImages.length
+    );
   };
 
   return (
@@ -27,8 +40,8 @@ export function ProductGallery() {
       {/* Main Image */}
       <div className="relative overflow-hidden rounded-lg bg-muted">
         <img
-          src={images[currentImage] || "/placeholder.svg"}
-          alt="Black Forest Cake"
+          src={galleryImages[currentImage] || "/placeholder.svg"}
+          alt={name ? `${name} image ${currentImage + 1}` : "Product image"}
           className="w-full h-[250px] md:h-[420px] object-cover"
         />
         <button
@@ -47,7 +60,7 @@ export function ProductGallery() {
 
       {/* Thumbnail Gallery */}
       <div className="flex gap-3">
-        {images.map((image, index) => (
+        {galleryImages.map((image, index) => (
           <button
             key={index}
             onClick={() => setCurrentImage(index)}
@@ -57,7 +70,11 @@ export function ProductGallery() {
           >
             <img
               src={image || "/placeholder.svg"}
-              alt={`Thumbnail ${index + 1}`}
+              alt={
+                name
+                  ? `${name} thumbnail ${index + 1}`
+                  : `Thumbnail ${index + 1}`
+              }
               className="h-full w-full object-cover"
             />
           </button>

@@ -4,10 +4,11 @@ import ProductCard from "./ProductCard";
 import { Button } from "./ui/button";
 import Header from "./Header";
 import Link from "next/link";
-import { getProducts, Product } from "@/app/services/productService";
+import { getProducts } from "@/app/services/productService";
+import type { ProductSummary } from "@/app/types/product";
 
 function FeaturedSection() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,10 +50,10 @@ function FeaturedSection() {
             className={`${
               index === 1 || index === 4 ? "2xl:-mt-28" : " "
             } sm:mx-auto `}
-            key={product.id}
+            key={product._id}
           >
             <ProductCard
-              key={product.id}
+              key={product._id}
               image={"assets/img1.png"}
               name={"Chocolate Cake"}
               description={"Moist Carrot Cake with Cream Cheese Frosting"}
