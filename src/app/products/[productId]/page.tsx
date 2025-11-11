@@ -9,9 +9,12 @@ import { ProductGallery } from "../components/ProductGallery";
 import { ReviewForm } from "../components/ReviewForm";
 import { ReviewsList } from "../components/ReviewsList";
 import {
+  addToCart,
   createProductReview,
   getProductById,
+  type AddToCartPayload,
 } from "@/app/services/productService";
+import { useCart } from "@/app/context/CartContext";
 import type { ProductDetail, ProductSummary } from "@/app/types/product";
 import ProductCard from "@/components/ProductCard";
 
@@ -73,8 +76,17 @@ const buildWeightOptions = (product: ProductDetail): WeightOption[] => {
   return [];
 };
 
+const parseKiloValue = (input?: string) => {
+  if (!input) return undefined;
+  const cleaned = input.replace(/[^0-9.]/g, "");
+  if (!cleaned) return undefined;
+  const numeric = Number(cleaned);
+  return Number.isNaN(numeric) ? undefined : numeric;
+};
+
 export default function ProductPage() {
   const params = useParams<{ productId: string }>();
+  const { refreshCart } = useCart();
   const [product, setProduct] = useState<ProductDetail | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<ProductSummary[]>([]);
   const [weightOptions, setWeightOptions] = useState<WeightOption[]>([]);
@@ -85,9 +97,14 @@ export default function ProductPage() {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [reviewError, setReviewError] = useState<string | null>(null);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [cartError, setCartError] = useState<string | null>(null);
+  const [cartSuccess, setCartSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshIndex, setRefreshIndex] = useState(0);
+  const [pieces, setPieces] = useState<number | undefined>(undefined);
+  const [additionalDescription, setAdditionalDescription] = useState("");
 
   const productId = params?.productId?.toString();
 
@@ -143,6 +160,7 @@ export default function ProductPage() {
         setRelatedProducts(resolvedProduct.related_products);
         setWeightOptions(options);
         setSelectedWeight(options[0] ?? null);
+        setPieces(resolvedProduct.is_pieceable ? 1 : undefined);
       })
       .catch(() => {
         if (!cancelled) {
@@ -284,6 +302,57 @@ export default function ProductPage() {
     }
   };
 
+  const handleAddToCart = async () => {
+    if (!productId) {
+      setCartError("Missing product identifier.");
+      return;
+    }
+
+    setCartError(null);
+    setCartSuccess(null);
+    setIsAddingToCart(true);
+
+    const kiloValue = parseKiloValue(selectedWeight?.id);
+    const payload: AddToCartPayload = {
+      product_id: productId,
+      quantity: 1,
+    };
+
+    if (typeof kiloValue === "number") {
+      payload.kilo = kiloValue;
+    } else if (selectedWeight) {
+      payload.kilo = 1;
+    } else if (!product?.is_pieceable) {
+      payload.kilo = 1;
+    }
+
+    if (product?.is_pieceable && typeof pieces === "number" && pieces > 0) {
+      payload.pieces = pieces;
+    }
+
+    if (message.trim()) {
+      payload.custom_text = message.trim();
+    }
+
+    if (additionalDescription.trim()) {
+      payload.additional_description = additionalDescription.trim();
+    }
+
+    try {
+      await addToCart(payload);
+      await refreshCart();
+      setCartSuccess("Added to cart successfully.");
+    } catch (cartErr: any) {
+      const apiMessage =
+        cartErr?.response?.data?.message ??
+        cartErr?.message ??
+        "Unable to add item to cart.";
+      setCartError(apiMessage);
+    } finally {
+      setIsAddingToCart(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-background-2 px-4 lg:px-6 xl:px-10 2xl:px-16 3xl:px-24">
       <header className="border-b border-border py-4">
@@ -337,8 +406,8 @@ export default function ProductPage() {
               <div className="text-sm text-muted-foreground">{priceMeta}</div>
             </div>
 
-            {weightOptions.length > 0 && (
-              <div className="flex flex-col items-start gap-6 2xl:flex-row">
+            <div className="flex flex-col gap-6 2xl:flex-row">
+              {weightOptions.length > 0 && (
                 <div className="flex flex-col">
                   <label className="mb-2 block text-sm font-medium">
                     Kilos
@@ -364,30 +433,80 @@ export default function ProductPage() {
                     ))}
                   </select>
                 </div>
+              )}
 
-                <div className="w-full flex-1">
+              {product.is_pieceable && (
+                <div className="flex flex-col">
                   <label className="mb-2 block text-sm font-medium">
-                    Message on cake
+                    Pieces
                   </label>
-                  <textarea
-                    rows={3}
-                    value={message}
-                    onChange={(event) => setMessage(event.target.value)}
-                    placeholder="e.g. Happy Birthday!"
-                    className="w-full rounded-md border border-border px-3 py-2 text-sm"
+                  <input
+                    type="number"
+                    min={1}
+                    value={pieces ?? 1}
+                    onChange={(event) => {
+                      const value = Number(event.target.value);
+                      setPieces(
+                        Number.isNaN(value) ? 1 : Math.max(1, Math.floor(value))
+                      );
+                    }}
+                    className="w-24 rounded-md border border-border px-3 py-2 text-center text-sm"
+                    aria-label="Select pieces"
                   />
                 </div>
+              )}
+
+              <div className="w-full flex-1">
+                <label className="mb-2 block text-sm font-medium">
+                  Message on cake
+                </label>
+                <textarea
+                  rows={3}
+                  value={message}
+                  onChange={(event) => setMessage(event.target.value)}
+                  placeholder="e.g. Happy Birthday!"
+                  className="w-full rounded-md border border-border px-3 py-2 text-sm"
+                />
               </div>
-            )}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="mb-2 block text-sm font-medium">
+                Additional instructions
+              </label>
+              <textarea
+                rows={3}
+                value={additionalDescription}
+                onChange={(event) =>
+                  setAdditionalDescription(event.target.value)
+                }
+                placeholder="Allergies, delivery notes, or decoration details"
+                className="w-full rounded-md border border-border px-3 py-2 text-sm"
+              />
+            </div>
 
             <div className="flex items-center gap-4 pt-4">
               <Button
                 size="lg"
-                className="flex flex-1 items-center justify-center gap-2 bg-[#C967AC] text-white hover:bg-[#bd5b9e]"
+                type="button"
+                onClick={handleAddToCart}
+                disabled={isAddingToCart}
+                className="flex flex-1 items-center justify-center gap-2 bg-[#C967AC] text-white hover:bg-[#bd5b9e] disabled:opacity-70"
               >
-                <ShoppingCart className="h-4 w-4" /> Add to Cart
+                <ShoppingCart className="h-4 w-4" />
+                {isAddingToCart ? "Adding…" : "Add to Cart"}
               </Button>
             </div>
+
+            {(cartError || cartSuccess) && (
+              <p
+                className={`text-sm ${
+                  cartError ? "text-red-500" : "text-emerald-600"
+                }`}
+              >
+                {cartError ?? cartSuccess}
+              </p>
+            )}
 
             <Card className="rounded-lg border border-border bg-background p-6">
               <h3 className="mb-4 text-lg font-semibold">Product Details</h3>

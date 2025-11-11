@@ -23,13 +23,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { User, LogOut, Check } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
+import { useCart } from "@/app/context/CartContext";
 import Image from "next/image";
 
 function Navbar() {
   const pathname = usePathname() || "/";
   const { user, isLoggedIn, logout } = useAuth();
+  const { cartCount } = useCart();
   const isAdmin = user?.role === "admin";
-  const cartCount = 5; // ✅ Example count (replace with real state later)
 
   const NavLinks = [
     { name: "Home", href: "/" },
@@ -283,7 +284,7 @@ function Navbar() {
                 className="bg-primary hover:bg-primary-hover text-primary-foreground font-semibold px-2 md:px-4 py-1 rounded-full transition-colors cursor-pointer text-xs md:text-sm"
               >
                 Login
-              </Link> 
+              </Link>
             </>
           )}
 
