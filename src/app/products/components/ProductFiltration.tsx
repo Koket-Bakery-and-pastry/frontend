@@ -10,6 +10,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { getCategories } from "@/app/services/categoryService";
+import LoadingState from "@/components/LoadingState";
 
 // ✅ Define flexible Category type from backend
 export type Category = {
@@ -92,12 +93,15 @@ export default function ProductFiltration({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category]);
 
-  if (loading)
+  if (loading) {
     return (
-      <div className="text-center py-10 text-gray-600">
-        Loading categories...
-      </div>
+      <LoadingState
+        message="Loading categories…"
+        fullScreen={false}
+        className="py-16"
+      />
     );
+  }
 
   // ✅ UI (unchanged)
   return (

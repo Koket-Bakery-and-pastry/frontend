@@ -1,11 +1,5 @@
-import axios from "axios";
 import type { ProductDetail, ProductSummary } from "@/app/types/product";
-
-const DEFAULT_BASE_URL = "https://backend-om79.onrender.com/api/v1";
-
-const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL ?? DEFAULT_BASE_URL,
-});
+import { apiClient as api } from "./api";
 
 interface ProductsResponse {
   message: string;

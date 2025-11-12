@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { Star, ChevronLeft, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ProductGallery } from "../components/ProductGallery";
 import { ReviewForm } from "../components/ReviewForm";
-import { ReviewsList } from "../components/ReviewsList";
+import dynamic from "next/dynamic";
 import {
   addToCart,
   createProductReview,
@@ -17,9 +16,19 @@ import {
 import { useCart } from "@/app/context/CartContext";
 import type { ProductDetail, ProductSummary } from "@/app/types/product";
 import ProductCard from "@/components/ProductCard";
+import LoadingState from "@/components/LoadingState";
 
+const ProductGallery = dynamic(() =>
+  import("../components/ProductGallery").then((mod) => mod.ProductGallery)
+);
+
+const ReviewsList = dynamic(() =>
+  import("../components/ReviewsList").then((mod) => mod.ReviewsList)
+);
 const ASSET_BASE_URL =
-  process.env.NEXT_PUBLIC_ASSET_BASE_URL ?? "https://backend-om79.onrender.com";
+  process.env.NEXT_PUBLIC_ASSET_BASE_URL ??
+  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/api\/v1\/?$/, "") ??
+  "https://backend-om79.onrender.com";
 
 const currencyFormatter = new Intl.NumberFormat("en-ET", {
   style: "currency",
@@ -213,11 +222,7 @@ export default function ProductPage() {
   };
 
   if (loading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-background-2">
-        <p className="text-sm text-muted-foreground">Loading product…</p>
-      </main>
-    );
+    return <LoadingState message="Loading product details…" />;
   }
 
   if (error) {
@@ -366,7 +371,17 @@ export default function ProductPage() {
 
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 xl:px-0">
         <div className="grid gap-8 4xl:gap-20 xl:grid-cols-2">
-          <ProductGallery images={galleryImages} name={product.name} />
+          <Suspense
+            fallback={
+              <LoadingState
+                message="Loading gallery…"
+                fullScreen={false}
+                className="min-h-[320px]"
+              />
+            }
+          >
+            <ProductGallery images={galleryImages} name={product.name} />
+          </Suspense>
 
           <div className="flex flex-col gap-6">
             <div>
@@ -587,7 +602,17 @@ export default function ProductPage() {
             </div>
           )}
 
-          <ReviewsList reviews={reviews} />
+          <Suspense
+            fallback={
+              <LoadingState
+                message="Loading reviews…"
+                fullScreen={false}
+                className="py-12"
+              />
+            }
+          >
+            <ReviewsList reviews={reviews} />
+          </Suspense>
         </div>
       </section>
 
