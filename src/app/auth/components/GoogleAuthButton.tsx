@@ -2,14 +2,15 @@
 
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { API_BASE_URL } from "@/app/services/api";
 
 function GoogleAuthButton() {
   const router = useRouter();
 
   const handleGoogleLogin = () => {
     console.log("[v1] Google auth clicked");
-    // Use window.location.assign to ensure a proper redirect
-    router.push("https://backend-om79.onrender.com/api/v1/auth/google");
+    const googleAuthUrl = `${API_BASE_URL.replace(/\/$/, "")}/auth/google`;
+    router.push(googleAuthUrl);
   };
 
   return (

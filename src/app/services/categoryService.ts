@@ -1,6 +1,4 @@
-import axios from "axios";
-
-const API_URL = "https://backend-om79.onrender.com/api/v1/categories/";
+import { apiClient } from "./api";
 
 export interface Subcategory {
   _id: string;
@@ -10,7 +8,6 @@ export interface Subcategory {
   price?: number;
   kilo_to_price_map?: Record<string, number>;
 }
-// test
 export interface Category {
   _id: string;
   name: string;
@@ -20,7 +17,7 @@ export interface Category {
 
 export const getCategories = async (): Promise<Category[]> => {
   try {
-    const res = await axios.get(API_URL);
+    const res = await apiClient.get("/categories");
     return res.data.categories;
   } catch (error: any) {
     console.error("Error fetching categories:", error);

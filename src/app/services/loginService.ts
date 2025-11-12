@@ -1,9 +1,4 @@
-// services/authService.ts
-import axios from "axios";
-
-const API_URL = "https://backend-om79.onrender.com/api/v1/auth";
-
-const api = axios.create({ baseURL: API_URL });
+import { apiClient } from "./api";
 
 interface LoginPayload {
   email: string;
@@ -29,7 +24,7 @@ interface LoginResponse {
 
 export const loginUser = async (data: LoginPayload): Promise<LoginResponse> => {
   try {
-    const response = await api.post<LoginResponse>("/login", data);
+    const response = await apiClient.post<LoginResponse>("/auth/login", data);
     return response.data;
   } catch (err: any) {
     console.error("Login failed:", err.response?.data || err.message);
