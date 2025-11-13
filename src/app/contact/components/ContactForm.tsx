@@ -32,7 +32,7 @@ function ContactForm() {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-8 max-w-2xl mx-auto " >
+    <div className="bg-card rounded-lg shadow-md p-8 max-w-2xl mx-auto">
       <h2 className="text-2xl font-bold mb-2 text-foreground">
         Send Us a Message
       </h2>
@@ -147,7 +147,7 @@ function ContactForm() {
 
         <Button
           type="submit"
-          className="w-full bg-[#C967AC] hover:bg-[#C967AC] text-white font-medium"
+          className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
         >
           Send Message
         </Button>

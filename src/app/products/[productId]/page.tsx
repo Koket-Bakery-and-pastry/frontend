@@ -415,7 +415,7 @@ export default function ProductPage() {
             </div>
 
             <div>
-              <div className="text-3xl font-bold text-[#C967AC]">
+              <div className="text-3xl font-bold text-primary">
                 {priceLabel}
               </div>
               <div className="text-sm text-muted-foreground">{priceMeta}</div>
@@ -506,7 +506,7 @@ export default function ProductPage() {
                 type="button"
                 onClick={handleAddToCart}
                 disabled={isAddingToCart}
-                className="flex flex-1 items-center justify-center gap-2 bg-[#C967AC] text-white hover:bg-[#bd5b9e] disabled:opacity-70"
+                className="flex flex-1 items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-70"
               >
                 <ShoppingCart className="h-4 w-4" />
                 {isAddingToCart ? "Adding…" : "Add to Cart"}
@@ -583,7 +583,7 @@ export default function ProductPage() {
             <Button
               onClick={() => setShowReviewForm((prev) => !prev)}
               disabled={isSubmittingReview}
-              className="rounded-full bg-[#C967AC] px-4 py-2 text-white hover:bg-[#bd5b9e]"
+              className="rounded-full bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
             >
               + Add Review
             </Button>

@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
+import { toast } from "react-toastify";
 import ProductCard from "./ProductCard";
 import { Button } from "./ui/button";
 import Header from "./Header";
@@ -26,7 +27,9 @@ function FeaturedSection() {
         const data = await getProducts();
         setProducts(data);
       } catch (err: any) {
-        setError("Failed to load products.");
+        const message = "Failed to load products.";
+        setError(message);
+        toast.error(message);
       } finally {
         setLoading(false);
       }

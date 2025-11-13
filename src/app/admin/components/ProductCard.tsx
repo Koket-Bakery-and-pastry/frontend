@@ -73,7 +73,7 @@ export default function ProductCard({
         <div className="mb-4">
           {/* Base Price */}
           {product.price && product.price > 0 && (
-            <p className="text-[#c967ac] font-bold text-2xl mb-2">
+            <p className="text-primary font-bold text-2xl mb-2">
               {formatPrice(product.price)}
             </p>
           )}
@@ -116,7 +116,7 @@ export default function ProductCard({
           {/* Price Display */}
           <div className="flex-1">
             {product.price && product.price > 0 ? (
-              <span className="text-[#c967ac] font-bold text-2xl">
+              <span className="text-primary font-bold text-2xl">
                 {formatPrice(product.price)}
               </span>
             ) : (

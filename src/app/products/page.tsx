@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
+import { toast } from "react-toastify";
 import { PageHeader, ProductCard } from "@/components";
 import ProductFiltration from "./components/ProductFiltration";
 import { ProductFilters } from "../types/ProductFilters";
@@ -36,7 +37,9 @@ function ProductsPage() {
         const data = await getProducts();
         setAllProducts(data);
       } catch (err: any) {
-        setError("Failed to load products.");
+        const message = "Failed to load products.";
+        setError(message);
+        toast.error(message);
       } finally {
         setLoading(false);
       }
@@ -111,7 +114,7 @@ function ProductsPage() {
 
       <ProductFiltration filters={filters} setFilters={setFilters} />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-4 gap-4 section-spacing bg-[#FFFAFF] px-4 sm:px-8 md:px-12 lg:px-16">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-4 gap-4 section-spacing bg-background-2 px-4 sm:px-8 md:px-12 lg:px-16">
         {error && (
           <div className="col-span-full text-center py-10 text-red-500">
             {error}

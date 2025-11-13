@@ -34,7 +34,7 @@ export default function AdminProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-pink-50 py-10 px-4">
+    <div className="min-h-screen bg-background py-10 px-4">
       <div className="max-w-5xl mx-auto">
         <div className="mb-4">
           <Link href="/admin" className="text-sm text-gray-600 hover:underline">
@@ -67,7 +67,7 @@ export default function AdminProfilePage() {
 
             {/* Right: Password Change */}
             <div>
-              <div className="bg-gradient-to-br from-pink-50 to-white p-8 rounded">
+              <div className="bg-gradient-to-br from-background-2 to-card p-8 rounded">
                 <h3 className="text-lg font-semibold mb-4">Change Password</h3>
                 <form
                   onSubmit={handlePasswordUpdate}
@@ -119,7 +119,7 @@ export default function AdminProfilePage() {
                   )}
 
                   <div>
-                    <Button className="bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded w-full">
+                    <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded w-full">
                       Update Password
                     </Button>
                   </div>

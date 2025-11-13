@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 import { Product, UpdateProductDto } from "../../../../types/product";
 
 const API_BASE_URL = "http://localhost:5001";
@@ -67,7 +68,9 @@ export default function EditProductPage() {
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-        alert("Failed to load product data");
+        toast.error(
+          error instanceof Error ? error.message : "Failed to load product data"
+        );
       } finally {
         setLoading(false);
       }
@@ -138,12 +141,12 @@ export default function EditProductPage() {
         throw new Error(errorData.message || "Failed to update product");
       }
 
-      const result = await response.json();
-      alert("Product updated successfully!");
+      await response.json();
+      toast.success("Product updated successfully!");
       router.push("/admin/products");
     } catch (error) {
       console.error("Error updating product:", error);
-      alert(
+      toast.error(
         error instanceof Error ? error.message : "Failed to update product"
       );
     } finally {
@@ -158,7 +161,7 @@ export default function EditProductPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-pink-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading product details...</p>
@@ -169,7 +172,7 @@ export default function EditProductPage() {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-pink-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-semibold text-red-600 mb-2">
             Product Not Found
@@ -179,7 +182,7 @@ export default function EditProductPage() {
           </p>
           <button
             onClick={() => router.push("/admin/products")}
-            className="px-4 py-2 rounded-full bg-pink-500 text-white text-sm hover:bg-pink-600"
+            className="px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm hover:bg-primary/90"
           >
             Back to Products
           </button>
@@ -189,7 +192,7 @@ export default function EditProductPage() {
   }
 
   return (
-    <div className="min-h-screen bg-pink-50 p-8">
+    <div className="min-h-screen bg-background p-8">
       <div className="max-w-3xl mx-auto">
         <form
           onSubmit={handleSubmit}
@@ -341,7 +344,7 @@ export default function EditProductPage() {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded-full bg-pink-500 text-white text-sm hover:bg-pink-600 disabled:opacity-70"
+              className="px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm hover:bg-primary/90 disabled:opacity-70"
               disabled={submitting}
             >
               {submitting ? "Saving..." : "Save Changes"}

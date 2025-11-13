@@ -18,7 +18,7 @@ export default function ProductsHeader({
   return (
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 px-6 sm:px-8 lg:px-10 py-6 sm:py-8 w-full">
       <div className="flex-1">
-        <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-[#C967AC]">
+        <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-primary">
           {title}
         </h2>
       </div>
@@ -27,14 +27,13 @@ export default function ProductsHeader({
         {onToggleFilters && (
           <Button
             size="sm"
+            variant={filterCount > 0 ? "default" : "secondary"}
             onClick={onToggleFilters}
-            className={`bg-gray-500 hover:bg-gray-600 text-white md:px-4 md:py-2 px-3 py-2 rounded-md flex items-center gap-2 text-sm sm:text-sm ${
-              filterCount > 0 ? "bg-orange-500 hover:bg-orange-600" : ""
-            }`}
+            className="md:px-4 md:py-2 px-3 py-2 rounded-md flex items-center gap-2 text-sm sm:text-sm"
           >
             <span>Filters</span>
             {filterCount > 0 && (
-              <span className="bg-white text-gray-700 rounded-full w-5 h-5 flex items-center justify-center text-xs">
+              <span className="bg-card text-foreground rounded-full w-5 h-5 flex items-center justify-center text-xs">
                 {filterCount}
               </span>
             )}
@@ -44,9 +43,9 @@ export default function ProductsHeader({
         {/* Add Product Button */}
         <Button
           size="sm"
-          className="bg-[#C967AC] hover:bg-[#da78d6] text-white md:px-4 md:py-2 px-3 py-2 rounded-md flex items-center gap-2 text-sm sm:text-sm"
           aria-label="Add New Product"
           onClick={onAddProduct}
+          className="md:px-4 md:py-2 px-3 py-2 rounded-md flex items-center gap-2 text-sm sm:text-sm"
         >
           <span className="inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 text-white bg-white/10 rounded-full">
             <svg

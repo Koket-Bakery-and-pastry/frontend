@@ -28,7 +28,7 @@ export default function ContactPage() {
             <ContactForm />
 
             {/* Location Section */}
-            <div className="bg-[#FFFAFF] section-spacing">
+            <div className="bg-background-2 section-spacing">
               <div className="mb-8">
                 <Header text=" Find Our Bakery" />
               </div>

@@ -65,7 +65,7 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
             key={index}
             onClick={() => setCurrentImage(index)}
             className={`h-15 w-15 md:h-20 md:w-20 overflow-hidden rounded-lg border-2 transition-colors ${
-              currentImage === index ? "border-[#C967AC]" : "border-border"
+              currentImage === index ? "border-primary" : "border-border"
             }`}
           >
             <img

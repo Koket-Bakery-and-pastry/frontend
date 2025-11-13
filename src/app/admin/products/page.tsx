@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { Product, ProductFilters } from "../../types/product";
 import HeroSection from "../components/HeroSection";
@@ -53,9 +54,10 @@ export default function AdminProductsPage() {
         setProducts(data.products || data.data || data);
       } catch (err) {
         console.error("Error fetching products:", err);
-        setError(
-          err instanceof Error ? err.message : "Failed to fetch products"
-        );
+        const message =
+          err instanceof Error ? err.message : "Failed to fetch products";
+        setError(message);
+        toast.error(message);
       } finally {
         setLoading(false);
       }
@@ -124,9 +126,13 @@ export default function AdminProductsPage() {
 
       setProductToDelete(null);
       setConfirmOpen(false);
+      toast.success("Product deleted successfully!");
     } catch (err) {
       console.error("Error deleting product:", err);
-      setError(err instanceof Error ? err.message : "Failed to delete product");
+      const message =
+        err instanceof Error ? err.message : "Failed to delete product";
+      setError(message);
+      toast.error(message);
     }
   };
 
@@ -163,7 +169,7 @@ export default function AdminProductsPage() {
           <p className="text-gray-600 mb-4">{error}</p>
           <Button
             onClick={() => window.location.reload()}
-            className="bg-pink-500 hover:bg-pink-600 text-white"
+            className="bg-primary text-primary-foreground hover:bg-primary/90"
           >
             Try Again
           </Button>
@@ -173,7 +179,7 @@ export default function AdminProductsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <HeroSection
         title="Products"
         subtitle="Manage all products and inventory in one place"
@@ -182,7 +188,7 @@ export default function AdminProductsPage() {
       />
 
       <main className="max-w-max mx-auto px-3 sm:px-6 lg:px-8 mt-6">
-        <section className="bg-white border-2 rounded-3xl shadow-sm overflow-hidden">
+        <section className="bg-card border-2 border-border rounded-3xl shadow-sm overflow-hidden">
           <ProductsHeader
             title="All Products"
             onAddProduct={handleAddProduct}
@@ -202,7 +208,7 @@ export default function AdminProductsPage() {
             </div>
           )}
 
-          <div className="p-4 sm:p-6 bg-[#FFFAFF]">
+          <div className="p-4 sm:p-6 bg-background-2">
             <ProductsGrid
               products={currentProducts}
               indexOfFirstProduct={(currentPage - 1) * itemsPerPage}

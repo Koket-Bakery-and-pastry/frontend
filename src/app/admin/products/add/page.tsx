@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 const API_BASE_URL = "http://localhost:5001";
 
@@ -93,11 +94,12 @@ export default function AddProductPage() {
         );
       } catch (error) {
         console.error("Error fetching data:", error);
-        setError(
+        const message =
           error instanceof Error
             ? error.message
-            : "Failed to load categories and subcategories"
-        );
+            : "Failed to load categories and subcategories";
+        setError(message);
+        toast.error(message);
       } finally {
         setLoading(false);
       }
@@ -166,13 +168,17 @@ export default function AddProductPage() {
 
     // Validate file type
     if (!file.type.startsWith("image/")) {
-      setError("Please select a valid image file");
+      const message = "Please select a valid image file";
+      setError(message);
+      toast.error(message);
       return;
     }
 
     // Validate file size (5MB limit)
     if (file.size > 5 * 1024 * 1024) {
-      setError("Image size should be less than 5MB");
+      const message = "Image size should be less than 5MB";
+      setError(message);
+      toast.error(message);
       return;
     }
 
@@ -213,16 +219,19 @@ export default function AddProductPage() {
       !productData.subcategoryId ||
       productData.price <= 0
     ) {
-      setError(
-        "Please fill all required fields: Product Name, Description, Category, and Subcategory"
-      );
+      const message =
+        "Please fill all required fields: Product Name, Description, Category, and Subcategory";
+      setError(message);
+      toast.error(message);
       setSubmitting(false);
       return;
     }
 
     // Additional validation based on subcategory type
     if (!selectedSubcategory?.is_pieceable && !productData.size) {
-      setError("Please select a size for this product");
+      const message = "Please select a size for this product";
+      setError(message);
+      toast.error(message);
       setSubmitting(false);
       return;
     }
@@ -231,7 +240,9 @@ export default function AddProductPage() {
       selectedSubcategory?.is_pieceable &&
       (!productData.quantity || productData.quantity < 1)
     ) {
-      setError("Please enter a valid quantity");
+      const message = "Please enter a valid quantity";
+      setError(message);
+      toast.error(message);
       setSubmitting(false);
       return;
     }
@@ -278,14 +289,15 @@ export default function AddProductPage() {
         throw new Error(errorData.message || "Failed to create product");
       }
 
-      const result = await response.json();
-      alert("Product created successfully!");
+      await response.json();
+      toast.success("Product created successfully!");
       router.push("/admin/products");
     } catch (error) {
       console.error("Error creating product:", error);
-      setError(
-        error instanceof Error ? error.message : "Failed to create product"
-      );
+      const message =
+        error instanceof Error ? error.message : "Failed to create product";
+      setError(message);
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }
@@ -321,7 +333,7 @@ export default function AddProductPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-pink-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading categories...</p>
@@ -331,7 +343,7 @@ export default function AddProductPage() {
   }
 
   return (
-    <div className="min-h-screen bg-pink-50 p-8">
+    <div className="min-h-screen bg-background p-8">
       <div className="max-w-3xl mx-auto">
         <form
           onSubmit={handleSubmit}
@@ -591,7 +603,7 @@ export default function AddProductPage() {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded-full bg-pink-500 text-white text-sm hover:bg-pink-600 disabled:opacity-70"
+              className="px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm hover:bg-primary/90 disabled:opacity-70"
               disabled={submitting}
             >
               {submitting ? "Adding..." : "Add Product"}

@@ -39,7 +39,7 @@ export function ReviewsList({ reviews }: ReviewsListProps) {
     <div className="relative">
       <div className="mt-6 space-y-4">
         {list.length === 0 ? (
-          <div className="rounded-lg border border-border bg-white p-8 text-center">
+          <div className="rounded-lg border border-border bg-card p-8 text-center">
             <p className="text-muted-foreground">
               No reviews yet. Be the first to review! 🍰
             </p>
@@ -59,11 +59,11 @@ export function ReviewsList({ reviews }: ReviewsListProps) {
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-pink-100 text-pink-600 font-semibold">
+                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold">
                         {avatar}
                       </div>
                       <div>
-                        <p className="font-semibold text-[#C967AC]">
+                        <p className="font-semibold text-primary">
                           {displayName}
                         </p>
                         {subtitle && (

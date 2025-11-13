@@ -12,7 +12,7 @@ export default function UserNotFound() {
           The user you're looking for doesn't exist.
         </p>
         <Link href="/admin/users">
-          <Button className="bg-pink-500 hover:bg-pink-600 text-white">
+          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
             Back to Users
           </Button>
         </Link>
