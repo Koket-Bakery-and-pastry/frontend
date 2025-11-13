@@ -114,7 +114,7 @@ function AdminPage() {
   return (
     <ProtectedRoute requireAdmin>
       <div>
-        <div className="bg-pink-50 section-spacing text-center">
+        <div className="bg-background-2 section-spacing text-center">
           <h1 className="text-4xl md:text-5xl font-kaushan italic mb-3 text-foreground">
             Admin Dashboard
           </h1>
@@ -140,7 +140,7 @@ function AdminPage() {
               id="report-range"
               value={reportRange}
               onChange={(e) => setReportRange(e.target.value)}
-              className="hidden sm:inline-block px-3 py-2 bg-[#F8EFFA] border border-gray-200 rounded-md shadow-sm text-sm"
+              className="hidden sm:inline-block px-3 py-2 bg-background border border-border rounded-md shadow-sm text-sm"
             >
               <option>Daily Report</option>
               <option>Weekly Report</option>
@@ -152,7 +152,7 @@ function AdminPage() {
               <DropdownMenuTrigger asChild>
                 <button
                   aria-label="Open report menu"
-                  className="inline-flex items-center gap-2 sm:hidden px-3 py-2 bg-[#F8EFFA] border border-gray-200 rounded-md shadow-sm text-sm"
+                  className="inline-flex items-center gap-2 sm:hidden px-3 py-2 bg-background border border-border rounded-md shadow-sm text-sm"
                 >
                   <FaBars />
                   <span className="truncate max-w-[8rem]">{reportRange}</span>
@@ -162,14 +162,14 @@ function AdminPage() {
               <DropdownMenuContent
                 align="end"
                 sideOffset={8}
-                className="w-44 bg-white rounded-md shadow-md p-1"
+                className="w-44 bg-card rounded-md shadow-md p-1"
               >
                 {["Daily Report", "Weekly Report", "Annual Report"].map((r) => (
                   <DropdownMenuItem
                     key={r}
                     onClick={() => setReportRange(r)}
                     className={`cursor-pointer px-3 py-2 text-sm ${
-                      reportRange === r ? "bg-gray-100 font-medium" : ""
+                      reportRange === r ? "bg-background-2 font-medium" : ""
                     }`}
                   >
                     {r}

@@ -4,7 +4,7 @@ import { Phone, Mail, MapPin, Clock } from "lucide-react";
 
 function MethodCards() {
   return (
-    <div className="bg-[#FFFAFF]   section-spacing">
+    <div className="bg-background-2 section-spacing">
       <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-4 ">
         <ContactMethodCard
           icon={Phone}

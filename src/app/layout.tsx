@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 import { Navbar, Footer } from "@/components";
+import ScrollToTop from "@/components/ScrollToTop";
+import { ToastProvider } from "@/components/ToastProvider";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 const geistSans = Geist({
@@ -33,8 +35,10 @@ export default function RootLayout({
         <AuthProvider>
           <CartProvider>
             <Navbar />
+            <ScrollToTop />
             {children}
             <Footer />
+            <ToastProvider />
           </CartProvider>
         </AuthProvider>
       </body>

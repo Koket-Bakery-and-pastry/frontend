@@ -13,12 +13,12 @@ function ContactMethodCard({
   label,
   text1,
   text2,
-  iconColor = "text-pink-400",
+  iconColor = "text-primary",
 }: ContactMethodCardProps) {
   return (
     <Card className="flex flex-col items-center justify-center p-2 lg:p-6 hover:shadow-lg transition-shadow cursor-pointer rounded-xl gap-0">
       <div className="flex items-center justify-center mb-3">
-        <span className="bg-pink-50 rounded-full  p-4 flex items-center justify-center">
+        <span className="bg-primary/10 rounded-full p-4 flex items-center justify-center">
           <Icon className={`w-8 h-8 ${iconColor}`} />
         </span>
       </div>

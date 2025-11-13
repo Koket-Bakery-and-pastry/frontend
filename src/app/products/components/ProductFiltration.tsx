@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { FaSearch, FaBars } from "react-icons/fa";
 import Link from "next/link";
 import {
@@ -65,6 +66,7 @@ export default function ProductFiltration({
         ]);
       } catch (error) {
         console.error("Error fetching categories:", error);
+        toast.error("Failed to load categories.");
         setCategories([
           { _id: "all", name: "All Products", subcategories: [] },
         ]);

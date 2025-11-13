@@ -72,7 +72,7 @@ export default function ShoppingCartPage() {
   const total = subtotal;
 
   return (
-    <div className="min-h-screen bg-white ">
+    <div className="min-h-screen bg-background ">
       <div>
         <div className="mb-12">
           <PageHeader
@@ -87,7 +87,7 @@ export default function ShoppingCartPage() {
             {/* 🆕 Selection Info Bar */}
 
             {items.length < 0 && (
-              <div className="flex items-center justify-between bg-pink-100/70 border border-pink-200 text-sm text-pink-700 px-4 py-2 rounded-md mb-4">
+              <div className="flex items-center justify-between bg-primary/10 border border-primary/30 text-sm text-primary px-4 py-2 rounded-md mb-4">
                 <p>
                   Tap on an item to select it.{" "}
                   <span className="font-semibold">
@@ -98,7 +98,7 @@ export default function ShoppingCartPage() {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="border-pink-300 text-pink-600 hover:bg-pink-50 bg-transparent"
+                    className="border-primary/40 text-primary hover:bg-primary/10 bg-transparent"
                     onClick={() => setSelectedIds([])}
                   >
                     Clear
@@ -115,8 +115,8 @@ export default function ShoppingCartPage() {
                     onClick={() => handleSelect(item.id)}
                     className={`transition-all duration-200 cursor-pointer rounded-lg border ${
                       selectedIds.includes(item.id)
-                        ? "border-pink-400 bg-pink-50 shadow-md scale-[1.01]"
-                        : "border-border bg-white hover:shadow-sm"
+                        ? "border-primary/40 bg-primary/10 shadow-md scale-[1.01]"
+                        : "border-border bg-card hover:shadow-sm"
                     }`}
                   >
                     <CartItem
@@ -133,7 +133,7 @@ export default function ShoppingCartPage() {
                 <Link href="/products">
                   <Button
                     variant="outline"
-                    className="mt-6 border-pink-300 text-pink-600 hover:bg-pink-50 bg-transparent"
+                    className="mt-6 border-primary/40 text-primary hover:bg-primary/10 bg-transparent"
                   >
                     Continue Shopping
                   </Button>

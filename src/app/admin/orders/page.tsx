@@ -143,7 +143,7 @@ export default function OrdersPage() {
 
   return (
     <div className="">
-      <div className="bg-pink-50 section-spacing text-center">
+      <div className="bg-background-2 section-spacing text-center">
         <div className="flex flex-col sm:flex-row justify-center items-center mb-4 gap-2">
           <img
             src="../../../../assets/cake.png"

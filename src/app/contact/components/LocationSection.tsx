@@ -3,12 +3,12 @@ import { MapPin } from "lucide-react";
 function LocationSection() {
   return (
     <div
-      className="bg-[#D9D9D9] rounded-lg px-4 py-32 max-w-4xl mx-auto  text-center"
+      className="bg-muted rounded-lg px-4 py-32 max-w-4xl mx-auto text-center"
       // style={{backgroundImage: 'url("assets/location.jpg")', backgroundSize: 'cover', backgroundPosition: 'center'}}
     >
       <div className="flex justify-center mb-4">
-        <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
-          <MapPin className="w-8 h-8 text-gray-400" />
+        <div className="w-16 h-16 rounded-full bg-background flex items-center justify-center">
+          <MapPin className="w-8 h-8 text-muted-foreground" />
         </div>
       </div>
       <p className="text-foreground font-medium mb-1">

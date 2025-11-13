@@ -70,7 +70,7 @@ export default function CheckoutPage() {
                       <span className="text-pink-500">${total.toFixed(2)}</span>
                     </div>
                   </div>
-                  <Button className="w-full mt-6 bg-pink-500 hover:bg-pink-600 text-white">
+                  <Button className="w-full mt-6 bg-primary hover:bg-primary/90 text-primary-foreground">
                     Place Order
                   </Button>
                   <p className="text-center text-xs text-muted-foreground mt-4">

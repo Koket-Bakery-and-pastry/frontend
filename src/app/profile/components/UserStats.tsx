@@ -8,13 +8,13 @@ interface UserStatsProps {
 export function UserStats({ totalOrders, totalSpent }: UserStatsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-      <Card className="p-4 bg-[#F8EFFA] border-0">
+      <Card className="p-4 bg-background border-0">
         <p className="text-sm text-gray-600">Total Orders</p>
         <p className="text-lg md:text-3xl font-bold text-gray-900">
           {totalOrders}
         </p>
       </Card>
-      <Card className="p-4 bg-[#F8EFFA] border-0">
+      <Card className="p-4 bg-background border-0">
         <p className="text-sm text-gray-600">Total Spent</p>
         <p className="text-lg md:text-3xl font-bold text-pink-600">
           ${totalSpent.toFixed(2)}

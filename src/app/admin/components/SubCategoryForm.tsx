@@ -115,7 +115,7 @@ export default function SubCategoryForm({
       <div>
         <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">
           {isEditing ? "Edit" : "Add"} Sub-category for{" "}
-          <span className="text-[#C967AC]">{categoryName}</span>
+          <span className="text-primary">{categoryName}</span>
         </h3>
       </div>
 
@@ -133,7 +133,7 @@ export default function SubCategoryForm({
               if (errors.name) setErrors((prev) => ({ ...prev, name: "" }));
             }}
             placeholder="Enter sub-category name"
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+            className="w-full border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-transparent"
           />
           {errors.name && (
             <p className="text-red-500 text-xs mt-1">{errors.name}</p>
@@ -152,7 +152,7 @@ export default function SubCategoryForm({
                 status: e.target.value as "available" | "coming_soon",
               }))
             }
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+            className="w-full border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-transparent"
           >
             <option value="available">Available</option>
             <option value="coming_soon">Coming Soon</option>
@@ -172,7 +172,7 @@ export default function SubCategoryForm({
                 is_pieceable: e.target.checked,
               }))
             }
-            className="rounded border-gray-300 text-pink-600 focus:ring-pink-500"
+            className="rounded border-border text-primary focus:ring-primary/40"
           />
           <span className="text-sm font-medium text-gray-700">
             Sold by pieces (instead of weight)
@@ -199,7 +199,7 @@ export default function SubCategoryForm({
               if (errors.price) setErrors((prev) => ({ ...prev, price: "" }));
             }}
             placeholder="0.00"
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+            className="w-full border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-transparent"
           />
           {errors.price && (
             <p className="text-red-500 text-xs mt-1">{errors.price}</p>
@@ -224,7 +224,7 @@ export default function SubCategoryForm({
                 setErrors((prev) => ({ ...prev, upfront_payment: "" }));
             }}
             placeholder="0.00"
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+            className="w-full border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-transparent"
           />
           {errors.upfront_payment && (
             <p className="text-red-500 text-xs mt-1">
@@ -263,7 +263,7 @@ export default function SubCategoryForm({
                     updateSizePriceField(index, "size", e.target.value)
                   }
                   placeholder="e.g., 0.5kg, 1kg, 2kg"
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  className="w-full border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-transparent"
                 />
               </div>
               <div className="flex-1 w-full">
@@ -279,8 +279,7 @@ export default function SubCategoryForm({
                       parseFloat(e.target.value) || 0
                     )
                   }
-                  placeholder="Price"
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  className="w-full border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-transparent"
                 />
               </div>
               {formData.kilo_to_price_map.length > 1 && (
@@ -310,15 +309,13 @@ export default function SubCategoryForm({
       <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4">
         <Button
           type="button"
+          variant="secondary"
           onClick={onCancel}
-          className="bg-gray-500 hover:bg-gray-600 text-white px-4 sm:px-6 py-2 rounded-md text-sm flex-1"
+          className="px-4 sm:px-6 py-2 text-sm flex-1"
         >
           Cancel
         </Button>
-        <Button
-          type="submit"
-          className="bg-[#C967AC] hover:bg-[#da78d6] text-white px-4 sm:px-6 py-2 rounded-md text-sm flex-1"
-        >
+        <Button type="submit" className="px-4 sm:px-6 py-2 text-sm flex-1">
           {isEditing ? "Update" : "Add"} Sub-category
         </Button>
       </div>

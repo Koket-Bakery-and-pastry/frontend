@@ -30,8 +30,8 @@ export function UserProfileCard({
         {/* Top Section: User Info & Actions */}
         <div className="flex flex-col lg:flex-row items-start  justify-between gap-4">
           <div className="flex  gap-4">
-            <Avatar className="h-16 w-16 bg-pink-100 hidden md:block">
-              <AvatarFallback className="bg-pink-100 text-pink-600 text-lg font-semibold ">
+            <Avatar className="h-16 w-16 bg-primary/10 hidden md:block">
+              <AvatarFallback className="bg-primary/10 text-primary text-lg font-semibold ">
                 {user.initials}
               </AvatarFallback>
             </Avatar>
@@ -41,7 +41,7 @@ export function UserProfileCard({
                 <h2 className="text-lg md:text-2xl font-bold text-gray-800">
                   {user.name}
                 </h2>
-                <Badge className="bg-pink-600 text-white text-sm md:text-base">
+                <Badge className="bg-primary text-primary-foreground text-sm md:text-base">
                   User
                 </Badge>
               </div>
@@ -71,7 +71,7 @@ export function UserProfileCard({
               variant="outline"
               size="sm"
               onClick={onEdit}
-              className="flex items-center gap-2 border-gray-300 hover:bg-gray-100"
+              className="flex items-center gap-2 border-border hover:bg-background-2"
             >
               <Edit className="h-4 w-4" />
               Edit

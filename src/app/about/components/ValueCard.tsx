@@ -11,12 +11,12 @@ function ValueCard({
   icon: Icon,
   title,
   description,
-  iconColor = "text-pink-400",
+  iconColor = "text-primary",
 }: ValueCardProps) {
   return (
-    <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100 text-center hover:shadow-md transition-shadow">
+    <div className="bg-card rounded-lg p-6 shadow-sm border border-border text-center hover:shadow-md transition-shadow">
       <div className="flex justify-center mb-4">
-        <div className="w-12 h-12 rounded-full bg-pink-50 flex items-center justify-center">
+        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
           <Icon className={`w-6 h-6 ${iconColor}`} />
         </div>
       </div>
