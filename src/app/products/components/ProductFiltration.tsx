@@ -107,8 +107,8 @@ export default function ProductFiltration({
 
   // ✅ UI (unchanged)
   return (
-    <div className="bg-background-2 px-3 sm:px-6 lg:px-16 pt-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="bg-background-2 px-3 xss:px-4 sm:px-6 md:px-10 lg:px-16 xl:px-24 pt-6">
+      <div className="max-w-7xl ">
         {/* Mobile */}
         <div className="mb-6 block 2xl:hidden">
           <div className="flex justify-between items-center">
