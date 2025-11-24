@@ -25,8 +25,8 @@ export default function EditProductPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState("");
+  const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
+  const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]);
 
   // Fetch product data, categories, and subcategories
   useEffect(() => {
@@ -78,30 +78,78 @@ export default function EditProductPage() {
 
   const handleInputChange = (field: keyof UpdateProductDto, value: string) => {
     if (product) {
-      setProduct((prev) => (prev ? { ...prev, [field]: value } : null));
+      setProduct((prev) => {
+        if (!prev) return null;
+        // Handle both object and string category/subcategory IDs
+        if (field === "category_id") {
+          return { ...prev, category_id: value };
+        }
+        if (field === "subcategory_id") {
+          return { ...prev, subcategory_id: value };
+        }
+        return { ...prev, [field]: value };
+      });
     }
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) {
-      setImageFile(null);
-      setImagePreview("");
+    const files = e.target.files;
+    if (!files || files.length === 0) {
       return;
     }
 
-    setImageFile(file);
+    const validFiles: File[] = [];
+    const previews: string[] = [];
+    const MAX_IMAGES = 10;
 
-    // Create preview URL
-    const previewUrl = URL.createObjectURL(file);
-    setImagePreview(previewUrl);
+    // Calculate total images (existing + new)
+    const currentTotal = (product?.images?.length || 0) + newImageFiles.length;
+    const remainingSlots = MAX_IMAGES - currentTotal;
+
+    if (remainingSlots <= 0) {
+      alert(
+        `Maximum ${MAX_IMAGES} images allowed. Please remove some images first.`
+      );
+      return;
+    }
+
+    for (
+      let i = 0;
+      i < files.length && validFiles.length < remainingSlots;
+      i++
+    ) {
+      const file = files[i];
+      if (file.type.startsWith("image/") && file.size <= 5 * 1024 * 1024) {
+        validFiles.push(file);
+        previews.push(URL.createObjectURL(file));
+      }
+    }
+
+    if (validFiles.length > 0) {
+      setNewImageFiles((prev) => [...prev, ...validFiles]);
+      setNewImagePreviews((prev) => [...prev, ...previews]);
+      if (files.length > remainingSlots) {
+        alert(
+          `Only ${validFiles.length} images added. Maximum ${MAX_IMAGES} images total allowed.`
+        );
+      }
+    }
   };
 
-  const removeImage = () => {
-    setImageFile(null);
-    setImagePreview("");
+  const removeNewImage = (index: number) => {
+    setNewImageFiles((prev) => prev.filter((_, i) => i !== index));
+    setNewImagePreviews((prev) => {
+      URL.revokeObjectURL(prev[index]);
+      return prev.filter((_, i) => i !== index);
+    });
+  };
+
+  const clearAllNewImages = () => {
+    newImagePreviews.forEach((url) => URL.revokeObjectURL(url));
+    setNewImageFiles([]);
+    setNewImagePreviews([]);
     const fileInput = document.getElementById(
-      "product-image"
+      "product-images"
     ) as HTMLInputElement;
     if (fileInput) fileInput.value = "";
   };
@@ -114,18 +162,28 @@ export default function EditProductPage() {
     try {
       const formData = new FormData();
 
+      // Extract IDs from objects if needed
+      const categoryId =
+        typeof product.category_id === "object"
+          ? product.category_id._id
+          : product.category_id;
+      const subcategoryId =
+        typeof product.subcategory_id === "object" && product.subcategory_id
+          ? product.subcategory_id._id
+          : product.subcategory_id;
+
       // Append updated product data
       if (product.name) formData.append("name", product.name);
       if (product.description)
         formData.append("description", product.description);
-      if (product.category_id)
-        formData.append("category_id", product.category_id);
-      if (product.subcategory_id)
-        formData.append("subcategory_id", product.subcategory_id);
+      if (categoryId) formData.append("category_id", categoryId);
+      if (subcategoryId) formData.append("subcategory_id", subcategoryId);
 
-      // Append image file if selected
-      if (imageFile) {
-        formData.append("image", imageFile);
+      // Append new image files if selected
+      if (newImageFiles.length > 0) {
+        newImageFiles.forEach((file) => {
+          formData.append("images", file);
+        });
       }
 
       const response = await fetch(`${API_BASE_URL}/api/v1/products/${id}`, {
@@ -152,8 +210,13 @@ export default function EditProductPage() {
   };
 
   // Get filtered subcategories based on selected category
-  const filteredSubcategories = product?.category_id
-    ? subcategories.filter((sub) => sub.category_id === product.category_id)
+  const currentCategoryId =
+    typeof product?.category_id === "object"
+      ? product.category_id._id
+      : product?.category_id;
+
+  const filteredSubcategories = currentCategoryId
+    ? subcategories.filter((sub) => sub.category_id === currentCategoryId)
     : [];
 
   if (loading) {
@@ -233,7 +296,11 @@ export default function EditProductPage() {
               Category <span className="text-red-500">*</span>
             </label>
             <select
-              value={product.category_id}
+              value={
+                typeof product.category_id === "object"
+                  ? product.category_id._id
+                  : product.category_id
+              }
               onChange={(e) => handleInputChange("category_id", e.target.value)}
               className="w-full border rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-pink-200"
               required
@@ -253,20 +320,25 @@ export default function EditProductPage() {
               Subcategory <span className="text-red-500">*</span>
             </label>
             <select
-              value={product.subcategory_id}
+              value={
+                typeof product.subcategory_id === "object" &&
+                product.subcategory_id
+                  ? product.subcategory_id._id
+                  : product.subcategory_id || ""
+              }
               onChange={(e) =>
                 handleInputChange("subcategory_id", e.target.value)
               }
               className="w-full border rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-pink-200"
               disabled={
-                !product.category_id || filteredSubcategories.length === 0
+                !currentCategoryId || filteredSubcategories.length === 0
               }
               required
             >
               <option value="">
-                {product.category_id && filteredSubcategories.length > 0
+                {currentCategoryId && filteredSubcategories.length > 0
                   ? "Select subcategory"
-                  : product.category_id
+                  : currentCategoryId
                   ? "No subcategories available"
                   : "Select a category first"}
               </option>
@@ -281,49 +353,94 @@ export default function EditProductPage() {
           {/* Image Upload */}
           <div className="mb-6">
             <label className="block text-sm font-medium mb-1">
-              Product Image
+              Product Images
             </label>
 
-            {/* Current Image */}
-            {product.image_url && !imagePreview && (
-              <div className="mb-3 flex items-start gap-3">
-                <img
-                  src={`${API_BASE_URL}${product.image_url}`}
-                  alt="Current product"
-                  className="w-28 h-28 object-cover rounded border"
-                />
-                <p className="text-sm text-gray-700">Current image</p>
+            {/* Current Images */}
+            {product.images && product.images.length > 0 && (
+              <div className="mb-4">
+                <p className="text-sm text-gray-600 mb-2">Current Images:</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  {product.images.map((imageUrl, index) => (
+                    <div key={index} className="relative">
+                      <img
+                        src={`${API_BASE_URL}${imageUrl}`}
+                        alt={`Product image ${index + 1}`}
+                        className="w-full h-24 object-cover rounded border"
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
-            {/* New Image Upload */}
+            {/* New Images Upload */}
             <input
-              id="product-image"
+              id="product-images"
               type="file"
               accept="image/*"
+              multiple
               onChange={handleImageChange}
-              className="w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-200 bg-white"
+              disabled={
+                (product?.images?.length || 0) + newImageFiles.length >= 10
+              }
+              className="w-full border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-200 bg-white disabled:opacity-50 disabled:cursor-not-allowed"
             />
+            <p className="text-xs text-gray-500 mt-1">
+              Upload new images (max 5MB each). Maximum 10 images total allowed.
+              Current: {(product?.images?.length || 0) + newImageFiles.length}
+              /10
+            </p>
 
-            {/* New Image Preview */}
-            {imagePreview && (
-              <div className="mt-3 flex items-start gap-3">
-                <img
-                  src={imagePreview}
-                  alt="New preview"
-                  className="w-28 h-28 object-cover rounded border"
-                />
-                <div className="flex-1">
-                  <p className="text-sm text-gray-700 mb-2">
-                    {imageFile?.name || "New image preview"}
+            {/* New Images Preview */}
+            {newImagePreviews.length > 0 && (
+              <div className="mt-4">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-sm font-medium text-gray-700">
+                    {newImagePreviews.length} new image
+                    {newImagePreviews.length !== 1 ? "s" : ""} to upload
                   </p>
                   <button
                     type="button"
-                    onClick={removeImage}
-                    className="px-3 py-1 rounded-full border bg-white text-sm hover:bg-gray-50"
+                    onClick={clearAllNewImages}
+                    className="text-sm text-red-600 hover:underline"
                   >
-                    Remove New Image
+                    Remove All New
                   </button>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  {newImagePreviews.map((preview, index) => (
+                    <div key={index} className="relative group">
+                      <img
+                        src={preview}
+                        alt={`New preview ${index + 1}`}
+                        className="w-full h-24 object-cover rounded border"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeNewImage(index)}
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        title="Remove image"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </button>
+                      <p className="text-xs text-gray-600 mt-1 truncate">
+                        {newImageFiles[index]?.name}
+                      </p>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
