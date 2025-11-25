@@ -1,15 +1,23 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
+import { toast } from "react-toastify";
 import { PageHeader, ProductCard } from "@/components";
 import ProductFiltration from "./components/ProductFiltration";
 import { ProductFilters } from "../types/ProductFilters";
-import { getProducts, Product as APIProduct } from "@/app/services/productService";
+import { getProducts } from "@/app/services/productService";
+import type { ProductSummary } from "@/app/types/product";
+import LoadingState from "@/components/LoadingState";
+
+const ASSET_BASE_URL =
+  process.env.NEXT_PUBLIC_ASSET_BASE_URL ??
+  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/api\/v1\/?$/, "") ??
+  "https://backend-om79.onrender.com";
 
 const PAGE_SIZE = 6;
 
 function ProductsPage() {
-  const [allProducts, setAllProducts] = useState<APIProduct[]>([]);
+  const [allProducts, setAllProducts] = useState<ProductSummary[]>([]);
   const [filters, setFilters] = useState<ProductFilters>({
     category: "All Products",
     subcategory: "All Subcategories",
@@ -29,7 +37,9 @@ function ProductsPage() {
         const data = await getProducts();
         setAllProducts(data);
       } catch (err: any) {
-        setError("Failed to load products.");
+        const message = "Failed to load products.";
+        setError(message);
+        toast.error(message);
       } finally {
         setLoading(false);
       }
@@ -65,8 +75,8 @@ function ProductsPage() {
       const q = filters.search.toLowerCase();
       products = products.filter(
         (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q)
+          (p.name ?? "").toLowerCase().includes(q) ||
+          (p.description ?? "").toLowerCase().includes(q)
       );
     }
 
@@ -91,6 +101,10 @@ function ProductsPage() {
 
   useEffect(() => setPage(1), [filters]);
 
+  if (loading) {
+    return <LoadingState message="Loading products…" />;
+  }
+
   return (
     <div className="bg-background-2 min-h-screen">
       <PageHeader
@@ -100,37 +114,30 @@ function ProductsPage() {
 
       <ProductFiltration filters={filters} setFilters={setFilters} />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-4 gap-4 section-spacing bg-[#FFFAFF] px-4 sm:px-8 md:px-12 lg:px-16">
-        {loading && (
-          <div className="col-span-full text-center py-10 text-gray-600 h-screen">
-            Loading products...
-          </div>
-        )}
-
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-4 gap-4 section-spacing bg-background-2 px-4 sm:px-8 md:px-12 lg:px-16">
         {error && (
           <div className="col-span-full text-center py-10 text-red-500">
             {error}
           </div>
         )}
 
-        {!loading && !error && paginatedProducts.length === 0 && (
+        {!error && paginatedProducts.length === 0 && (
           <div className="col-span-full text-center text-gray-500 py-10">
             No products found 😕
           </div>
         )}
 
-        {!loading &&
-          !error &&
+        {!error &&
           paginatedProducts.map((product) => (
             <ProductCard
               key={product._id}
               image={
                 product.image_url
-                  ? `https://backend-om79.onrender.com${product.image_url}`
+                  ? `${ASSET_BASE_URL}${product.image_url}`
                   : "/assets/img1.png"
               }
               name={product.name}
-              description={product.description}
+              description={product.description ?? ""}
               price={
                 product.price
                   ? `$${product.price}`
@@ -144,7 +151,7 @@ function ProductsPage() {
       </div>
 
       {/* Pagination Controls */}
-      {!loading && !error && totalPages > 1 && (
+      {!error && totalPages > 1 && (
         <div className="flex justify-center items-center gap-2 py-8">
           <button
             className="px-3 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-50"

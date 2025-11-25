@@ -8,7 +8,7 @@ interface UserDetailHeroProps {
 
 export default function UserDetailHero({ user }: UserDetailHeroProps) {
   return (
-    <div className="bg-pink-50 section-spacing">
+    <div className="bg-background-2 section-spacing">
       <div className="max-w-5xl mx-auto px-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex items-center">

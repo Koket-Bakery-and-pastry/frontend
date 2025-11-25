@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { FaSearch, FaBars } from "react-icons/fa";
 import Link from "next/link";
 import {
@@ -10,6 +11,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { getCategories } from "@/app/services/categoryService";
+import LoadingState from "@/components/LoadingState";
 
 // ✅ Define flexible Category type from backend
 export type Category = {
@@ -64,6 +66,7 @@ export default function ProductFiltration({
         ]);
       } catch (error) {
         console.error("Error fetching categories:", error);
+        toast.error("Failed to load categories.");
         setCategories([
           { _id: "all", name: "All Products", subcategories: [] },
         ]);
@@ -92,17 +95,20 @@ export default function ProductFiltration({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category]);
 
-  if (loading)
+  if (loading) {
     return (
-      <div className="text-center py-10 text-gray-600">
-        Loading categories...
-      </div>
+      <LoadingState
+        message="Loading categories…"
+        fullScreen={false}
+        className="py-16"
+      />
     );
+  }
 
   // ✅ UI (unchanged)
   return (
-    <div className="bg-background-2 px-3 sm:px-6 lg:px-16 pt-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="bg-background-2 px-3 xss:px-4 sm:px-6 md:px-10 lg:px-16 xl:px-24 pt-6">
+      <div className="max-w-7xl ">
         {/* Mobile */}
         <div className="mb-6 block 2xl:hidden">
           <div className="flex justify-between items-center">

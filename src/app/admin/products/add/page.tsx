@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 const API_BASE_URL = "http://localhost:5001";
 
@@ -89,11 +90,12 @@ export default function AddProductPage() {
         );
       } catch (error) {
         console.error("Error fetching data:", error);
-        setError(
+        const message =
           error instanceof Error
             ? error.message
-            : "Failed to load categories and subcategories"
-        );
+            : "Failed to load categories and subcategories";
+        setError(message);
+        toast.error(message);
       } finally {
         setLoading(false);
       }
@@ -236,16 +238,19 @@ export default function AddProductPage() {
       !productData.categoryId ||
       !productData.subcategoryId
     ) {
-      setError(
-        "Please fill all required fields: Product Name, Description, Category, and Subcategory"
-      );
+      const message =
+        "Please fill all required fields: Product Name, Description, Category, and Subcategory";
+      setError(message);
+      toast.error(message);
       setSubmitting(false);
       return;
     }
 
     // Additional validation based on subcategory type
     if (!selectedSubcategory?.is_pieceable && !productData.size) {
-      setError("Please select a size for this product");
+      const message = "Please select a size for this product";
+      setError(message);
+      toast.error(message);
       setSubmitting(false);
       return;
     }
@@ -254,7 +259,9 @@ export default function AddProductPage() {
       selectedSubcategory?.is_pieceable &&
       (!productData.quantity || productData.quantity < 1)
     ) {
-      setError("Please enter a valid quantity");
+      const message = "Please enter a valid quantity";
+      setError(message);
+      toast.error(message);
       setSubmitting(false);
       return;
     }
@@ -302,14 +309,15 @@ export default function AddProductPage() {
         throw new Error(errorData.message || "Failed to create product");
       }
 
-      const result = await response.json();
-      alert("Product created successfully!");
+      await response.json();
+      toast.success("Product created successfully!");
       router.push("/admin/products");
     } catch (error) {
       console.error("Error creating product:", error);
-      setError(
-        error instanceof Error ? error.message : "Failed to create product"
-      );
+      const message =
+        error instanceof Error ? error.message : "Failed to create product";
+      setError(message);
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }

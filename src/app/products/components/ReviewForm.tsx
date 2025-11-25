@@ -1,64 +1,59 @@
-// ...existing code...
 "use client";
 
 import type React from "react";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 interface ReviewFormProps {
-  onSubmit: () => void;
+  onSubmit: (payload: {
+    rating: number;
+    comment: string;
+    name?: string;
+  }) => void;
+  defaultRating?: number;
+  isSubmitting?: boolean;
 }
 
-export function ReviewForm({ onSubmit }: ReviewFormProps) {
-  const [rating, setRating] = useState(5);
+export function ReviewForm({
+  onSubmit,
+  defaultRating = 5,
+  isSubmitting = false,
+}: ReviewFormProps) {
+  const [rating, setRating] = useState(defaultRating);
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [title, setTitle] = useState("");
-  const [review, setReview] = useState("");
+  const [comment, setComment] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle form submission
-    console.log({ name, email, rating, title, review });
+  useEffect(() => {
+    setRating(defaultRating);
+  }, [defaultRating]);
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    onSubmit({ rating, comment, name: name.trim() || undefined });
     setName("");
-    setEmail("");
-    setTitle("");
-    setReview("");
-    setRating(5);
-    onSubmit();
+    setComment("");
+    setRating(defaultRating);
   };
 
   return (
     <Card className="p-6">
       <h3 className="mb-6 text-lg font-semibold">Write a Review</h3>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label className="mb-2 block text-sm font-medium">Name</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Your name (nick name)"
-              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-              required
-            />
-          </div>
-          <div>
-            <label className="mb-2 block text-sm font-medium">
-              Email (Optional)
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-          </div>
+        <div>
+          <label className="mb-2 block text-sm font-medium">
+            Name (optional)
+          </label>
+          <input
+            type="text"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            placeholder="Your name or nickname"
+            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            disabled={isSubmitting}
+          />
         </div>
 
         <div>
@@ -70,6 +65,7 @@ export function ReviewForm({ onSubmit }: ReviewFormProps) {
                 type="button"
                 onClick={() => setRating(star)}
                 className="transition-colors"
+                disabled={isSubmitting}
               >
                 <Star
                   className={`h-6 w-6 ${
@@ -84,40 +80,35 @@ export function ReviewForm({ onSubmit }: ReviewFormProps) {
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium">Title</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="E.g. Best Wedding Cake!"
-            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-            required
-          />
-        </div>
-
-        <div>
           <label className="mb-2 block text-sm font-medium">Review</label>
           <textarea
-            value={review}
-            onChange={(e) => setReview(e.target.value)}
+            value={comment}
+            onChange={(event) => setComment(event.target.value)}
             placeholder="Tell us about the cake, taste, delivery, design..."
             rows={4}
             className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             required
+            disabled={isSubmitting}
           />
         </div>
 
         <div className="flex gap-3">
           <Button
             type="submit"
-            className="bg-[#C967AC] text-white hover:bg-[#bd5b9e]"
+            disabled={isSubmitting}
+            className="bg-primary text-primary-foreground hover:bg-primary/90"
           >
-            Submit Review
+            {isSubmitting ? "Submitting…" : "Submit Review"}
           </Button>
           <Button
             type="button"
             variant="outline"
-            onClick={onSubmit}
+            onClick={() => {
+              setName("");
+              setComment("");
+              setRating(defaultRating);
+            }}
+            disabled={isSubmitting}
             className="border-border bg-transparent text-sm"
           >
             Clear
@@ -127,4 +118,3 @@ export function ReviewForm({ onSubmit }: ReviewFormProps) {
     </Card>
   );
 }
-// ...existing code...

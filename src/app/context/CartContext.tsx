@@ -1,0 +1,83 @@
+"use client";
+
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
+import { getCartItems, type CartItem } from "@/app/services/productService";
+import { useAuth } from "./AuthContext";
+
+type CartContextValue = {
+  cartItems: CartItem[];
+  cartCount: number;
+  isLoading: boolean;
+  error: string | null;
+  refreshCart: () => Promise<void>;
+};
+
+const CartContext = createContext<CartContextValue | undefined>(undefined);
+
+export function CartProvider({ children }: { children: ReactNode }) {
+  const { isLoggedIn } = useAuth();
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchCart = useCallback(async () => {
+    if (!isLoggedIn) {
+      setCartItems([]);
+      setError(null);
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const items = await getCartItems();
+      setCartItems(items);
+    } catch (err: any) {
+      const message =
+        err?.response?.data?.message ?? err?.message ?? "Unable to load cart.";
+      setError(message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isLoggedIn]);
+
+  useEffect(() => {
+    fetchCart();
+  }, [fetchCart]);
+
+  const cartCount = useMemo(
+    () => cartItems.reduce((total, item) => total + (item.quantity ?? 0), 0),
+    [cartItems]
+  );
+
+  const value = useMemo(
+    () => ({
+      cartItems,
+      cartCount,
+      isLoading,
+      error,
+      refreshCart: fetchCart,
+    }),
+    [cartItems, cartCount, isLoading, error, fetchCart]
+  );
+
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+}
+
+export function useCart() {
+  const context = useContext(CartContext);
+  if (!context) {
+    throw new Error("useCart must be used within a CartProvider");
+  }
+  return context;
+}

@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import {
   Category,
   CreateCategoryDto,
@@ -56,7 +57,10 @@ export default function CategoriesPage() {
         );
       } catch (err) {
         console.error("Error fetching data:", err);
-        setError(err instanceof Error ? err.message : "Failed to fetch data");
+        const message =
+          err instanceof Error ? err.message : "Failed to fetch data";
+        setError(message);
+        toast.error(message);
       } finally {
         setLoading(false);
       }
@@ -91,11 +95,13 @@ export default function CategoriesPage() {
         ...prev,
         newCategory.category || newCategory.data || newCategory,
       ]);
+      toast.success("Category created successfully!");
     } catch (err) {
       console.error("Error creating category:", err);
-      setError(
-        err instanceof Error ? err.message : "Failed to create category"
-      );
+      const message =
+        err instanceof Error ? err.message : "Failed to create category";
+      setError(message);
+      toast.error(message);
     }
   };
 
@@ -143,11 +149,13 @@ export default function CategoriesPage() {
         )
       );
       setEditingCategory(null);
+      toast.success("Category updated successfully!");
     } catch (err) {
       console.error("Error updating category:", err);
-      setError(
-        err instanceof Error ? err.message : "Failed to update category"
-      );
+      const message =
+        err instanceof Error ? err.message : "Failed to update category";
+      setError(message);
+      toast.error(message);
     }
   };
 
@@ -172,11 +180,13 @@ export default function CategoriesPage() {
         prev.filter((cat) => cat._id !== deleteCategoryModal._id)
       );
       setDeleteCategoryModal(null);
+      toast.success("Category deleted successfully!");
     } catch (err) {
       console.error("Error deleting category:", err);
-      setError(
-        err instanceof Error ? err.message : "Failed to delete category"
-      );
+      const message =
+        err instanceof Error ? err.message : "Failed to delete category";
+      setError(message);
+      toast.error(message);
     }
   };
 
@@ -221,7 +231,7 @@ export default function CategoriesPage() {
         throw new Error(errorData.message || "Failed to create sub-category");
       }
 
-      const newSubCategory = await response.json();
+      await response.json();
 
       // Refresh categories to get updated data with subcategories
       const categoriesResponse = await fetch(
@@ -235,11 +245,13 @@ export default function CategoriesPage() {
       }
 
       setAddingSubCategory(null);
+      toast.success("Sub-category created successfully!");
     } catch (err) {
       console.error("Error creating sub-category:", err);
-      setError(
-        err instanceof Error ? err.message : "Failed to create sub-category"
-      );
+      const message =
+        err instanceof Error ? err.message : "Failed to create sub-category";
+      setError(message);
+      toast.error(message);
     }
   };
 
@@ -312,7 +324,7 @@ export default function CategoriesPage() {
         throw new Error(errorData.message || "Failed to update sub-category");
       }
 
-      const updatedSubCategory = await response.json();
+      await response.json();
 
       // Refresh categories to get updated data
       const categoriesResponse = await fetch(
@@ -326,11 +338,13 @@ export default function CategoriesPage() {
       }
 
       setEditingSubCategory(null);
+      toast.success("Sub-category updated successfully!");
     } catch (err) {
       console.error("Error updating sub-category:", err);
-      setError(
-        err instanceof Error ? err.message : "Failed to update sub-category"
-      );
+      const message =
+        err instanceof Error ? err.message : "Failed to update sub-category";
+      setError(message);
+      toast.error(message);
     }
   };
 
@@ -363,11 +377,13 @@ export default function CategoriesPage() {
       }
 
       setDeleteSubCategoryModal(null);
+      toast.success("Sub-category deleted successfully!");
     } catch (err) {
       console.error("Error deleting sub-category:", err);
-      setError(
-        err instanceof Error ? err.message : "Failed to delete sub-category"
-      );
+      const message =
+        err instanceof Error ? err.message : "Failed to delete sub-category";
+      setError(message);
+      toast.error(message);
     }
   };
 
@@ -390,7 +406,7 @@ export default function CategoriesPage() {
           <p className="text-gray-600 mb-4">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-md"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-md"
           >
             Try Again
           </button>
@@ -400,7 +416,7 @@ export default function CategoriesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <HeroSection
         title="Categories"
         subtitle="Track all categories in client page in one place"
@@ -409,21 +425,21 @@ export default function CategoriesPage() {
       />
 
       <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 mt-4 sm:mt-6">
-        <section className="bg-white border-2 rounded-2xl sm:rounded-3xl shadow-sm overflow-hidden">
+        <section className="bg-card border-2 border-border rounded-2xl sm:rounded-3xl shadow-sm overflow-hidden">
           {/* Header */}
           <div className="flex flex-col gap-3 sm:gap-4 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 w-full">
             <div className="text-center sm:text-left">
-              <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-[#C967AC]">
+              <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-primary">
                 All Categories
               </h2>
-              <p className="text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2 max-w-2xl mx-auto sm:mx-0">
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-2 max-w-2xl mx-auto sm:mx-0">
                 This is your main category management section. You can now
                 manage categories easily using the forms below.
               </p>
             </div>
           </div>
 
-          <div className="p-3 sm:p-4 lg:p-6 bg-[#FFFAFF]">
+          <div className="p-3 sm:p-4 lg:p-6 bg-background-2">
             {/* Add/Edit Category Form */}
             {editingCategory ? (
               <div className="mb-6 sm:mb-8">
@@ -453,7 +469,7 @@ export default function CategoriesPage() {
 
             {/* Add Sub-category Form */}
             {addingSubCategory && (
-              <div className="mb-6 sm:mb-8 p-4 sm:p-6 border border-gray-200 rounded-lg bg-white">
+              <div className="mb-6 sm:mb-8 p-4 sm:p-6 border border-border rounded-lg bg-card">
                 <SubCategoryForm
                   onSubmit={handleCreateSubCategory}
                   onCancel={() => setAddingSubCategory(null)}
@@ -464,7 +480,7 @@ export default function CategoriesPage() {
 
             {/* Edit Sub-category Form */}
             {editingSubCategory && (
-              <div className="mb-6 sm:mb-8 p-4 sm:p-6 border border-gray-200 rounded-lg bg-white">
+              <div className="mb-6 sm:mb-8 p-4 sm:p-6 border border-border rounded-lg bg-card">
                 <SubCategoryForm
                   onSubmit={handleUpdateSubCategory}
                   onCancel={() => setEditingSubCategory(null)}

@@ -1,20 +1,28 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Star } from "lucide-react"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Star } from "lucide-react";
 
 interface ReviewItemProfileProps {
-  name: string
-  title: string
-  rating: number
-  content: string
-  initials: string
+  name: string;
+  title: string;
+  rating: number;
+  content: string;
+  initials: string;
 }
 
-export function ReviewItemProfile({ name, title, rating, content, initials }: ReviewItemProfileProps) {
+export function ReviewItemProfile({
+  name,
+  title,
+  rating,
+  content,
+  initials,
+}: ReviewItemProfileProps) {
   return (
     <div className="border-b pb-4 last:border-b-0">
       <div className="flex gap-3">
-        <Avatar className="h-10 w-10 bg-pink-100">
-          <AvatarFallback className="bg-pink-100 text-pink-600 text-sm font-semibold">{initials}</AvatarFallback>
+        <Avatar className="h-10 w-10 bg-primary/10">
+          <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">
+            {initials}
+          </AvatarFallback>
         </Avatar>
         <div className="flex-1">
           <div className="flex items-center justify-between">
@@ -26,7 +34,11 @@ export function ReviewItemProfile({ name, title, rating, content, initials }: Re
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star
                   key={i}
-                  className={`h-4 w-4 ${i < rating ? "fill-orange-400 text-orange-400" : "text-gray-300"}`}
+                  className={`h-4 w-4 ${
+                    i < rating
+                      ? "fill-orange-400 text-orange-400"
+                      : "text-gray-300"
+                  }`}
                 />
               ))}
             </div>
@@ -35,5 +47,5 @@ export function ReviewItemProfile({ name, title, rating, content, initials }: Re
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,8 +1,13 @@
 "use client";
 
 import React, { useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ShieldAlert } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
+import LoadingState from "@/components/LoadingState";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 type ProtectedRouteProps = {
   children: React.ReactNode;
@@ -18,31 +23,33 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   useEffect(() => {
     if (!isLoggedIn) {
-      // Redirect to login if not authenticated
-      router.push("/auth/login");
-    } else if (requireAdmin && user?.role !== "admin") {
-      // Redirect non-admin users away from admin routes
-      router.push("/");
+      router.replace("/auth/login");
     }
-  }, [isLoggedIn, requireAdmin, router, user]);
+  }, [isLoggedIn, router]);
 
-  // Optional: You can add a small loading UI while checking
   if (!isLoggedIn) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-gray-600">Checking authentication...</p>
-      </div>
-    );
+    return <LoadingState message="Checking authentication…" fullScreen />;
   }
 
-  // If admin is required but the user is not admin, don't render content
   if (requireAdmin && user?.role !== "admin") {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-destructive font-medium">
-          Access denied. Admins only.
-        </p>
-      </div>
+      <main className="flex min-h-screen items-center justify-center bg-background-2 px-4">
+        <Card className="flex max-w-md flex-col items-center gap-4 p-8 text-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-rose-100 text-rose-500">
+            <ShieldAlert className="h-6 w-6" />
+          </div>
+          <h2 className="text-lg font-semibold text-foreground">
+            Access Restricted
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            You need administrator privileges to view this section. Please
+            contact support if you believe this is a mistake.
+          </p>
+          <Button asChild variant="default">
+            <Link href="/">Return to Home</Link>
+          </Button>
+        </Card>
+      </main>
     );
   }
 

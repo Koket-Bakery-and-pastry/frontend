@@ -112,10 +112,10 @@ export default function Pagination({
               <button
                 key={page}
                 onClick={() => handlePageChange(page)}
-                className={`px-3 py-1 border rounded-md text-sm ${
+                className={`px-3 py-1 border rounded-md text-sm transition-colors ${
                   page === currentPage
-                    ? "bg-pink-600 text-white border-pink-600"
-                    : "hover:bg-gray-100 hover:border-gray-300"
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "border-border hover:bg-background-2"
                 }`}
               >
                 {page}

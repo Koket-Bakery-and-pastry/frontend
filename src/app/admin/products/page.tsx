@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { Product, ProductFilters } from "../../types/product";
 import HeroSection from "../components/HeroSection";
@@ -53,9 +54,10 @@ export default function AdminProductsPage() {
         setProducts(data.products || data.data || data);
       } catch (err) {
         console.error("Error fetching products:", err);
-        setError(
-          err instanceof Error ? err.message : "Failed to fetch products"
-        );
+        const message =
+          err instanceof Error ? err.message : "Failed to fetch products";
+        setError(message);
+        toast.error(message);
       } finally {
         setLoading(false);
       }
@@ -124,9 +126,13 @@ export default function AdminProductsPage() {
 
       setProductToDelete(null);
       setConfirmOpen(false);
+      toast.success("Product deleted successfully!");
     } catch (err) {
       console.error("Error deleting product:", err);
-      setError(err instanceof Error ? err.message : "Failed to delete product");
+      const message =
+        err instanceof Error ? err.message : "Failed to delete product";
+      setError(message);
+      toast.error(message);
     }
   };
 
