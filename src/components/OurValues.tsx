@@ -23,26 +23,28 @@ const values = [
 
 function OurValues() {
   return (
-    <section className="bg-background/50 section-spacing mb-8">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className=" mb-12">
-          <Header
-            text="
-          Why Choose Sweet Delights?"
-          />
+    <section className="bg-background/50 section-spacing-y">
+      <div className="section-container">
+        <div className="text-center mb-10 sm:mb-12 md:mb-14 lg:mb-16">
+          <Header text="Why Choose Sweet Delights?" />
+          <p className="mt-3 xs:mt-4 text-muted-foreground text-sm xs:text-base md:text-lg max-w-2xl mx-auto">
+            Quality ingredients, expert craftsmanship, and personalized service
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-8 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 md:gap-8 lg:gap-10">
           {values.map((v, i) => (
             <div
               key={i}
-              className="bg-white rounded-2xl p-6 text-center shadow-sm flex flex-col items-center justify-start"
+              className="bg-card rounded-2xl p-6 sm:p-7 md:p-8 text-center shadow-lg hover:shadow-xl border-2 border-border hover:border-primary/50 transition-all duration-300 flex flex-col items-center group"
             >
-              <div className="bg-secondary rounded-full w-16 h-16 flex items-center justify-center mb-4">
+              <div className="bg-secondary group-hover:bg-primary/10 rounded-full w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 flex items-center justify-center mb-4 sm:mb-5 md:mb-6 transition-colors duration-300">
                 {v.icon}
               </div>
-              <h3 className="font-bold text-lg mb-2">{v.title}</h3>
-              <p className="text-foreground text-sm xl:text-base max-w-xs">
+              <h3 className="font-bold text-base sm:text-lg md:text-xl mb-2 sm:mb-3 text-card-foreground group-hover:text-primary transition-colors duration-300">
+                {v.title}
+              </h3>
+              <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
                 {v.desc}
               </p>
             </div>

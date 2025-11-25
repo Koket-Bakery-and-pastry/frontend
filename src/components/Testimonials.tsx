@@ -31,35 +31,44 @@ const testimonials = [
 
 function Testimonials() {
   return (
-    <section className="bg-background/50 section-spacing">
-      <div className=" mb-12">
-        <Header
-          text="
-        What Our Customers Say"
-        />
-      </div>
+    <section className="bg-background section-spacing-y">
+      <div className="section-container">
+        <div className="text-center mb-10 sm:mb-12 md:mb-14 lg:mb-16">
+          <Header text="What Our Customers Say" />
+          <p className="mt-3 xs:mt-4 text-muted-foreground text-sm xs:text-base md:text-lg max-w-2xl mx-auto">
+            Real reviews from our satisfied customers
+          </p>
+        </div>
 
-      <div className=" grid grid-cols-1 lg:grid-cols-2 3xl:grid-cols-4 gap-6 items-stretch">
-        {testimonials.map((t, i) => (
-          <div
-            key={i}
-            className="bg-white rounded-xl shadow-lg p-6 flex flex-col"
-          >
-            <div className="flex mb-3">
-              {Array.from({ length: t.rating }).map((_, idx) => (
-                <span key={idx} className="text-yellow-400 text-lg mr-1">
-                  &#9733;
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7 md:gap-8">
+          {testimonials.map((t, i) => (
+            <div
+              key={i}
+              className="bg-card rounded-2xl shadow-lg hover:shadow-xl border-2 border-border hover:border-primary/50 p-6 sm:p-7 flex flex-col transition-all duration-300 group"
+            >
+              <div className="flex mb-3 sm:mb-4">
+                {Array.from({ length: t.rating }).map((_, idx) => (
+                  <span
+                    key={idx}
+                    className="text-yellow-400 text-lg sm:text-xl mr-1"
+                  >
+                    &#9733;
+                  </span>
+                ))}
+              </div>
+
+              <p className="text-muted-foreground text-sm sm:text-base mb-4 sm:mb-5 flex-1 overflow-hidden line-clamp-4 leading-relaxed">
+                &ldquo;{t.review}&rdquo;
+              </p>
+
+              <div className="pt-3 sm:pt-4 border-t border-border">
+                <span className="font-bold text-card-foreground group-hover:text-primary transition-colors duration-300 text-sm sm:text-base">
+                  {t.name}
                 </span>
-              ))}
+              </div>
             </div>
-
-            <p className="text-foreground mb-4 flex-1 overflow-hidden line-clamp-4">
-              {t.review}
-            </p>
-
-            <span className="font-bold text-foreground mt-4">{t.name}</span>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
   );

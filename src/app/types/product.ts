@@ -61,7 +61,9 @@ export interface ProductSubcategoryDetail {
   description?: string;
   status?: string;
   is_pieceable?: boolean;
+  price?: number;
   kilo_to_price_map?: Record<string, number>;
+  upfront_payment?: number;
   pricing?: string;
   stock?: number;
   created_at?: string;

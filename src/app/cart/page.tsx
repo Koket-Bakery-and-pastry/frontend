@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { CartItem } from "./components/CartItem";
 import { OrderSummary } from "./components/OrderSummary";
 import { PageHeader } from "@/components";
 import Link from "next/link";
+import { useCart } from "@/app/context/CartContext";
+import LoadingState from "@/components/LoadingState";
 
 interface CartItemData {
   id: string;
@@ -14,37 +16,32 @@ interface CartItemData {
   category: string;
   price: number;
   quantity: number;
+  kilo?: number;
+  custom_text?: string;
+  additional_description?: string;
 }
 
 export default function ShoppingCartPage() {
-  const [items, setItems] = useState<CartItemData[]>([
-    {
-      id: "1",
-      image: "/assets/img1.png",
-      name: "Black Forest Cake",
-      category: "Cakes",
-      price: 48,
-      quantity: 1,
-    },
-    {
-      id: "2",
-      image: "/assets/img2.png",
-      name: "Red Velvet Cake",
-      category: "Cakes",
-      price: 48,
-      quantity: 1,
-    },
-    {
-      id: "3",
-      image: "/assets/img3.jpeg",
-      name: "Chocolate Cake",
-      category: "Cakes",
-      price: 55,
-      quantity: 1,
-    },
-  ]);
-
+  const { cartItems, isLoading, refreshCart } = useCart();
+  const [items, setItems] = useState<CartItemData[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  // Convert cart items from API to display format
+  useEffect(() => {
+    const mappedItems: CartItemData[] = cartItems.map((item) => ({
+      id: item._id,
+      // TODO: These will be populated from product_id when it's populated by backend
+      image: "/assets/img1.png",
+      name: "Product Name",
+      category: "Cakes",
+      price: 50, // Placeholder price
+      quantity: item.quantity,
+      kilo: item.kilo,
+      custom_text: item.custom_text,
+      additional_description: item.additional_description,
+    }));
+    setItems(mappedItems);
+  }, [cartItems]);
 
   const handleSelect = (id: string) => {
     setSelectedIds((prev) =>
@@ -71,6 +68,19 @@ export default function ShoppingCartPage() {
 
   const total = subtotal;
 
+  // Save selected items to localStorage when they change
+  useEffect(() => {
+    if (selectedIds.length > 0) {
+      localStorage.setItem("selectedCartItems", JSON.stringify(selectedIds));
+    } else {
+      localStorage.removeItem("selectedCartItems");
+    }
+  }, [selectedIds]);
+
+  if (isLoading) {
+    return <LoadingState message="Loading your cart..." />;
+  }
+
   return (
     <div className="min-h-screen bg-background ">
       <div>
@@ -86,7 +96,7 @@ export default function ShoppingCartPage() {
           <div className="lg:col-span-2 space-y-4">
             {/* 🆕 Selection Info Bar */}
 
-            {items.length < 0 && (
+            {items.length > 0 && (
               <div className="flex items-center justify-between bg-primary/10 border border-primary/30 text-sm text-primary px-4 py-2 rounded-md mb-4">
                 <p>
                   Tap on an item to select it.{" "}
@@ -107,7 +117,7 @@ export default function ShoppingCartPage() {
               </div>
             )}
 
-            {items.length < 0 ? (
+            {items.length > 0 ? (
               <>
                 {items.map((item) => (
                   <div

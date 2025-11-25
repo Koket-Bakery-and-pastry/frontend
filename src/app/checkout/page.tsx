@@ -1,36 +1,91 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ContactPaymentForm } from "./components/ContactPaymentForm";
 import { CheckoutItemPreview } from "./components/CheckoutItemPreview";
 import { PageHeader } from "@/components";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { useCart } from "@/app/context/CartContext";
+import LoadingState from "@/components/LoadingState";
 
-interface CartItem {
+interface CheckoutItem {
   id: string;
   image: string;
   name: string;
   price: number;
   quantity: number;
+  kilo?: number;
+  custom_text?: string;
+  additional_description?: string;
 }
 
 export default function CheckoutPage() {
-  const [items] = useState<CartItem[]>([
-    {
-      id: "1",
-      image: "/black-forest-cake.png",
-      name: "Black Forest Cake",
-      price: 48,
-      quantity: 3,
-    },
-  ]);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { cartItems, isLoading } = useCart();
+  
+  // Get selected item IDs from URL params or localStorage
+  const selectedIds = useMemo(() => {
+    const urlIds = searchParams.get("items");
+    if (urlIds) {
+      return urlIds.split(",");
+    }
+    // Fallback to localStorage if no URL params
+    const stored = localStorage.getItem("selectedCartItems");
+    return stored ? JSON.parse(stored) : [];
+  }, [searchParams]);
+
+  // Map cart items to checkout format
+  const items = useMemo(() => {
+    if (selectedIds.length === 0) {
+      // If no items selected, use all cart items
+      return cartItems.map((item) => ({
+        id: item._id,
+        // TODO: These will be populated from product_id when backend populates it
+        image: "/assets/img1.png",
+        name: "Product Name",
+        price: 50, // Placeholder
+        quantity: item.quantity,
+        kilo: item.kilo,
+        custom_text: item.custom_text,
+        additional_description: item.additional_description,
+      }));
+    }
+    
+    // Filter only selected items
+    return cartItems
+      .filter((item) => selectedIds.includes(item._id))
+      .map((item) => ({
+        id: item._id,
+        // TODO: These will be populated from product_id when backend populates it
+        image: "/assets/img1.png",
+        name: "Product Name",
+        price: 50, // Placeholder
+        quantity: item.quantity,
+        kilo: item.kilo,
+        custom_text: item.custom_text,
+        additional_description: item.additional_description,
+      }));
+  }, [cartItems, selectedIds]);
 
   const subtotal = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
   const total = subtotal;
+
+  // Redirect if no items
+  useEffect(() => {
+    if (!isLoading && items.length === 0) {
+      router.push("/cart");
+    }
+  }, [isLoading, items.length, router]);
+
+  if (isLoading) {
+    return <LoadingState message="Loading checkout..." />;
+  }
 
   const handlePaymentSubmit = (data: any) => {
     console.log("Payment data submitted:", data);

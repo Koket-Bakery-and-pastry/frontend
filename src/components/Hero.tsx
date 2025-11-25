@@ -3,27 +3,29 @@ import Link from "next/link";
 
 function Hero() {
   return (
-    <section className="bg-background   flex flex-col items-center text-center section-spacing ">
-      <h1 className="font-kaushan text-4xl md:text-5xl lg:text-7xl 2xl:text-8xl text-foreground  md:mb-4 leading-tight">
-        Delicious Cakes for <br /> Every Celebration
-      </h1>
-      <p className="text-sm md:text-base lg:text-lg 2xl:text-2xl text-foreground max-w-5xl mx-auto mt-8 mb-14 leading-relaxed">
-        From birthdays to weddings, we create custom cakes that taste as amazing
-        as they look. Order online and make your special moments sweeter.
-      </p>
-      <div className="flex flex- gap-4 justify-center">
-        <Link
-          href="/products"
-          className="bg-primary hover:bg-primary-hover text-primary-foreground font-bold px-4 text-xs md:text-base md:px-6 py-2 rounded-full shadow-md transition"
-        >
-          Browse Products
-        </Link>
-        <Link
-          href="/products"
-          className="bg-white text-foreground font-semibold px-4 text-xs xs:text-sm md:text-base md:px-6 py-2 rounded-full shadow-md hover:bg-foreground-hover transition"
-        >
-          Custom Order
-        </Link>
+    <section className="bg-background section-spacing-y">
+      <div className="section-container flex flex-col items-center text-center">
+        <h1 className="font-kaushan text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl text-foreground leading-tight mb-4 sm:mb-6">
+          Delicious Cakes for <br /> Every Celebration
+        </h1>
+        <p className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-4xl mx-auto mt-4 sm:mt-6 md:mt-8 mb-8 sm:mb-10 md:mb-12 lg:mb-14 leading-relaxed px-4">
+          From birthdays to weddings, we create custom cakes that taste as amazing
+          as they look. Order online and make your special moments sweeter.
+        </p>
+        <div className="flex flex-col xs:flex-row gap-3 xs:gap-4 justify-center w-full xs:w-auto">
+          <Link
+            href="/products"
+            className="bg-primary hover:bg-primary-hover text-primary-foreground font-bold px-6 xs:px-8 md:px-10 py-3 md:py-4 text-sm xs:text-base md:text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+          >
+            Browse Products
+          </Link>
+          <Link
+            href="/custom-cake"
+            className="bg-card hover:bg-secondary text-foreground font-semibold px-6 xs:px-8 md:px-10 py-3 md:py-4 text-sm xs:text-base md:text-lg rounded-full shadow-lg hover:shadow-xl border-2 border-border hover:border-primary/50 transition-all duration-300"
+          >
+            Custom Order
+          </Link>
+        </div>
       </div>
     </section>
   );
