@@ -15,7 +15,7 @@ import SubCategoryForm, {
 import CategoriesGrid from "../components/CategoriesGrid";
 import ConfirmationModal from "../components/ConfirmationModal";
 
-const API_BASE_URL = "http://localhost:5001";
+const API_BASE_URL = "https://backend-om79.onrender.com";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
