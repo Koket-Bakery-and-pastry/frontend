@@ -23,8 +23,6 @@ interface ReviewResponse {
   message: string;
 }
 
-
-
 export async function getProducts(): Promise<ProductSummary[]> {
   try {
     const { data } = await api.get<ProductsResponse>("/products");

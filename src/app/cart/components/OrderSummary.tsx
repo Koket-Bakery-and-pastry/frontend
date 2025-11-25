@@ -26,7 +26,7 @@ export function OrderSummary({ subtotal, total }: OrderSummaryProps) {
       </div>
 
       <Link href="/checkout" passHref>
-        <Button 
+        <Button
           className="w-full mt-6 bg-primary hover:bg-primary/90 text-primary-foreground"
           disabled={subtotal === 0}
         >

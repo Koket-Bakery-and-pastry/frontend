@@ -25,7 +25,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { cartItems, isLoading } = useCart();
-  
+
   // Get selected item IDs from URL params or localStorage
   const selectedIds = useMemo(() => {
     const urlIds = searchParams.get("items");
@@ -53,7 +53,7 @@ export default function CheckoutPage() {
         additional_description: item.additional_description,
       }));
     }
-    
+
     // Filter only selected items
     return cartItems
       .filter((item) => selectedIds.includes(item._id))
