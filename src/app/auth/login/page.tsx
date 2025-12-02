@@ -25,10 +25,11 @@ function LoginPage() {
 
     try {
       const response = await loginUser({ email, password });
-      const role: "admin" | "user" =
-        response.user.role === "admin" ? "admin" : "user";
+      const role: "customer" | "admin" =
+        response.user.role === "admin" ? "admin" : "customer";
       login(
         {
+          id: response.user.id,
           role,
           name: response.user.name,
           email: response.user.email,

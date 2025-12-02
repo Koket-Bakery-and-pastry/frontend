@@ -16,11 +16,10 @@ interface ProductResponse {
 }
 
 interface ReviewPayload {
+  user_id: string;
   product_id: string;
-  user_id?: string;
   rating: number;
   comment: string;
-  name?: string;
 }
 
 interface ReviewResponse {
@@ -61,7 +60,18 @@ export async function getProductById(id: string): Promise<ProductDetail> {
  */
 export async function createProductReview(payload: ReviewPayload) {
   try {
-    const { data } = await api.post<ReviewResponse>("/reviews", payload);
+    const token = localStorage.getItem("accessToken");
+
+    if (!token) {
+      throw new Error("Please login to submit a review");
+    }
+
+    const { data } = await api.post<ReviewResponse>("/reviews", payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
     return data;
   } catch (error: any) {
     console.error("Failed to submit review", error?.response?.data ?? error);

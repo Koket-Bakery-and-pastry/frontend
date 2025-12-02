@@ -2,10 +2,11 @@
 
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-import { Star, ChevronLeft, ShoppingCart } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ReviewForm } from "../components/ReviewForm";
+import { ProductDetails } from "../components/ProductDetails";
 import dynamic from "next/dynamic";
 import {
   createProductReview,
@@ -13,6 +14,7 @@ import {
 } from "@/app/services/productService";
 import { addToCart, type AddToCartPayload } from "@/app/services/cartService";
 import { useCart } from "@/app/context/CartContext";
+import { useAuth } from "@/app/context/AuthContext";
 import type { ProductDetail, ProductSummary } from "@/app/types/product";
 import ProductCard from "@/components/ProductCard";
 import LoadingState from "@/components/LoadingState";
@@ -35,12 +37,6 @@ const currencyFormatter = new Intl.NumberFormat("en-ET", {
   maximumFractionDigits: 0,
 });
 
-type WeightOption = {
-  id: string;
-  label: string;
-  price?: number;
-};
-
 const resolveImageUrl = (path?: string) => {
   if (!path) return undefined;
   if (/^https?:\/\//i.test(path)) {
@@ -49,70 +45,18 @@ const resolveImageUrl = (path?: string) => {
   return `${ASSET_BASE_URL}${path}`;
 };
 
-const formatWeightLabel = (raw: string) => {
-  const normalized = raw.trim().toLowerCase();
-  if (normalized.endsWith("kg") || normalized.endsWith("g")) {
-    return raw;
-  }
-  const numeric = Number(normalized);
-  if (!Number.isNaN(numeric)) {
-    return numeric >= 1 ? `${numeric} kg` : `${numeric * 1000} g`;
-  }
-  return raw;
-};
-
-const buildWeightOptions = (product: ProductDetail): WeightOption[] => {
-  const entries = Object.entries(product.kilo_to_price_map ?? {});
-  if (entries.length) {
-    return entries.map(([key, value]) => ({
-      id: key,
-      label: formatWeightLabel(key),
-      price: typeof value === "number" ? value : Number(value),
-    }));
-  }
-
-  if (typeof product.price === "number") {
-    return [
-      {
-        id: "default",
-        label: "Standard",
-        price: product.price,
-      },
-    ];
-  }
-
-  return [];
-};
-
-const parseKiloValue = (input?: string) => {
-  if (!input) return undefined;
-  const cleaned = input.replace(/[^0-9.]/g, "");
-  if (!cleaned) return undefined;
-  const numeric = Number(cleaned);
-  return Number.isNaN(numeric) ? undefined : numeric;
-};
-
 export default function ProductPage() {
   const params = useParams<{ productId: string }>();
   const { refreshCart } = useCart();
+  const { user } = useAuth();
   const [product, setProduct] = useState<ProductDetail | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<ProductSummary[]>([]);
-  const [weightOptions, setWeightOptions] = useState<WeightOption[]>([]);
-  const [selectedWeight, setSelectedWeight] = useState<WeightOption | null>(
-    null
-  );
-  const [message, setMessage] = useState("");
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [reviewError, setReviewError] = useState<string | null>(null);
-  const [isAddingToCart, setIsAddingToCart] = useState(false);
-  const [cartError, setCartError] = useState<string | null>(null);
-  const [cartSuccess, setCartSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshIndex, setRefreshIndex] = useState(0);
-  const [pieces, setPieces] = useState<number | undefined>(undefined);
-  const [additionalDescription, setAdditionalDescription] = useState("");
 
   const productId = params?.productId?.toString();
 
@@ -155,20 +99,21 @@ export default function ProductPage() {
         const resolvedProduct: ProductDetail = {
           ...data,
           image_url: resolveImageUrl(data.image_url),
+          images: data.images
+            ?.map((img) => resolveImageUrl(img))
+            .filter((img): img is string => !!img),
           related_products: related.map((item) => ({
             ...item,
             image_url: resolveImageUrl(item.image_url),
+            images: item.images
+              ?.map((img) => resolveImageUrl(img))
+              .filter((img): img is string => !!img),
           })),
           reviews: normalizedReviews,
         };
 
-        const options = buildWeightOptions(resolvedProduct);
-
         setProduct(resolvedProduct);
         setRelatedProducts(resolvedProduct.related_products);
-        setWeightOptions(options);
-        setSelectedWeight(options[0] ?? null);
-        setPieces(resolvedProduct.is_pieceable ? 1 : undefined);
       })
       .catch(() => {
         if (!cancelled) {
@@ -187,27 +132,15 @@ export default function ProductPage() {
   }, [productId, refreshIndex]);
 
   const galleryImages = useMemo(() => {
-    if (!product?.image_url) {
-      return [];
+    // Prioritize images array, fallback to single image_url
+    if (product?.images && product.images.length > 0) {
+      return product.images;
     }
-    return [product.image_url];
-  }, [product?.image_url]);
-
-  const priceValue = selectedWeight?.price ?? product?.price;
-  const priceLabel =
-    typeof priceValue === "number"
-      ? currencyFormatter.format(priceValue)
-      : "Price on request";
-
-  const priceMeta = selectedWeight
-    ? selectedWeight.price
-      ? `${currencyFormatter.format(selectedWeight.price)} · ${
-          selectedWeight.label
-        }`
-      : selectedWeight.label
-    : product?.price
-    ? "Standard price"
-    : "Contact us for pricing";
+    if (product?.image_url) {
+      return [product.image_url];
+    }
+    return [];
+  }, [product?.images, product?.image_url]);
 
   const computePriceLabel = (item: ProductSummary) => {
     const kiloValues = item.kilo_to_price_map
@@ -271,7 +204,6 @@ export default function ProductPage() {
   const handleReviewSubmit = async ({
     rating,
     comment,
-    name,
   }: {
     rating: number;
     comment: string;
@@ -282,14 +214,20 @@ export default function ProductPage() {
       return;
     }
 
+    if (!user?.id) {
+      setReviewError("Please login to submit a review.");
+      return;
+    }
+
     try {
       setIsSubmittingReview(true);
       setReviewError(null);
+
       const payload = {
+        user_id: user.id,
         product_id: productId,
         rating,
         comment,
-        ...(name ? { name } : {}),
       };
 
       await createProductReview(payload);
@@ -303,57 +241,6 @@ export default function ProductPage() {
       setReviewError(apiMessage);
     } finally {
       setIsSubmittingReview(false);
-    }
-  };
-
-  const handleAddToCart = async () => {
-    if (!productId) {
-      setCartError("Missing product identifier.");
-      return;
-    }
-
-    setCartError(null);
-    setCartSuccess(null);
-    setIsAddingToCart(true);
-
-    const kiloValue = parseKiloValue(selectedWeight?.id);
-    const payload: AddToCartPayload = {
-      product_id: productId,
-      quantity: 1,
-    };
-
-    if (typeof kiloValue === "number") {
-      payload.kilo = kiloValue;
-    } else if (selectedWeight) {
-      payload.kilo = 1;
-    } else if (!product?.is_pieceable) {
-      payload.kilo = 1;
-    }
-
-    if (product?.is_pieceable && typeof pieces === "number" && pieces > 0) {
-      payload.pieces = pieces;
-    }
-
-    if (message.trim()) {
-      payload.custom_text = message.trim();
-    }
-
-    if (additionalDescription.trim()) {
-      payload.additional_description = additionalDescription.trim();
-    }
-
-    try {
-      await addToCart(payload);
-      await refreshCart();
-      setCartSuccess("Added to cart successfully.");
-    } catch (cartErr: any) {
-      const apiMessage =
-        cartErr?.response?.data?.message ??
-        cartErr?.message ??
-        "Unable to add item to cart.";
-      setCartError(apiMessage);
-    } finally {
-      setIsAddingToCart(false);
     }
   };
 
@@ -382,196 +269,7 @@ export default function ProductPage() {
             <ProductGallery images={galleryImages} name={product.name} />
           </Suspense>
 
-          <div className="flex flex-col gap-6">
-            <div>
-              <p className="text-sm text-muted-foreground">{categoryLabel}</p>
-              <h1 className="mt-2 text-2xl font-bold text-foreground md:text-4xl">
-                {product.name}
-              </h1>
-              <p className="mt-2 text-sm text-muted-foreground md:text-sm">
-                {product.description}
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div className="flex gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="h-4 w-4"
-                    style={{
-                      fill: i < ratingValue ? "#FFD700" : "transparent",
-                      color: i < ratingValue ? "#FFD700" : "#d1d5db",
-                    }}
-                  />
-                ))}
-              </div>
-              <span className="text-sm text-muted-foreground">
-                {totalReviews > 0
-                  ? `(${totalReviews} review${totalReviews === 1 ? "" : "s"})`
-                  : "No reviews yet"}
-              </span>
-            </div>
-
-            <div>
-              <div className="text-3xl font-bold text-primary">
-                {priceLabel}
-              </div>
-              <div className="text-sm text-muted-foreground">{priceMeta}</div>
-            </div>
-
-            <div className="flex flex-col gap-6 2xl:flex-row">
-              {weightOptions.length > 0 && (
-                <div className="flex flex-col">
-                  <label className="mb-2 block text-sm font-medium">
-                    Kilos
-                  </label>
-                  <select
-                    value={selectedWeight?.id ?? ""}
-                    onChange={(event) => {
-                      const next = weightOptions.find(
-                        (option) => option.id === event.target.value
-                      );
-                      setSelectedWeight(next ?? null);
-                    }}
-                    className="w-32 rounded-md border border-border px-3 py-2 text-center text-sm"
-                    aria-label="Select weight"
-                  >
-                    {weightOptions.map((option) => (
-                      <option key={option.id} value={option.id}>
-                        {option.label}
-                        {typeof option.price === "number"
-                          ? ` — ${currencyFormatter.format(option.price)}`
-                          : ""}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              {product.is_pieceable && (
-                <div className="flex flex-col">
-                  <label className="mb-2 block text-sm font-medium">
-                    Pieces
-                  </label>
-                  <input
-                    type="number"
-                    min={1}
-                    value={pieces ?? 1}
-                    onChange={(event) => {
-                      const value = Number(event.target.value);
-                      setPieces(
-                        Number.isNaN(value) ? 1 : Math.max(1, Math.floor(value))
-                      );
-                    }}
-                    className="w-24 rounded-md border border-border px-3 py-2 text-center text-sm"
-                    aria-label="Select pieces"
-                  />
-                </div>
-              )}
-
-              <div className="w-full flex-1">
-                <label className="mb-2 block text-sm font-medium">
-                  Message on cake
-                </label>
-                <textarea
-                  rows={3}
-                  value={message}
-                  onChange={(event) => setMessage(event.target.value)}
-                  placeholder="e.g. Happy Birthday!"
-                  className="w-full rounded-md border border-border px-3 py-2 text-sm"
-                />
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label className="mb-2 block text-sm font-medium">
-                Additional instructions
-              </label>
-              <textarea
-                rows={3}
-                value={additionalDescription}
-                onChange={(event) =>
-                  setAdditionalDescription(event.target.value)
-                }
-                placeholder="Allergies, delivery notes, or decoration details"
-                className="w-full rounded-md border border-border px-3 py-2 text-sm"
-              />
-            </div>
-
-            <div className="flex items-center gap-4 pt-4">
-              <Button
-                size="lg"
-                type="button"
-                onClick={handleAddToCart}
-                disabled={isAddingToCart}
-                className="flex flex-1 items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-70"
-              >
-                <ShoppingCart className="h-4 w-4" />
-                {isAddingToCart ? "Adding…" : "Add to Cart"}
-              </Button>
-            </div>
-
-            {(cartError || cartSuccess) && (
-              <p
-                className={`text-sm ${
-                  cartError ? "text-red-500" : "text-emerald-600"
-                }`}
-              >
-                {cartError ?? cartSuccess}
-              </p>
-            )}
-
-            <Card className="rounded-lg border border-border bg-background p-6">
-              <h3 className="mb-4 text-lg font-semibold">Product Details</h3>
-
-              <div className="grid gap-4 text-sm">
-                <div className="flex flex-col sm:grid sm:grid-cols-2 sm:items-center">
-                  <span className="font-medium text-muted-foreground">
-                    Category:
-                  </span>
-                  <span className="font-medium sm:text-right">
-                    {categoryName || "—"}
-                  </span>
-                </div>
-
-                <div className="flex flex-col sm:grid sm:grid-cols-2 sm:items-center">
-                  <span className="font-medium text-muted-foreground">
-                    Type:
-                  </span>
-                  <span className="font-medium sm:text-right">
-                    {subcategoryName || "—"}
-                  </span>
-                </div>
-
-                <div className="flex flex-col sm:grid sm:grid-cols-2 sm:items-center">
-                  <span className="font-medium text-muted-foreground">
-                    Availability:
-                  </span>
-                  <span className="font-medium text-green-600 sm:text-right">
-                    In Stock
-                  </span>
-                </div>
-
-                <div className="flex flex-col sm:grid sm:grid-cols-2 sm:items-center">
-                  <span className="font-medium text-muted-foreground">
-                    Description:
-                  </span>
-                  <span className="font-medium sm:text-right">
-                    {product.description || "—"}
-                  </span>
-                </div>
-
-                <div className="border-t border-border pt-4">
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    Delivery times may vary depending on current workload. The
-                    final decoration may differ slightly from the reference
-                    image because each cake is handmade with care.
-                  </p>
-                </div>
-              </div>
-            </Card>
-          </div>
+          <ProductDetails product={product} onCartUpdate={refreshCart} />
         </div>
       </section>
 

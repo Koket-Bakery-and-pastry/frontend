@@ -4,20 +4,19 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Star } from "lucide-react";
 import { ReviewFilterDropdown } from "./ReviewFilterDropdown";
-import { ReviewItemProfile } from "./ReviewItemProfile";
-import { ReviewsList } from "@/app/products/components/ReviewsList";
 
-interface Review {
-  id: string;
-  name: string;
-  title: string;
+interface Rating {
+  product: {
+    _id: string;
+    name: string;
+  };
   rating: number;
-  content: string;
-  initials: string;
+  comment: string;
+  created_at: string;
 }
 
 interface MyReviewsSectionProps {
-  reviews: Review[];
+  reviews: Rating[];
 }
 
 export function MyReviewsSection({ reviews }: MyReviewsSectionProps) {
@@ -26,6 +25,15 @@ export function MyReviewsSection({ reviews }: MyReviewsSectionProps) {
   const filteredReviews = selectedRating
     ? reviews.filter((r) => r.rating === selectedRating)
     : reviews;
+  
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
 
   return (
     <Card className="py-6 border-2 mt-6">
@@ -46,7 +54,29 @@ export function MyReviewsSection({ reviews }: MyReviewsSectionProps) {
         </div>
       ) : (
         <div className="space-y-4 px-2 md:px-6">
-          <ReviewsList />
+          {filteredReviews.map((review, index) => (
+            <Card key={index} className="p-4 border">
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <h4 className="font-semibold text-gray-900">{review.product.name}</h4>
+                  <p className="text-sm text-gray-500">{formatDate(review.created_at)}</p>
+                </div>
+                <div className="flex items-center gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`h-4 w-4 ${
+                        i < review.rating
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "text-gray-300"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+              <p className="text-gray-700">{review.comment}</p>
+            </Card>
+          ))}
         </div>
       )}
     </Card>

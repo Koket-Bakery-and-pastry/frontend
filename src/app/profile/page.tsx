@@ -109,7 +109,7 @@ export default function ProfilePage() {
     })
   );
 
-  const handleSaveProfile = (data: {
+  const handleSaveProfile = async (data: {
     fullName: string;
     email: string;
     phone: string;

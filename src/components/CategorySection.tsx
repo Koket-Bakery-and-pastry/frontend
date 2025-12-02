@@ -16,19 +16,22 @@ import Header from "./Header";
 
 const categories = [
   {
-    name: "Cookies",
-    image: "/assets/img2.png",
-    tagline: "One bite, endless smiles!  love at first bite!",
+    name: "Cakes",
+    image: "/assets/img1.png",
+    tagline: "Sweeten every moment!",
+    description: "Custom designs for your special occasions",
   },
   {
-    name: "Cakes",
+    name: "Cookies",
     image: "/assets/img2.png",
-    tagline: "Celebrate every moment with sweetness!",
+    tagline: "One bite, endless smiles!",
+    description: "Custom designs for your special occasions",
   },
   {
     name: "Breads",
-    image: "/assets/img2.png",
+    image: "/assets/img3.jpeg",
     tagline: "Warm, fresh, and made with love!",
+    description: "Artisan breads crafted to perfection",
   },
 ];
 
@@ -55,58 +58,95 @@ const cardVariants: Variants = {
 
 function CategorySection() {
   return (
-    <section className=" bg-background mt-8 section-spacing min-h-screen">
-      <div className="mx-auto max-w-7xl">
+    <section className="bg-background section-spacing-y">
+      <div className="section-container">
         {/* Section heading */}
-        <motion.h2
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-3xl md:text-5xl xl:text-6xl 2xl:text-7xl text-center mb-16 text-balance font-kaushan"
+          className="text-center mb-10 sm:mb-12 md:mb-14 lg:mb-16"
         >
           <Header text="Explore Our Delicious Categories" />
-        </motion.h2>
+          <p className="mt-3 xs:mt-4 text-muted-foreground text-sm xs:text-base md:text-lg max-w-2xl mx-auto">
+            Discover our handcrafted selection of baked goods, made fresh daily
+            with love
+          </p>
+        </motion.div>
 
-        {/* Category grid */}
+        {/* Category grid - 3 cards only */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-8 lg:gap-12"
+          viewport={{ once: true, margin: "-50px" }}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 md:gap-8 lg:gap-10"
         >
           {categories.map((category, index) => (
             <motion.div
               key={index}
               variants={cardVariants}
-              whileHover={{ scale: 1.02 }}
-              className="flex flex-col group cursor-pointer overflow-hidden transition-transform px-8 md:px-0   "
+              whileHover={{ y: -8 }}
+              className="group cursor-pointer w-full max-w-md mx-auto sm:max-w-none"
             >
-              <Card className="shadow-none border-none pt-0 gap-4 ">
-                {/* Image container */}
-                <div className="group relative aspect-square overflow-hidden rounded-lg xl:mb-3">
+              <Card className="relative overflow-hidden border-2 border-border hover:border-primary/50 transition-all duration-300 h-full bg-card hover:shadow-xl p-0">
+                {/* Image container with overlay */}
+                <div className="relative aspect-[4/3] overflow-hidden rounded-t-lg">
                   <Image
                     src={category.image || "/placeholder.svg"}
                     alt={category.name}
                     fill
-                    className="object-cover transition-transform group-hover:scale-105"
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    priority={index === 0}
                   />
-                  <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-70 group-hover:opacity-50 transition-opacity duration-300" />
+
+                  {/* Category name overlay */}
+                  <div className="absolute bottom-0 left-0 right-0 p-3 xss:p-4 xs:p-5 sm:p-2 md:p-6">
+                    <h3 className="text-xl xss:text-2xl sm:text-xl md:text-2xl lg:text-3xl font-bold text-white mb-1 xss:mb-2">
+                      {category.name}
+                    </h3>
+                    <p className="text-white/90 text-xs xss:text-sm font-medium line-clamp-2">
+                      {category.description}
+                    </p>
+                  </div>
                 </div>
 
-                {/* Category name */}
-                <h3 className="text-2xl lg:text-3xl font-bold text-center pb-8 text-foreground">
-                  {category.name}
-                </h3>
-              </Card>
+                {/* Tagline section */}
+                <CardContent className="p-4 xss:p-5 sm:py-0 md:py-1 sm:px-2  lg:p-6">
+                  <div className="flex items-center gap-2 xss:gap-3">
+                    <div className="h-0.5 xss:h-1 flex-1 bg-primary/20 rounded-full" />
+                    <div className="w-1.5 h-1.5 xss:w-2 xss:h-2 bg-primary rounded-full" />
+                    <div className="h-0.5 xss:h-1 flex-1 bg-primary/20 rounded-full" />
+                  </div>
+                  <p className="text-center text-xs xss:text-sm md:text-base text-muted-foreground mt-3 xss:mt-4 leading-relaxed px-1 xss:px-0 ">
+                    {category.tagline}
+                  </p>
+                </CardContent>
 
-              {/* Tagline box */}
-              <div className="flex items-center justify-center rounded-lg py-4 px-4 md:px-1 lg:px-4 text-center -mt-8 max-w-[180px] xs:max-w-[200px] sm:max-w-[220px]  2xl:max-w-[230px] 3xl:max-w-[300px] bg-primary/50 mx-auto">
-                <p className="text-xs lg:text-sm 2xl:text-base 3xl:text-xl font-semibold text-secondary-foreground leading-relaxed md:max-w-[170px] xl:max-w-[250px]">
-                  {category.tagline}
-                </p>
-              </div>
+                {/* Hover effect indicator */}
+                <div className="absolute top-3 right-3 xss:top-4 xss:right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="bg-primary text-primary-foreground rounded-full p-1.5 xss:p-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4 xss:h-5 xss:w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </Card>
             </motion.div>
           ))}
         </motion.div>

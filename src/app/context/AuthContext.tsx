@@ -10,7 +10,8 @@ import {
 import { useRouter } from "next/navigation";
 
 type User = {
-  role: "admin" | "user";
+  id: string;
+  role: "customer" | "admin";
   name: string;
   email: string;
 } | null;

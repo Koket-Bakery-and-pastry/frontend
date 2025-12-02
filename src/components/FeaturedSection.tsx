@@ -42,70 +42,95 @@ function FeaturedSection() {
 
   if (loading) {
     return (
-      <section className="section-spacing bg-background mt-8">
-        <Header text="Featured Products" />
-        <LoadingState
-          message="Loading featured cakes…"
-          fullScreen={false}
-          className="h-[320px]"
-        />
+      <section className="bg-background section-spacing-y">
+        <div className="section-container">
+          <div className="text-center mb-10">
+            <Header text="Featured Products" />
+          </div>
+          <LoadingState
+            message="Loading featured products…"
+            fullScreen={false}
+            className="h-[320px]"
+          />
+        </div>
       </section>
     );
   }
 
   if (error) {
     return (
-      <section className="section-spacing bg-background mt-8">
-        <Header text="Featured Products" />
-        <p className="text-center py-16 text-destructive">{error}</p>
+      <section className="bg-background section-spacing-y">
+        <div className="section-container">
+          <div className="text-center mb-10">
+            <Header text="Featured Products" />
+          </div>
+          <p className="text-center py-16 text-destructive text-base md:text-lg">
+            {error}
+          </p>
+        </div>
       </section>
     );
   }
 
   return (
-    <section className=" section-spacing bg-background mt-8">
-      <div className=" 2xl:pb-16 w-full">
-        <Header text="Featured Products" />
-      </div>
+    <section className="bg-background section-spacing-y">
+      <div className="section-container">
+        {/* Section header */}
+        <div className="text-center mb-10 sm:mb-12 md:mb-14 lg:mb-16">
+          <Header text="Featured Products" />
+          <p className="mt-3 xs:mt-4 text-muted-foreground text-sm xs:text-base md:text-lg max-w-2xl mx-auto">
+            Discover our handpicked selection of the finest baked goods
+          </p>
+        </div>
 
-      <div className=" 2xl:my-16 grid grid-cols-1 sm:grid-cols-2  2xl:grid-cols-3 gap-6 3xl:gap-10 ">
-        {visibleProducts.map((product, index) => (
-          <div
-            className={`${
-              index === 1 || index === 4 ? "2xl:-mt-28" : " "
-            } sm:mx-auto `}
-            key={product._id}
-          >
-            <ProductCard
-              key={product._id}
-              image={
-                product.image_url
-                  ? `${ASSET_BASE_URL}${product.image_url}`
-                  : "/assets/img1.png"
-              }
-              name={product.name}
-              description={product.description ?? "Freshly baked with love."}
-              price={
-                product.price
-                  ? `$${product.price}`
-                  : product.is_pieceable
-                  ? "Per Piece"
-                  : "By Kilo"
-              }
-              productId={product._id}
-            />
-          </div>
-        ))}
-      </div>
-      <div className="flex justify-center items-center mb-16 py-6">
-        <Link href="/products" className="2xl:-mt-20 cursor-pointer">
-          <Button
-            variant="default"
-            className=" py-3 md:py-6  lg:px-10 lg:text-lg "
-          >
-            View All Featured Products
-          </Button>
-        </Link>
+        {/* Products grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 md:gap-8 lg:gap-10 mb-12 sm:mb-14 md:mb-16">
+          {visibleProducts.map((product) => {
+            // Determine the price to display based on product type
+            let displayPrice = "Contact for Price";
+
+            // Check if product has kilo_to_price_map (sold by weight)
+            if (
+              product.kilo_to_price_map &&
+              Object.keys(product.kilo_to_price_map).length > 0
+            ) {
+              const prices = Object.values(product.kilo_to_price_map);
+              const minPrice = Math.min(...prices);
+              displayPrice = `From $${minPrice.toFixed(2)}`;
+            }
+            // Check if product is pieceable (sold per piece with subcategory price)
+            else if (product.is_pieceable && product.subcategory_id?.price) {
+              displayPrice = `$${product.subcategory_id.price.toFixed(2)}`;
+            }
+
+            return (
+              <ProductCard
+                key={product._id}
+                image={
+                  product.image_url
+                    ? `${ASSET_BASE_URL}${product.image_url}`
+                    : "/assets/img1.png"
+                }
+                name={product.name}
+                description={product.description ?? "Freshly baked with love."}
+                price={displayPrice}
+                productId={product._id}
+              />
+            );
+          })}
+        </div>
+
+        {/* View all button */}
+        <div className="flex justify-center">
+          <Link href="/products">
+            <Button
+              size="lg"
+              className="text-sm xss:text-base md:text-lg font-semibold px-6 xss:px-8 md:px-12 py-5 xss:py-6 md:py-7 shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              View All Products
+            </Button>
+          </Link>
+        </div>
       </div>
     </section>
   );

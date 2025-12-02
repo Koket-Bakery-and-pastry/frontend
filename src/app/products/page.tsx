@@ -128,26 +128,39 @@ function ProductsPage() {
         )}
 
         {!error &&
-          paginatedProducts.map((product) => (
-            <ProductCard
-              key={product._id}
-              image={
-                product.image_url
-                  ? `${ASSET_BASE_URL}${product.image_url}`
-                  : "/assets/img1.png"
-              }
-              name={product.name}
-              description={product.description ?? ""}
-              price={
-                product.price
-                  ? `$${product.price}`
-                  : product.is_pieceable
-                  ? "Per Piece"
-                  : "By Kilo"
-              }
-              productId={product._id}
-            />
-          ))}
+          paginatedProducts.map((product) => {
+            // Determine the price to display based on product type
+            let displayPrice = "Contact for Price";
+
+            // Check if product has kilo_to_price_map (sold by weight)
+            if (
+              product.kilo_to_price_map &&
+              Object.keys(product.kilo_to_price_map).length > 0
+            ) {
+              const prices = Object.values(product.kilo_to_price_map);
+              const minPrice = Math.min(...prices);
+              displayPrice = `From $${minPrice.toFixed(2)}`;
+            }
+            // Check if product is pieceable (sold per piece with subcategory price)
+            else if (product.is_pieceable && product.subcategory_id?.price) {
+              displayPrice = `$${product.subcategory_id.price.toFixed(2)}`;
+            }
+
+            return (
+              <ProductCard
+                key={product._id}
+                image={
+                  product.image_url
+                    ? `${ASSET_BASE_URL}${product.image_url}`
+                    : "/assets/img1.png"
+                }
+                name={product.name}
+                description={product.description ?? ""}
+                price={displayPrice}
+                productId={product._id}
+              />
+            );
+          })}
       </div>
 
       {/* Pagination Controls */}
