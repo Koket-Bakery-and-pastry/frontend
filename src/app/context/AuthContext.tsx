@@ -10,7 +10,8 @@ import {
 import { useRouter } from "next/navigation";
 
 type User = {
-  role: "admin" | "user";
+  id: string;
+  role: "admin" | "user" | "customer";
   name: string;
   email: string;
 } | null;
@@ -55,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("user");
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-    
+
     router.push("/");
   };
 

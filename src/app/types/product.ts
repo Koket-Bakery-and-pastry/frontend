@@ -75,6 +75,7 @@ export interface ProductSummary {
   _id: string;
   name: string;
   image_url?: string;
+  images?: string[];
   category_id: ProductCategoryDetail;
   subcategory_id: ProductSubcategoryDetail;
   description?: string;
@@ -91,7 +92,15 @@ export interface ProductSummary {
 export interface ProductReview {
   _id: string;
   product_id: string | ProductSummary;
-  user_id?: string;
+  user_id?:
+    | string
+    | {
+        _id: string;
+        name: string;
+        email: string;
+        role: string;
+        [key: string]: any;
+      };
   name?: string;
   rating: number;
   comment?: string;
@@ -103,6 +112,7 @@ export interface ProductDetail {
   _id: string;
   name: string;
   image_url?: string;
+  images?: string[];
   category_id: ProductCategoryDetail;
   subcategory_id: ProductSubcategoryDetail;
   description: string;

@@ -8,6 +8,7 @@ import { Upload } from "lucide-react";
 
 interface ContactPaymentFormProps {
   onSubmit?: (data: FormData) => void;
+  isSubmitting?: boolean;
 }
 
 interface FormData {
@@ -16,7 +17,7 @@ interface FormData {
   paymentProof: File | null;
 }
 
-export function ContactPaymentForm({ onSubmit }: ContactPaymentFormProps) {
+export function ContactPaymentForm({ onSubmit, isSubmitting = false }: ContactPaymentFormProps) {
   const [formData, setFormData] = useState<FormData>({
     deliveryDate: "",
     recipientPhone: "",
@@ -159,6 +160,15 @@ export function ContactPaymentForm({ onSubmit }: ContactPaymentFormProps) {
             (555) 123-4567. Upload your payment receipt above.
           </p>
         </div>
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full mt-6 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isSubmitting ? "Placing Order..." : "Place Order"}
+        </button>
       </div>
     </form>
   );

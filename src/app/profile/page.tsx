@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { UserProfileCard } from "./components/UserProfileCard";
@@ -8,55 +8,110 @@ import { UserStats } from "./components/UserStats";
 import { MyReviewsSection } from "./components/MyReviewsSection";
 import { EditProfileModal } from "./components/EditProfileModal";
 import { DeleteAccountDialog } from "./components/DeleteAccountDialog";
+import { getUserProfile, updateUserProfile, type UserProfile } from "@/app/services/profileService";
+import LoadingState from "@/components/LoadingState";
+import { toast } from "react-toastify";
 
 export default function ProfilePage() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [user, setUser] = useState({
-    name: "Alex Texas",
-    email: "abdulah-jo+1959@gmail.com",
-    phone: "+251900112233",
-    joinedDate: "October 1, 2025",
-    initials: "AT",
-  });
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const reviews = [
-    {
-      id: "1",
-      name: "Your name",
-      title: "Title goes here",
-      rating: 5,
-      content:
-        "I ordered a chocolate fudge cake for my birthday and it was beyond amazing! 🎂 The texture was soft, rich, and just the right amount of sweet. Everyone at the party kept asking where I got it from. The design was elegant and exactly like the photo. Definitely ordering again soon!",
-      initials: "Y",
-    },
-    {
-      id: "2",
-      name: "Alex Texas",
-      title: "Absolutely perfect for my Wedding!",
-      rating: 5,
-      content:
-        "I ordered a chocolate fudge cake for my birthday and it was beyond amazing! 🎂 The texture was soft, rich, and just the right amount of sweet. Everyone at the party kept asking where I got it from. The design was elegant and exactly like the photo. Definitely ordering again soon!",
-      initials: "AT",
-    },
-  ];
+  useEffect(() => {
+    fetchProfile();
+  }, []);
 
-  const handleSaveProfile = (data: {
+  const fetchProfile = async () => {
+    try {
+      setIsLoading(true);
+      const data = await getUserProfile();
+      setProfile(data);
+    } catch (error: any) {
+      console.error("Failed to load profile:", error);
+      toast.error("Failed to load profile");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Helper to get user initials
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  // Helper to format join date
+  const formatJoinDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const handleSaveProfile = async (data: {
     fullName: string;
     email: string;
     phone: string;
   }) => {
-    setUser({
-      ...user,
-      name: data.fullName,
-      email: data.email,
-      phone: data.phone,
-    });
+    try {
+      const updateData: any = {
+        name: data.fullName,
+        email: data.email,
+      };
+      
+      // Only include phone_number if it's not empty
+      if (data.phone) {
+        updateData.phone_number = data.phone;
+      }
+      
+      const response = await updateUserProfile(updateData);
+      toast.success(response.message || "Profile updated successfully");
+      setEditModalOpen(false);
+      await fetchProfile();
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || "Failed to update profile";
+      toast.error(errorMessage);
+    }
   };
 
   const handleDeleteAccount = () => {
     console.log("Account deleted");
     setDeleteDialogOpen(false);
+  };
+
+  if (isLoading) {
+    return <LoadingState />;
+  }
+
+  if (!profile) {
+    return (
+      <div className="min-h-screen bg-background-2 p-6 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Failed to load profile</p>
+          <button
+            onClick={fetchProfile}
+            className="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const user = {
+    name: profile.name,
+    email: profile.email,
+    phone: profile.phone_number || "",
+    joinedDate: formatJoinDate(profile.created_at),
+    initials: getInitials(profile.name),
   };
 
   return (
@@ -75,22 +130,20 @@ export default function ProfilePage() {
           onEdit={() => setEditModalOpen(true)}
           onDelete={() => setDeleteDialogOpen(true)}
         />
-        {/* <UserStats totalOrders={15} totalSpent={2444.0} /> */}
+        
+        <UserStats 
+          totalOrders={profile.stats.totalOrders} 
+          totalSpent={profile.stats.totalSpending} 
+        />
+
+        <MyReviewsSection reviews={profile.stats.recentRatings} />
+
         <EditProfileModal
           open={editModalOpen}
           onOpenChange={setEditModalOpen}
           user={{ fullName: user.name, email: user.email, phone: user.phone }}
           onSave={handleSaveProfile}
         />
-
-        <MyReviewsSection reviews={reviews} />
-
-        {/* <EditProfileModal
-          open={editModalOpen}
-          onOpenChange={setEditModalOpen}
-          user={{ fullName: user.name, email: user.email, phone: user.phone }}
-          onSave={handleSaveProfile}
-        /> */}
 
         <DeleteAccountDialog
           open={deleteDialogOpen}
