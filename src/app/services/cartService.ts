@@ -40,7 +40,10 @@ interface CartMutationResponse {
  */
 export async function addToCart(payload: AddToCartPayload) {
   try {
-    const { data } = await apiClient.post<CartMutationResponse>("/carts", payload);
+    const { data } = await apiClient.post<CartMutationResponse>(
+      "/carts",
+      payload
+    );
     return data;
   } catch (error: any) {
     console.error("Failed to add item to cart", error?.response?.data ?? error);
@@ -85,7 +88,9 @@ export async function updateCartItem(
  */
 export async function removeFromCart(id: string) {
   try {
-    const { data } = await apiClient.delete<CartMutationResponse>(`/carts/${id}`);
+    const { data } = await apiClient.delete<CartMutationResponse>(
+      `/carts/${id}`
+    );
     return data;
   } catch (error: any) {
     console.error(

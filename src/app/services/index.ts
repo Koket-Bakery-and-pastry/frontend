@@ -8,7 +8,12 @@ export { apiClient, API_BASE_URL } from "./api";
 
 // Auth (namespace to avoid conflicts)
 export * as authService from "./authService";
-export { loginUser, registerUser, refreshToken, logoutUser } from "./authService";
+export {
+  loginUser,
+  registerUser,
+  refreshToken,
+  logoutUser,
+} from "./authService";
 
 // User Profile
 export {

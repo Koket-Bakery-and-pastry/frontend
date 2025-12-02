@@ -149,7 +149,9 @@ export const getProductPerformance = async (
 /**
  * Get category performance
  */
-export const getCategoryPerformance = async (): Promise<CategoryPerformance[]> => {
+export const getCategoryPerformance = async (): Promise<
+  CategoryPerformance[]
+> => {
   try {
     const response = await apiClient.get("/analytics/categories/performance");
     return response.data;

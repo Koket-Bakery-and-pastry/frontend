@@ -33,24 +33,24 @@ jobs:
         run: |
           # Create deployment directory
           mkdir -p deploy
-          
+
           # Copy standalone output (server.js, package.json, .next, node_modules)
           cp -r .next/standalone/* deploy/
-          
+
           # Copy static files (required for standalone)
           mkdir -p deploy/.next/static
           cp -r .next/static/* deploy/.next/static/
-          
+
           # Copy public folder
           cp -r public deploy/
-          
+
           # Create .env file for production
           cat > deploy/.env << EOF
           NODE_ENV=production
           PORT=3000
           NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
           EOF
-          
+
           # Override package.json for cPanel Node.js app
           cat > deploy/package.json << EOF
           {
@@ -62,11 +62,11 @@ jobs:
             }
           }
           EOF
-          
+
           # Create restart trigger for cPanel Node.js app
           mkdir -p deploy/tmp
           echo "restart-$(date +%s)" > deploy/tmp/restart.txt
-          
+
           # List deployment contents for debugging
           echo "Deployment directory contents:"
           ls -la deploy/

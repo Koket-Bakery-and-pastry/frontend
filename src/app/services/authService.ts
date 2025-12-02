@@ -49,12 +49,17 @@ export const loginUser = async (data: LoginPayload): Promise<AuthResponse> => {
 /**
  * Register new user
  */
-export const registerUser = async (data: RegisterPayload): Promise<AuthResponse> => {
+export const registerUser = async (
+  data: RegisterPayload
+): Promise<AuthResponse> => {
   try {
     const response = await apiClient.post<AuthResponse>("/auth/register", data);
     return response.data;
   } catch (error: any) {
-    console.error("Registration failed:", error.response?.data || error.message);
+    console.error(
+      "Registration failed:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };
@@ -62,12 +67,17 @@ export const registerUser = async (data: RegisterPayload): Promise<AuthResponse>
 /**
  * Refresh access token
  */
-export const refreshToken = async (refreshToken: string): Promise<{ accessToken: string }> => {
+export const refreshToken = async (
+  refreshToken: string
+): Promise<{ accessToken: string }> => {
   try {
     const response = await apiClient.post("/auth/refresh", { refreshToken });
     return response.data;
   } catch (error: any) {
-    console.error("Token refresh failed:", error.response?.data || error.message);
+    console.error(
+      "Token refresh failed:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };

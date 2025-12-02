@@ -11,10 +11,7 @@ import {
   createProductReview,
   getProductById,
 } from "@/app/services/productService";
-import {
-  addToCart,
-  type AddToCartPayload,
-} from "@/app/services/cartService";
+import { addToCart, type AddToCartPayload } from "@/app/services/cartService";
 import { useCart } from "@/app/context/CartContext";
 import type { ProductDetail, ProductSummary } from "@/app/types/product";
 import ProductCard from "@/components/ProductCard";
