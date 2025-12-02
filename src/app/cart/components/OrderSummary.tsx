@@ -6,9 +6,15 @@ import Link from "next/link";
 interface OrderSummaryProps {
   subtotal: number;
   total: number;
+  selectedIds: string[];
 }
 
-export function OrderSummary({ subtotal, total }: OrderSummaryProps) {
+export function OrderSummary({ subtotal, total, selectedIds }: OrderSummaryProps) {
+  // Build checkout URL with selected item IDs
+  const checkoutUrl = selectedIds.length > 0 
+    ? `/checkout?items=${selectedIds.join(",")}` 
+    : "/checkout";
+
   return (
     <div className="border-2 border-blue-400 rounded-lg p-6 bg-white">
       <h2 className="text-2xl font-semibold text-foreground mb-6">
@@ -25,7 +31,7 @@ export function OrderSummary({ subtotal, total }: OrderSummaryProps) {
         </div>
       </div>
 
-      <Link href="/checkout" passHref>
+      <Link href={checkoutUrl} passHref>
         <Button
           className="w-full mt-6 bg-primary hover:bg-primary/90 text-primary-foreground"
           disabled={subtotal === 0}

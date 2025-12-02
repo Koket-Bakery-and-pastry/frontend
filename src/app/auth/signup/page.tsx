@@ -37,12 +37,17 @@ function SignUpPage() {
         password,
       });
 
-      const role: "admin" | "user" =
-        response.user.role === "admin" ? "admin" : "user";
+      const role: "admin" | "user" | "customer" =
+        response.user.role === "admin"
+          ? "admin"
+          : response.user.role === "customer"
+          ? "customer"
+          : "user";
 
       // Save user & tokens in context/localStorage
       login(
         {
+          id: response.user.id ?? "",
           role,
           name: response.user.name ?? "",
           email: response.user.email ?? "",

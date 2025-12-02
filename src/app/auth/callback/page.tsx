@@ -28,12 +28,22 @@ export default function AuthCallback() {
         const parsedUser = JSON.parse(decodeURIComponent(userParam));
         const parsedTokens = JSON.parse(decodeURIComponent(tokens));
 
-        const role: "admin" | "user" =
-          parsedUser.role === "admin" ? "admin" : "user";
+        console.log("📝 Parsed user from Google:", parsedUser);
+
+        const role: "admin" | "user" | "customer" =
+          parsedUser.role === "admin"
+            ? "admin"
+            : parsedUser.role === "customer"
+            ? "customer"
+            : "user";
+
+        const userId = parsedUser.id || parsedUser._id;
+        console.log("🔑 User ID extracted:", userId);
 
         // Save in context
         login(
           {
+            id: userId,
             role,
             name: parsedUser.name,
             email: parsedUser.email,
@@ -41,7 +51,10 @@ export default function AuthCallback() {
           parsedTokens
         );
 
-        console.log("✅ Google login successful:", parsedUser);
+        console.log(
+          "✅ Google login successful - User stored with ID:",
+          userId
+        );
 
         // Small delay ensures context is updated before redirect
         setTimeout(() => {

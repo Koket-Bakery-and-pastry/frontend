@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Mail, Phone, Calendar, Edit, Trash2 } from "lucide-react";
-import { UserStats } from "./UserStats";
 
 interface UserProfileCardProps {
   user: {
@@ -87,9 +86,6 @@ export function UserProfileCard({
             </Button>
           </div>
         </div>
-
-        {/* User Stats Section */}
-        <UserStats totalOrders={15} totalSpent={2444.0} />
       </div>
     </Card>
   );

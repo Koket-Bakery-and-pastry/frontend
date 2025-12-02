@@ -91,7 +91,7 @@ export function ProductDetails({ product, onCartUpdate }: ProductDetailsProps) {
   const ratingValue = Math.min(5, Math.max(0, Math.round(averageRating)));
 
   const handleAddToCart = async () => {
-    // Validate weight selection for kilo-based products
+    // Validation: for weight-based products, ensure a weight is selected
     if (
       product?.kilo_to_price_map &&
       Object.keys(product.kilo_to_price_map).length > 0

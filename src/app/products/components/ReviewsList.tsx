@@ -6,8 +6,8 @@ interface ReviewsListProps {
   reviews?: ProductReview[];
 }
 
-const getInitials = (input?: string) => {
-  if (!input) return "?";
+const getInitials = (input?: string | any) => {
+  if (!input || typeof input !== "string") return "?";
   const trimmed = input.trim();
   if (!trimmed) return "?";
   return (
@@ -47,7 +47,14 @@ export function ReviewsList({ reviews }: ReviewsListProps) {
         ) : (
           list.map((review) => {
             const ratingValue = Math.max(0, Math.min(5, review.rating ?? 0));
-            const displayName = review.name ?? review.user_id ?? "Anonymous";
+            // Handle user_id which can be string or object
+            const userName =
+              typeof review.user_id === "object" && review.user_id?.name
+                ? review.user_id.name
+                : typeof review.user_id === "string"
+                ? review.user_id
+                : "Anonymous";
+            const displayName = review.name ?? userName;
             const avatar = getInitials(displayName);
             const subtitle = formatDate(review.created_at);
 

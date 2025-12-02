@@ -11,7 +11,6 @@ interface ReviewFormProps {
   onSubmit: (payload: {
     rating: number;
     comment: string;
-    name?: string;
   }) => void;
   defaultRating?: number;
   isSubmitting?: boolean;
@@ -23,7 +22,6 @@ export function ReviewForm({
   isSubmitting = false,
 }: ReviewFormProps) {
   const [rating, setRating] = useState(defaultRating);
-  const [name, setName] = useState("");
   const [comment, setComment] = useState("");
 
   useEffect(() => {
@@ -32,8 +30,7 @@ export function ReviewForm({
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    onSubmit({ rating, comment, name: name.trim() || undefined });
-    setName("");
+    onSubmit({ rating, comment });
     setComment("");
     setRating(defaultRating);
   };
@@ -42,20 +39,6 @@ export function ReviewForm({
     <Card className="p-6">
       <h3 className="mb-6 text-lg font-semibold">Write a Review</h3>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="mb-2 block text-sm font-medium">
-            Name (optional)
-          </label>
-          <input
-            type="text"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            placeholder="Your name or nickname"
-            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-            disabled={isSubmitting}
-          />
-        </div>
-
         <div>
           <label className="mb-2 block text-sm font-medium">Rating</label>
           <div className="flex gap-2">
@@ -104,7 +87,6 @@ export function ReviewForm({
             type="button"
             variant="outline"
             onClick={() => {
-              setName("");
               setComment("");
               setRating(defaultRating);
             }}

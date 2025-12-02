@@ -13,6 +13,7 @@ import {
   getProductById,
 } from "@/app/services/productService";
 import { useCart } from "@/app/context/CartContext";
+import { useAuth } from "@/app/context/AuthContext";
 import type { ProductDetail, ProductSummary } from "@/app/types/product";
 import ProductCard from "@/components/ProductCard";
 import LoadingState from "@/components/LoadingState";
@@ -46,6 +47,7 @@ const resolveImageUrl = (path?: string) => {
 export default function ProductPage() {
   const params = useParams<{ productId: string }>();
   const { refreshCart } = useCart();
+  const { user } = useAuth();
   const [product, setProduct] = useState<ProductDetail | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<ProductSummary[]>([]);
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -96,9 +98,15 @@ export default function ProductPage() {
         const resolvedProduct: ProductDetail = {
           ...data,
           image_url: resolveImageUrl(data.image_url),
+          images: data.images
+            ?.map((img) => resolveImageUrl(img))
+            .filter((img): img is string => !!img),
           related_products: related.map((item) => ({
             ...item,
             image_url: resolveImageUrl(item.image_url),
+            images: item.images
+              ?.map((img) => resolveImageUrl(img))
+              .filter((img): img is string => !!img),
           })),
           reviews: normalizedReviews,
         };
@@ -123,11 +131,15 @@ export default function ProductPage() {
   }, [productId, refreshIndex]);
 
   const galleryImages = useMemo(() => {
-    if (!product?.image_url) {
-      return [];
+    // Prioritize images array, fallback to single image_url
+    if (product?.images && product.images.length > 0) {
+      return product.images;
     }
-    return [product.image_url];
-  }, [product?.image_url]);
+    if (product?.image_url) {
+      return [product.image_url];
+    }
+    return [];
+  }, [product?.images, product?.image_url]);
 
   const computePriceLabel = (item: ProductSummary) => {
     const kiloValues = item.kilo_to_price_map
@@ -191,7 +203,6 @@ export default function ProductPage() {
   const handleReviewSubmit = async ({
     rating,
     comment,
-    name,
   }: {
     rating: number;
     comment: string;
@@ -202,14 +213,20 @@ export default function ProductPage() {
       return;
     }
 
+    if (!user?.id) {
+      setReviewError("Please login to submit a review.");
+      return;
+    }
+
     try {
       setIsSubmittingReview(true);
       setReviewError(null);
+
       const payload = {
+        user_id: user.id,
         product_id: productId,
         rating,
         comment,
-        ...(name ? { name } : {}),
       };
 
       await createProductReview(payload);
