@@ -8,7 +8,7 @@ export const mockOrders: Order[] = [
     deliveryDate: "April 10, 2025 • 12:00 PM - 3:00 PM",
     deliveryLocation: "Addis Ababa, Ayertena",
     contact: "+251900584595",
-    status: "Pending",
+    status: "pending",
     receiptUrl: "/receipts/12456789.pdf",
     products: [
       {
@@ -40,7 +40,7 @@ export const mockOrders: Order[] = [
     deliveryDate: "April 12, 2025 • 2:00 PM - 4:00 PM",
     deliveryLocation: "Addis Ababa, Bole",
     contact: "+251911223344",
-    status: "Confirmed",
+    status: "accepted",
     receiptUrl: "/receipts/12456789.pdf",
 
     products: [
@@ -66,7 +66,7 @@ export const mockOrders: Order[] = [
     contact: "+251911223344",
     receiptUrl: "/receipts/12456789.pdf",
 
-    status: "Confirmed",
+    status: "accepted",
     products: [
       {
         id: "p3",
@@ -89,7 +89,7 @@ export const mockOrders: Order[] = [
     contact: "+251911223344",
     receiptUrl: "/receipts/12456789.pdf",
 
-    status: "Confirmed",
+    status: "accepted",
     products: [
       {
         id: "p3",
@@ -110,7 +110,7 @@ export const mockOrders: Order[] = [
     deliveryDate: "April 12, 2025 • 2:00 PM - 4:00 PM",
     deliveryLocation: "Addis Ababa, Bole",
     contact: "+251911223344",
-    status: "Confirmed",
+    status: "accepted",
     receiptUrl: "/receipts/12456789.pdf",
 
     products: [
@@ -133,7 +133,7 @@ export const mockOrders: Order[] = [
     deliveryDate: "April 12, 2025 • 2:00 PM - 4:00 PM",
     deliveryLocation: "Addis Ababa, Bole",
     contact: "+251911223344",
-    status: "Confirmed",
+    status: "accepted",
     receiptUrl: "/receipts/12456789.pdf",
 
     products: [
@@ -158,7 +158,7 @@ export const mockOrders: Order[] = [
     contact: "+251911223344",
     // receiptUrl: "/receipts/12456789.pdf",
 
-    status: "Confirmed",
+    status: "accepted",
     products: [
       {
         id: "p3",

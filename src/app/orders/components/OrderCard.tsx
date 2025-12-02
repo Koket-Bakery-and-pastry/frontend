@@ -15,6 +15,8 @@ export default function OrderCard({
   isProductExpanded,
   onToggleProductDetail,
 }: OrderCardProps) {
+  const orderId = order.id ?? order._id ?? "";
+
   return (
     <div className="border rounded-lg p-4 sm:p-5 bg-white shadow-sm">
       <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-3">
@@ -41,17 +43,20 @@ export default function OrderCard({
           Track Order
           <RefreshCcw />
         </Button>
-      </div>
-
-      <div className="mt-4 space-y-2">
-        {order.products.map((product) => (
-          <ProductDetail
-            key={product.id}
-            product={product}
-            isExpanded={isProductExpanded(order.id, product.id)}
-            onToggle={() => onToggleProductDetail(order.id, product.id)}
-          />
-        ))}
+        <div className="mt-4 space-y-2">
+          {order.products && order.products.length > 0 ? (
+            order.products.map((product) => (
+              <ProductDetail
+                key={product.id}
+                product={product}
+                isExpanded={isProductExpanded(orderId, product.id)}
+                onToggle={() => onToggleProductDetail(orderId, product.id)}
+              />
+            ))
+          ) : (
+            <p className="text-gray-500 text-sm">No items in this order</p>
+          )}
+        </div>
       </div>
 
       <div className="mt-3 flex flex-col sm:flex-row items-start sm:items-center sm:justify-between">
@@ -75,9 +80,10 @@ export default function OrderCard({
         <div className="w-full sm:w-auto text-right">
           <p className="font-semibold text-pink-700 text-sm sm:text-base">
             Total: $
-            {order.products
-              .reduce((sum, p) => sum + p.price * p.quantity, 0)
-              .toFixed(2)}
+            {order.total_price?.toFixed(2) ||
+              (order.products || [])
+                .reduce((sum, p) => sum + p.price * p.quantity, 0)
+                .toFixed(2)}
           </p>
 
           <div className="mt-2 flex justify-end">

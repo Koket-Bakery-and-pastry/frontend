@@ -1,22 +1,65 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Customer } from "../../types/customer";
-import { customersData } from "../../data/mockCustomers";
 import HeroSection from "../components/HeroSection";
 import CustomerFilters from "../components/CustomerFilters";
 import CustomersList from "../components/CustomersList";
 import Pagination from "../components/Pagination";
 import ConfirmationModal from "../components/ConfirmationModal";
+import { getAllCustomers, deleteUser } from "../../services/admin/userService";
 
 export default function CustomerPage() {
-  const [customers, setCustomers] = useState<Customer[]>(customersData);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
     null
   );
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
+  const [deleting, setDeleting] = useState(false);
+
+  // Fetch customers from API
+  const fetchCustomers = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const data = await getAllCustomers();
+
+      // Map API response to Customer type
+      const mappedCustomers: Customer[] = data.map(
+        (customer: any, index: number) => ({
+          id: customer._id || customer.id || index + 1,
+          name: customer.name || "Unknown",
+          email: customer.email || "",
+          phone: customer.phone || "",
+          joined: customer.created_at
+            ? new Date(customer.created_at).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })
+            : "Unknown",
+          totalOrders: customer.totalOrders || 0,
+          totalSpent: customer.totalSpent || 0,
+        })
+      );
+
+      setCustomers(mappedCustomers);
+    } catch (err: any) {
+      console.error("Error fetching customers:", err);
+      setError(err.message || "Failed to fetch customers");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCustomers();
+  }, [fetchCustomers]);
 
   // Filter customers based on search
   const filteredCustomers = customers.filter(
@@ -37,9 +80,18 @@ export default function CustomerPage() {
     setCurrentPage(1);
   }, [search]);
 
-  const handleDelete = (id: number) => {
-    setCustomers((prev) => prev.filter((customer) => customer.id !== id));
-    setSelectedCustomer(null);
+  const handleDelete = async (id: number | string) => {
+    try {
+      setDeleting(true);
+      await deleteUser(String(id));
+      setCustomers((prev) => prev.filter((customer) => customer.id !== id));
+      setSelectedCustomer(null);
+    } catch (err: any) {
+      console.error("Error deleting customer:", err);
+      setError(err.message || "Failed to delete customer");
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const openDeleteConfirm = (customer: Customer) => {
@@ -80,12 +132,38 @@ export default function CustomerPage() {
       <div className="min-h-screen flex justify-center items-start py-6 w-full px-4">
         <div className="w-full max-w-5xl mx-auto border border-black rounded-2xl">
           <div className="bg-white rounded-xl p-4 sm:p-6 w-full shadow-lg">
-            <h2 className="text-lg sm:text-xl font-semibold">
-              Customer Management
-            </h2>
-            <p className="text-gray-500 text-sm sm:text-base mb-4">
-              View and Manage all registered customers
-            </p>
+            <div className="flex items-center justify-between mb-2">
+              <div>
+                <h2 className="text-lg sm:text-xl font-semibold">
+                  Customer Management
+                </h2>
+                <p className="text-gray-500 text-sm sm:text-base">
+                  View and Manage all registered customers
+                </p>
+              </div>
+              <button
+                onClick={fetchCustomers}
+                disabled={loading}
+                className="text-sm px-3 py-1 bg-pink-100 hover:bg-pink-200 text-pink-700 rounded-md disabled:opacity-50"
+              >
+                {loading ? "Refreshing..." : "Refresh"}
+              </button>
+            </div>
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+                <p>{error}</p>
+                <button
+                  onClick={() => {
+                    setError(null);
+                    fetchCustomers();
+                  }}
+                  className="text-sm underline mt-1"
+                >
+                  Try again
+                </button>
+              </div>
+            )}
 
             {/* Search Filters */}
             <CustomerFilters
@@ -95,19 +173,34 @@ export default function CustomerPage() {
             />
 
             {/* Customers List */}
-            <CustomersList
-              customers={currentCustomers}
-              onDelete={openDeleteConfirm}
-            />
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mb-4"></div>
+                <p className="text-gray-500">Loading customers...</p>
+              </div>
+            ) : currentCustomers.length > 0 ? (
+              <CustomersList
+                customers={currentCustomers}
+                onDelete={openDeleteConfirm}
+              />
+            ) : (
+              <div className="text-center py-10 text-gray-500">
+                {search
+                  ? "No customers found matching your search."
+                  : "No customers found."}
+              </div>
+            )}
 
             {/* Universal Pagination */}
-            <Pagination
-              currentPage={currentPage}
-              totalItems={totalItems}
-              itemsPerPage={itemsPerPage}
-              onPageChange={goToPage}
-              className="mt-6"
-            />
+            {!loading && totalItems > 0 && (
+              <Pagination
+                currentPage={currentPage}
+                totalItems={totalItems}
+                itemsPerPage={itemsPerPage}
+                onPageChange={goToPage}
+                className="mt-6"
+              />
+            )}
           </div>
         </div>
 
@@ -116,7 +209,7 @@ export default function CustomerPage() {
           isOpen={!!selectedCustomer}
           title="Are you sure?"
           message="This action cannot be undone. This will permanently delete the user from your shop."
-          confirmText="Delete"
+          confirmText={deleting ? "Deleting..." : "Delete"}
           onConfirm={confirmDelete}
           onCancel={cancelDelete}
         />

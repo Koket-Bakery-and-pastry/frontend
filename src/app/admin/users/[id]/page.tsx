@@ -1,8 +1,8 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Customer } from "../../../types/customer";
-import { customersData } from "../../../data/mockCustomers";
+import { getUserById, deleteUser } from "../../../services/admin/userService";
 import UserDetailLayout from "../../components/UserDetailLayout";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import UserNotFound from "../../components/UserNotFound";
@@ -12,29 +12,69 @@ export default function UserDetailPage() {
   const router = useRouter();
   const [user, setUser] = useState<Customer | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
-  useEffect(() => {
-    // Simulate API call
-    const userId = parseInt(params.id as string);
-    const foundUser = customersData.find((c) => c.id === userId);
+  const fetchUser = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const userId = params.id as string;
+      const userData = await getUserById(userId);
 
-    if (foundUser) {
-      setUser(foundUser);
+      // Map to Customer type
+      const customer: Customer = {
+        id: userData._id || userData.id || userId,
+        _id: userData._id,
+        name: userData.name || "Unknown",
+        email: userData.email || "",
+        phone: userData.phone || "",
+        joined: userData.created_at
+          ? new Date(userData.created_at).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            })
+          : "Unknown",
+        totalOrders: 0,
+        totalSpent: 0,
+        role: userData.role,
+      };
+
+      setUser(customer);
+    } catch (err: any) {
+      console.error("Error fetching user:", err);
+      setError(err.message || "Failed to fetch user");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, [params.id]);
 
-  const handleDelete = () => {
+  useEffect(() => {
+    if (params.id) {
+      fetchUser();
+    }
+  }, [params.id, fetchUser]);
+
+  const handleDelete = async () => {
     if (!user) return;
-    console.log("Deleting user:", user.id);
-    router.push("/admin/users");
+
+    try {
+      setDeleting(true);
+      await deleteUser(String(user.id));
+      router.push("/admin/users");
+    } catch (err: any) {
+      console.error("Error deleting user:", err);
+      setError(err.message || "Failed to delete user");
+      setDeleting(false);
+    }
   };
 
   if (loading) {
     return <LoadingSpinner message="Loading user details..." />;
   }
 
-  if (!user) {
+  if (error || !user) {
     return <UserNotFound />;
   }
 

@@ -1,3 +1,7 @@
+/**
+ * Product Service
+ * Handles product-related API calls
+ */
 import type { ProductDetail, ProductSummary } from "@/app/types/product";
 import { apiClient as api } from "./api";
 
@@ -22,6 +26,9 @@ interface ReviewResponse {
   message: string;
 }
 
+/**
+ * Get all products
+ */
 export async function getProducts(): Promise<ProductSummary[]> {
   try {
     const { data } = await api.get<ProductsResponse>("/products");
@@ -32,6 +39,9 @@ export async function getProducts(): Promise<ProductSummary[]> {
   }
 }
 
+/**
+ * Get product by ID
+ */
 export async function getProductById(id: string): Promise<ProductDetail> {
   try {
     const { data } = await api.get<ProductResponse>(`/products/${id}`);
@@ -45,6 +55,9 @@ export async function getProductById(id: string): Promise<ProductDetail> {
   }
 }
 
+/**
+ * Create product review
+ */
 export async function createProductReview(payload: ReviewPayload) {
   try {
     const token = localStorage.getItem("accessToken");
@@ -58,7 +71,7 @@ export async function createProductReview(payload: ReviewPayload) {
         Authorization: `Bearer ${token}`,
       },
     });
-    
+
     return data;
   } catch (error: any) {
     console.error("Failed to submit review", error?.response?.data ?? error);

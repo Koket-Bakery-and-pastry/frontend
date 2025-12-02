@@ -18,17 +18,24 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   requireAdmin = false,
 }) => {
-  const { user, isLoggedIn } = useAuth();
+  const { user, isLoggedIn, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoggedIn) {
+    // Only redirect after loading is complete and user is not logged in
+    if (!isLoading && !isLoggedIn) {
       router.replace("/auth/login");
     }
-  }, [isLoggedIn, router]);
+  }, [isLoading, isLoggedIn, router]);
 
-  if (!isLoggedIn) {
+  // Show loading while checking auth state
+  if (isLoading) {
     return <LoadingState message="Checking authentication…" fullScreen />;
+  }
+
+  // User not logged in - show loading while redirect happens
+  if (!isLoggedIn) {
+    return <LoadingState message="Redirecting to login…" fullScreen />;
   }
 
   if (requireAdmin && user?.role !== "admin") {

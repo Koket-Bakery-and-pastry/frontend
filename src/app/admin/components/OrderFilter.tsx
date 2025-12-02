@@ -1,4 +1,4 @@
-import { OrderStatus } from "../../types/order";
+import { OrderStatus, statusLabels } from "../../types/order";
 
 interface OrderFiltersProps {
   filterStatus: OrderStatus | "All";
@@ -19,6 +19,14 @@ interface OrderFiltersProps {
   showMobileFilters: boolean;
   onShowMobileFiltersChange: (show: boolean) => void;
 }
+
+// Backend status values
+const orderStatuses: OrderStatus[] = [
+  "pending",
+  "accepted",
+  "rejected",
+  "completed",
+];
 
 export default function OrderFilters({
   filterStatus,
@@ -75,15 +83,9 @@ export default function OrderFilters({
               className="border rounded-md px-3 py-2 w-full sm:w-52 text-sm"
             >
               <option value="All">All Statuses</option>
-              {Object.keys({
-                Pending: "",
-                Confirmed: "",
-                "In Progress": "",
-                Completed: "",
-                Canceled: "",
-              }).map((status) => (
+              {orderStatuses.map((status) => (
                 <option key={status} value={status}>
-                  {status}
+                  {statusLabels[status]}
                 </option>
               ))}
             </select>

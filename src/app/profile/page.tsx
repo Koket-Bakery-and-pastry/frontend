@@ -1,41 +1,43 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { UserProfileCard } from "./components/UserProfileCard";
 import { UserStats } from "./components/UserStats";
 import { MyReviewsSection } from "./components/MyReviewsSection";
 import { EditProfileModal } from "./components/EditProfileModal";
 import { DeleteAccountDialog } from "./components/DeleteAccountDialog";
-import { getUserProfile, updateUserProfile, type UserProfile } from "@/app/services/profileService";
-import LoadingState from "@/components/LoadingState";
-import { toast } from "react-toastify";
+import {
+  getProfile,
+  User,
+  UserStatsData,
+  UserRating,
+} from "../services/userService";
+import { useAuth } from "../context/AuthContext";
 
 export default function ProfilePage() {
+  const router = useRouter();
+  const { isLoggedIn, isLoading: authLoading, logout } = useAuth();
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    joinedDate: "",
+    initials: "",
+    profileImage: "",
+  });
+  const [stats, setStats] = useState<UserStatsData>({
+    totalOrders: 0,
+    totalSpending: 0,
+    recentRatings: [],
+  });
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  const fetchProfile = async () => {
-    try {
-      setIsLoading(true);
-      const data = await getUserProfile();
-      setProfile(data);
-    } catch (error: any) {
-      console.error("Failed to load profile:", error);
-      toast.error("Failed to load profile");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Helper to get user initials
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -45,59 +47,119 @@ export default function ProfilePage() {
       .slice(0, 2);
   };
 
-  // Helper to format join date
-  const formatJoinDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
+  const fetchProfile = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const profileData = await getProfile();
+
+      setUser({
+        name: profileData.name || "Unknown",
+        email: profileData.email || "",
+        phone: profileData.phone || "",
+        joinedDate: profileData.created_at
+          ? new Date(profileData.created_at).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })
+          : "Unknown",
+        initials: getInitials(profileData.name || "U"),
+        profileImage: profileData.profile_image || "",
+      });
+
+      // Set stats from API
+      if (profileData.stats) {
+        setStats({
+          totalOrders: profileData.stats.totalOrders || 0,
+          totalSpending: profileData.stats.totalSpending || 0,
+          recentRatings: profileData.stats.recentRatings || [],
+        });
+      }
+    } catch (err: any) {
+      console.error("Error fetching profile:", err);
+      setError(err.message || "Failed to load profile");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Redirect to login if not authenticated
+    if (!authLoading && !isLoggedIn) {
+      router.replace("/auth/login");
+      return;
+    }
+
+    if (isLoggedIn) {
+      fetchProfile();
+    }
+  }, [authLoading, isLoggedIn, router, fetchProfile]);
+
+  // Transform API reviews to component format
+  const reviews = stats.recentRatings.map(
+    (rating: UserRating, index: number) => ({
+      id: `${rating.product._id}-${index}`,
+      name: user.name,
+      title: rating.product.name,
+      rating: rating.rating,
+      content: rating.comment,
+      initials: user.initials,
+      createdAt: rating.created_at,
+    })
+  );
 
   const handleSaveProfile = async (data: {
     fullName: string;
     email: string;
     phone: string;
   }) => {
-    try {
-      const updateData: any = {
-        name: data.fullName,
-        email: data.email,
-      };
-      
-      // Only include phone_number if it's not empty
-      if (data.phone) {
-        updateData.phone_number = data.phone;
-      }
-      
-      const response = await updateUserProfile(updateData);
-      toast.success(response.message || "Profile updated successfully");
-      setEditModalOpen(false);
-      await fetchProfile();
-    } catch (error: any) {
-      const errorMessage = error?.response?.data?.message || "Failed to update profile";
-      toast.error(errorMessage);
-    }
+    setUser({
+      ...user,
+      name: data.fullName,
+      email: data.email,
+      phone: data.phone,
+      initials: getInitials(data.fullName),
+    });
   };
 
   const handleDeleteAccount = () => {
     console.log("Account deleted");
     setDeleteDialogOpen(false);
+    logout();
+    router.push("/");
   };
 
-  if (isLoading) {
-    return <LoadingState />;
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background-2 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
-  if (!profile) {
+  // Show loading while fetching profile
+  if (loading) {
     return (
-      <div className="min-h-screen bg-background-2 p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-background-2 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600">Failed to load profile</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background-2 flex items-center justify-center p-6">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
           <button
             onClick={fetchProfile}
-            className="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
+            className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-hover"
           >
             Try Again
           </button>
@@ -105,14 +167,6 @@ export default function ProfilePage() {
       </div>
     );
   }
-
-  const user = {
-    name: profile.name,
-    email: profile.email,
-    phone: profile.phone_number || "",
-    joinedDate: formatJoinDate(profile.created_at),
-    initials: getInitials(profile.name),
-  };
 
   return (
     <div className="min-h-screen bg-background-2 p-6">
@@ -127,23 +181,18 @@ export default function ProfilePage() {
 
         <UserProfileCard
           user={user}
+          stats={stats}
           onEdit={() => setEditModalOpen(true)}
           onDelete={() => setDeleteDialogOpen(true)}
         />
-        
-        <UserStats 
-          totalOrders={profile.stats.totalOrders} 
-          totalSpent={profile.stats.totalSpending} 
-        />
-
-        <MyReviewsSection reviews={profile.stats.recentRatings} />
-
         <EditProfileModal
           open={editModalOpen}
           onOpenChange={setEditModalOpen}
           user={{ fullName: user.name, email: user.email, phone: user.phone }}
           onSave={handleSaveProfile}
         />
+
+        <MyReviewsSection reviews={reviews} />
 
         <DeleteAccountDialog
           open={deleteDialogOpen}

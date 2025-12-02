@@ -1,10 +1,17 @@
 "use client";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Mail, Phone, Calendar, Edit, Trash2 } from "lucide-react";
+import { UserStats } from "./UserStats";
+
+interface UserStatsData {
+  totalOrders: number;
+  totalSpending: number;
+  recentRatings: any[];
+}
 
 interface UserProfileCardProps {
   user: {
@@ -13,13 +20,16 @@ interface UserProfileCardProps {
     phone: string;
     joinedDate: string;
     initials: string;
+    profileImage?: string;
   };
+  stats?: UserStatsData;
   onEdit: () => void;
   onDelete: () => void;
 }
 
 export function UserProfileCard({
   user,
+  stats,
   onEdit,
   onDelete,
 }: UserProfileCardProps) {
@@ -30,6 +40,9 @@ export function UserProfileCard({
         <div className="flex flex-col lg:flex-row items-start  justify-between gap-4">
           <div className="flex  gap-4">
             <Avatar className="h-16 w-16 bg-primary/10 hidden md:block">
+              {user.profileImage && (
+                <AvatarImage src={user.profileImage} alt={user.name} />
+              )}
               <AvatarFallback className="bg-primary/10 text-primary text-lg font-semibold ">
                 {user.initials}
               </AvatarFallback>
@@ -56,10 +69,12 @@ export function UserProfileCard({
                     Joined {user.joinedDate}
                   </span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-gray-500" />
-                  <span className="text-xs md:text-sm">{user.phone}</span>
-                </div>
+                {user.phone && (
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-gray-500" />
+                    <span className="text-xs md:text-sm">{user.phone}</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -86,6 +101,12 @@ export function UserProfileCard({
             </Button>
           </div>
         </div>
+
+        {/* User Stats Section */}
+        <UserStats
+          totalOrders={stats?.totalOrders || 0}
+          totalSpent={stats?.totalSpending || 0}
+        />
       </div>
     </Card>
   );

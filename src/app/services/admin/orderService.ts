@@ -1,4 +1,8 @@
-import { apiClient } from "./api";
+/**
+ * Admin Order Service
+ * Handles all order-related API calls for admin
+ */
+import { apiClient } from "../api";
 
 // Order Item type
 export interface OrderItemDTO {
@@ -37,16 +41,6 @@ export interface Order {
   };
 }
 
-// Create order payload
-export interface CreateOrderPayload {
-  order_items: OrderItemDTO[];
-  phone_number: string;
-  delivery_time: string;
-  upfront_paid?: number;
-  total_price?: number;
-  payment_proof_file?: File;
-}
-
 // Update order payload
 export interface UpdateOrderPayload {
   status?: OrderStatus;
@@ -69,20 +63,7 @@ export const getAllOrders = async (): Promise<Order[]> => {
 };
 
 /**
- * Get orders for current user
- */
-export const getUserOrders = async (): Promise<Order[]> => {
-  try {
-    const response = await apiClient.get("/orders/user");
-    return response.data;
-  } catch (error: any) {
-    console.error("Failed to fetch user orders:", error);
-    throw new Error(error.response?.data?.message || "Failed to fetch orders");
-  }
-};
-
-/**
- * Get order by ID
+ * Get order by ID (Admin)
  */
 export const getOrderById = async (id: string): Promise<Order> => {
   try {
@@ -91,47 +72,6 @@ export const getOrderById = async (id: string): Promise<Order> => {
   } catch (error: any) {
     console.error("Failed to fetch order:", error);
     throw new Error(error.response?.data?.message || "Failed to fetch order");
-  }
-};
-
-/**
- * Create a new order with payment proof file
- */
-export const createOrder = async (
-  payload: CreateOrderPayload
-): Promise<Order> => {
-  try {
-    const formData = new FormData();
-
-    // Add order items as JSON string
-    formData.append("order_items", JSON.stringify(payload.order_items));
-
-    // Add other fields
-    formData.append("phone_number", payload.phone_number);
-    formData.append("delivery_time", payload.delivery_time);
-
-    if (payload.upfront_paid !== undefined) {
-      formData.append("upfront_paid", payload.upfront_paid.toString());
-    }
-    if (payload.total_price !== undefined) {
-      formData.append("total_price", payload.total_price.toString());
-    }
-
-    // Add payment proof file
-    if (payload.payment_proof_file) {
-      formData.append("payment_proof_file", payload.payment_proof_file);
-    }
-
-    const response = await apiClient.post("/orders", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    return response.data;
-  } catch (error: any) {
-    console.error("Failed to create order:", error);
-    throw new Error(error.response?.data?.message || "Failed to create order");
   }
 };
 

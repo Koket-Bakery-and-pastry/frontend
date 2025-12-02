@@ -1,96 +1,49 @@
+/**
+ * Cart Service
+ * Handles shopping cart operations
+ */
 import type { ProductSummary } from "@/app/types/product";
-import { apiClient as api } from "./api";
+import { apiClient } from "./api";
 
 export interface AddToCartPayload {
   product_id: string;
-  quantity?: number; // Always 1, but optional in case we want to override
-  kilo?: number; // Optional - for weight-based products
-  custom_text?: string; // Optional - message on cake
-  additional_description?: string; // Optional - delivery notes, allergies, etc.
+  quantity: number;
+  kilo?: number;
+  pieces?: number;
+  custom_text?: string;
+  additional_description?: string;
+}
+
+export interface CartItem {
+  _id: string;
+  user_id?: string;
+  product_id: string | ProductSummary;
+  kilo?: number;
+  pieces?: number;
+  quantity: number;
+  custom_text?: string;
+  additional_description?: string;
+  created_at?: string;
+}
+
+interface CartItemsResponse {
+  message?: string;
+  cartItems: CartItem[];
 }
 
 interface CartMutationResponse {
   message?: string;
 }
 
-export interface Category {
-  _id: string;
-  name: string;
-  description?: string;
-  created_at?: string;
-  updated_at?: string;
-  __v?: number;
-}
-
-export interface Subcategory {
-  _id: string;
-  category_id: string;
-  name: string;
-  status: string;
-  kilo_to_price_map?: Record<string, number>;
-  upfront_payment?: number;
-  is_pieceable: boolean;
-  price?: number;
-  created_at?: string;
-  updated_at?: string;
-  __v?: number;
-}
-
-export interface CartItemProduct {
-  _id: string;
-  name: string;
-  image_url?: string;
-  images?: string[];
-  category_id: string | Category; // Can be string or populated object
-  subcategory_id: string | Subcategory; // Can be string or populated object
-  description?: string;
-  created_at?: string;
-  updated_at?: string;
-  __v?: number;
-}
-
-export interface CartItem {
-  _id: string;
-  user_id: string;
-  product?: CartItemProduct; // Populated product details
-  kilo?: number;
-  pieces?: number;
-  quantity: number;
-  custom_text?: string;
-  additional_description?: string;
-  is_ordered?: boolean; // Backend flag to track if item is ordered
-  created_at?: string;
-  __v?: number;
-}
-
 /**
- * Add item to cart (order items)
+ * Add item to cart
  */
 export async function addToCart(payload: AddToCartPayload) {
   try {
-    // Get auth token from localStorage
-    const token = localStorage.getItem("accessToken");
-
-    if (!token) {
-      throw new Error("Please login to add items to cart");
-    }
-
-    // Ensure quantity is always 1
-    const requestPayload = {
-      ...payload,
-      quantity: 1,
-    };
-
-    const { data } = await api.post<CartMutationResponse>(
-      "/orders/items",
-      requestPayload,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+    const { data } = await apiClient.post<CartMutationResponse>(
+      "/carts",
+      payload
     );
-
     return data;
   } catch (error: any) {
     console.error("Failed to add item to cart", error?.response?.data ?? error);
@@ -99,55 +52,30 @@ export async function addToCart(payload: AddToCartPayload) {
 }
 
 /**
- * Get all cart items for the current user
+ * Get cart items
  */
 export async function getCartItems(): Promise<CartItem[]> {
   try {
-    const token = localStorage.getItem("accessToken");
-
-    if (!token) {
-      return [];
-    }
-
-    const { data } = await api.get<CartItem[]>("/orders/items/user", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    // API returns array directly, not wrapped in an object
-    return Array.isArray(data) ? data : [];
+    const { data } = await apiClient.get<CartItemsResponse>("/carts");
+    return data.cartItems ?? [];
   } catch (error: any) {
     console.error("Failed to fetch cart items", error?.response?.data ?? error);
-    // Return empty array instead of throwing to prevent app crashes
-    return [];
+    throw error;
   }
 }
 
 /**
- * Update cart item quantity or details
+ * Update cart item
  */
 export async function updateCartItem(
-  itemId: string,
-  updates: Partial<AddToCartPayload>
+  id: string,
+  payload: Partial<AddToCartPayload>
 ) {
   try {
-    const token = localStorage.getItem("accessToken");
-
-    if (!token) {
-      throw new Error("Please login to update cart");
-    }
-
-    const { data } = await api.put<CartMutationResponse>(
-      `/orders/items/${itemId}`,
-      updates,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+    const { data } = await apiClient.put<CartMutationResponse>(
+      `/carts/${id}`,
+      payload
     );
-
     return data;
   } catch (error: any) {
     console.error("Failed to update cart item", error?.response?.data ?? error);
@@ -158,56 +86,15 @@ export async function updateCartItem(
 /**
  * Remove item from cart
  */
-export async function removeFromCart(itemId: string) {
+export async function removeFromCart(id: string) {
   try {
-    const token = localStorage.getItem("accessToken");
-
-    if (!token) {
-      throw new Error("Please login to remove items from cart");
-    }
-
-    const { data } = await api.delete<CartMutationResponse>(
-      `/orders/items/${itemId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+    const { data } = await apiClient.delete<CartMutationResponse>(
+      `/carts/${id}`
     );
-
     return data;
   } catch (error: any) {
-    console.error("Failed to remove cart item", error?.response?.data ?? error);
-    throw error;
-  }
-}
-
-/**
- * Remove multiple items from cart (kept for potential future use)
- */
-export async function removeMultipleFromCart(itemIds: string[]) {
-  try {
-    const token = localStorage.getItem("accessToken");
-
-    if (!token) {
-      throw new Error("Please login to remove items from cart");
-    }
-
-    // Delete each item individually
-    const deletePromises = itemIds.map((itemId) =>
-      api.delete<CartMutationResponse>(`/orders/items/${itemId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-    );
-
-    await Promise.all(deletePromises);
-
-    return { message: "Items removed successfully" };
-  } catch (error: any) {
     console.error(
-      "Failed to remove cart items",
+      "Failed to remove item from cart",
       error?.response?.data ?? error
     );
     throw error;
@@ -219,18 +106,7 @@ export async function removeMultipleFromCart(itemIds: string[]) {
  */
 export async function clearCart() {
   try {
-    const token = localStorage.getItem("accessToken");
-
-    if (!token) {
-      throw new Error("Please login to clear cart");
-    }
-
-    const { data } = await api.delete<CartMutationResponse>("/orders/items", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
+    const { data } = await apiClient.delete<CartMutationResponse>("/carts");
     return data;
   } catch (error: any) {
     console.error("Failed to clear cart", error?.response?.data ?? error);
