@@ -27,7 +27,7 @@ export default function OrdersPage() {
     "All",
     ...new Set(
       orders.flatMap((order) =>
-        order.products.map((product) => product.name.split(" ")[0])
+        (order.products || []).map((product) => product.name.split(" ")[0])
       )
     ),
   ];
@@ -40,11 +40,11 @@ export default function OrdersPage() {
   const filteredOrders = orders.filter((order) => {
     const matchesStatus =
       filterStatus === "All" || order.status === filterStatus;
-    const matchesSearch = order.customer
+    const matchesSearch = (order.customer || "")
       .toLowerCase()
       .includes(search.toLowerCase());
 
-    const orderDate = parseDate(order.date);
+    const orderDate = parseDate(order.date || order.created_at || "");
     const from = fromDate ? new Date(fromDate) : null;
     const to = toDate ? new Date(toDate) : null;
     const matchesFromDate = !from || orderDate >= from;
@@ -52,7 +52,7 @@ export default function OrdersPage() {
 
     const matchesCategory =
       categoryFilter === "All" ||
-      order.products.some((product) =>
+      (order.products || []).some((product) =>
         product.name.toLowerCase().includes(categoryFilter.toLowerCase())
       );
 
@@ -96,7 +96,9 @@ export default function OrdersPage() {
     if (selectedOrder) {
       setOrders((prev) =>
         prev.map((o) =>
-          o.id === selectedOrder ? { ...o, status: "Canceled" } : o
+          o.id === selectedOrder
+            ? { ...o, status: "rejected" as OrderStatus }
+            : o
         )
       );
     }

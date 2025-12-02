@@ -1,0 +1,87 @@
+name: Deploy Frontend to cPanel
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create production .env
+        run: |
+          echo "NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}" > .env.local
+
+      - name: Build Next.js
+        run: npm run build
+
+      - name: Prepare standalone deployment
+        run: |
+          # Create deployment directory
+          mkdir -p deploy
+          
+          # Copy standalone output (server.js, package.json, .next, node_modules)
+          cp -r .next/standalone/* deploy/
+          
+          # Copy static files (required for standalone)
+          mkdir -p deploy/.next/static
+          cp -r .next/static/* deploy/.next/static/
+          
+          # Copy public folder
+          cp -r public deploy/
+          
+          # Create .env file for production
+          cat > deploy/.env << EOF
+          NODE_ENV=production
+          PORT=3000
+          NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
+          EOF
+          
+          # Override package.json for cPanel Node.js app
+          cat > deploy/package.json << EOF
+          {
+            "name": "koket-frontend",
+            "version": "1.0.0",
+            "private": true,
+            "scripts": {
+              "start": "NODE_ENV=production node server.js"
+            }
+          }
+          EOF
+          
+          # Create restart trigger for cPanel Node.js app
+          mkdir -p deploy/tmp
+          echo "restart-$(date +%s)" > deploy/tmp/restart.txt
+          
+          # List deployment contents for debugging
+          echo "Deployment directory contents:"
+          ls -la deploy/
+
+      - name: Deploy to cPanel via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+        with:
+          server: ${{ secrets.CPANEL_FTP_SERVER }}
+          username: ${{ secrets.CPANEL_FTP_USERNAME }}
+          password: ${{ secrets.CPANEL_FTP_PASSWORD }}
+          local-dir: ./deploy/
+          server-dir: /public_html/frontend/
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git/**
+            **/.github/**
+          log-level: verbose

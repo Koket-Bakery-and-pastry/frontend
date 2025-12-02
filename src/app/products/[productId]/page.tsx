@@ -8,11 +8,13 @@ import { Card } from "@/components/ui/card";
 import { ReviewForm } from "../components/ReviewForm";
 import dynamic from "next/dynamic";
 import {
-  addToCart,
   createProductReview,
   getProductById,
-  type AddToCartPayload,
 } from "@/app/services/productService";
+import {
+  addToCart,
+  type AddToCartPayload,
+} from "@/app/services/cartService";
 import { useCart } from "@/app/context/CartContext";
 import type { ProductDetail, ProductSummary } from "@/app/types/product";
 import ProductCard from "@/components/ProductCard";

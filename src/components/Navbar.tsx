@@ -28,9 +28,12 @@ import Image from "next/image";
 
 function Navbar() {
   const pathname = usePathname() || "/";
-  const { user, isLoggedIn, logout } = useAuth();
+  const { user, isLoggedIn, isLoading, logout } = useAuth();
   const { cartCount } = useCart();
   const isAdmin = user?.role === "admin";
+
+  // Don't show authenticated state while still loading
+  const showAsLoggedIn = !isLoading && isLoggedIn;
 
   const NavLinks = [
     { name: "Home", href: "/" },
@@ -46,7 +49,7 @@ function Navbar() {
     { name: "Categories", href: "/admin/categories" },
   ];
 
-  const linksToDisplay = isLoggedIn && isAdmin ? AdminLinks : NavLinks;
+  const linksToDisplay = showAsLoggedIn && isAdmin ? AdminLinks : NavLinks;
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -96,7 +99,7 @@ function Navbar() {
         {/* Right Section */}
         <div className="flex items-center gap-4 2xl:gap-8">
           {/* ===== BEFORE LOGIN (Same for both user/admin) ===== */}
-          {!isLoggedIn && (
+          {!showAsLoggedIn && (
             <>
               <Link
                 href="/cart"
@@ -119,7 +122,7 @@ function Navbar() {
           )}
 
           {/* ===== AFTER LOGIN ===== */}
-          {isLoggedIn && (
+          {showAsLoggedIn && (
             <>
               {/* ✅ USER: Cart + Profile Dropdown */}
               {!isAdmin && (
@@ -266,7 +269,7 @@ function Navbar() {
 
         <div className="flex items-center gap-4">
           {/* ===== BEFORE LOGIN ===== */}
-          {!isLoggedIn && (
+          {!showAsLoggedIn && (
             <>
               <Link
                 href="/cart"
@@ -289,7 +292,7 @@ function Navbar() {
           )}
 
           {/* ===== AFTER LOGIN  ===== */}
-          {isLoggedIn && (
+          {showAsLoggedIn && (
             <>
               {/* ✅ USER: Cart + Dropdown */}
               {!isAdmin && (

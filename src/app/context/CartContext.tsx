@@ -9,7 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { getCartItems, type CartItem } from "@/app/services/productService";
+import { getCartItems, type CartItem } from "@/app/services/cartService";
 import { useAuth } from "./AuthContext";
 
 type CartContextValue = {

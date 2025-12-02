@@ -1,0 +1,110 @@
+/**
+ * Cart Service
+ * Handles shopping cart operations
+ */
+import type { ProductSummary } from "@/app/types/product";
+import { apiClient } from "./api";
+
+export interface AddToCartPayload {
+  product_id: string;
+  quantity: number;
+  kilo?: number;
+  pieces?: number;
+  custom_text?: string;
+  additional_description?: string;
+}
+
+export interface CartItem {
+  _id: string;
+  user_id?: string;
+  product_id: string | ProductSummary;
+  kilo?: number;
+  pieces?: number;
+  quantity: number;
+  custom_text?: string;
+  additional_description?: string;
+  created_at?: string;
+}
+
+interface CartItemsResponse {
+  message?: string;
+  cartItems: CartItem[];
+}
+
+interface CartMutationResponse {
+  message?: string;
+}
+
+/**
+ * Add item to cart
+ */
+export async function addToCart(payload: AddToCartPayload) {
+  try {
+    const { data } = await apiClient.post<CartMutationResponse>("/carts", payload);
+    return data;
+  } catch (error: any) {
+    console.error("Failed to add item to cart", error?.response?.data ?? error);
+    throw error;
+  }
+}
+
+/**
+ * Get cart items
+ */
+export async function getCartItems(): Promise<CartItem[]> {
+  try {
+    const { data } = await apiClient.get<CartItemsResponse>("/carts");
+    return data.cartItems ?? [];
+  } catch (error: any) {
+    console.error("Failed to fetch cart items", error?.response?.data ?? error);
+    throw error;
+  }
+}
+
+/**
+ * Update cart item
+ */
+export async function updateCartItem(
+  id: string,
+  payload: Partial<AddToCartPayload>
+) {
+  try {
+    const { data } = await apiClient.put<CartMutationResponse>(
+      `/carts/${id}`,
+      payload
+    );
+    return data;
+  } catch (error: any) {
+    console.error("Failed to update cart item", error?.response?.data ?? error);
+    throw error;
+  }
+}
+
+/**
+ * Remove item from cart
+ */
+export async function removeFromCart(id: string) {
+  try {
+    const { data } = await apiClient.delete<CartMutationResponse>(`/carts/${id}`);
+    return data;
+  } catch (error: any) {
+    console.error(
+      "Failed to remove item from cart",
+      error?.response?.data ?? error
+    );
+    throw error;
+  }
+}
+
+/**
+ * Clear all cart items
+ */
+export async function clearCart() {
+  try {
+    const { data } = await apiClient.delete<CartMutationResponse>("/carts");
+    return data;
+  } catch (error: any) {
+    console.error("Failed to clear cart", error?.response?.data ?? error);
+    throw error;
+  }
+}

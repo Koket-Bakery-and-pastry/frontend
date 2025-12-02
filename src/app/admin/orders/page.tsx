@@ -1,15 +1,27 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Order, OrderStatus, statusColors } from "../../types/order";
+import React, { useEffect, useState, useCallback } from "react";
+import {
+  Order,
+  OrderStatus,
+  statusColors,
+  statusLabels,
+  mapOrderToDisplay,
+} from "../../types/order";
 
 import OrderCard from "../components/OrderCard";
 import Pagination from "../components/Pagination";
 import RejectModal from "../components/RejectModal";
-import { mockOrders } from "../../data/mockData";
 import OrderFilters from "../components/OrderFilter";
+import {
+  getAllOrders,
+  updateOrder,
+  filterOrdersByStatus,
+} from "../../services/admin/orderService";
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState<Order[]>(mockOrders);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<OrderStatus | "All">("All");
   const [search, setSearch] = useState("");
   const [fromDate, setFromDate] = useState("");
@@ -22,61 +34,67 @@ export default function OrdersPage() {
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [updating, setUpdating] = useState<string | null>(null);
 
-  // Extract unique categories from products
-  const categories = [
-    "All",
-    ...new Set(
-      orders.flatMap((order) =>
-        order.products.map((product) => product.name.split(" ")[0])
-      )
-    ),
-  ];
+  // Fetch orders from API
+  const fetchOrders = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      let data: Order[];
+      if (filterStatus !== "All") {
+        data = await filterOrdersByStatus(filterStatus);
+      } else {
+        data = await getAllOrders();
+      }
+
+      // Map orders to display format
+      const mappedOrders = data.map(mapOrderToDisplay);
+      setOrders(mappedOrders);
+    } catch (err: any) {
+      console.error("Error fetching orders:", err);
+      setError(err.message || "Failed to fetch orders");
+    } finally {
+      setLoading(false);
+    }
+  }, [filterStatus]);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
+  // Extract unique categories from products (if products have category info)
+  const categories = ["All"];
 
   const parseDate = (dateString: string) => {
-    const datePart = dateString.split(" at ")[0];
-    return new Date(datePart);
+    try {
+      return new Date(dateString);
+    } catch {
+      return new Date();
+    }
   };
 
   const filteredOrders = orders.filter((order) => {
-    const matchesStatus =
-      filterStatus === "All" || order.status === filterStatus;
-    const matchesSearch = order.customer
-      .toLowerCase()
-      .includes(search.toLowerCase());
+    const matchesSearch =
+      order.customer?.toLowerCase().includes(search.toLowerCase()) ||
+      order.phone_number?.toLowerCase().includes(search.toLowerCase()) ||
+      order._id?.toLowerCase().includes(search.toLowerCase());
 
-    const orderDate = parseDate(order.date);
+    const orderDate = parseDate(
+      order.created_at || order.date || new Date().toISOString()
+    );
     const from = fromDate ? new Date(fromDate) : null;
     const to = toDate ? new Date(toDate) : null;
     const matchesFromDate = !from || orderDate >= from;
     const matchesToDate = !to || orderDate <= to;
 
-    const matchesCategory =
-      categoryFilter === "All" ||
-      order.products.some((product) =>
-        product.name.toLowerCase().includes(categoryFilter.toLowerCase())
-      );
-
-    return (
-      matchesStatus &&
-      matchesSearch &&
-      matchesFromDate &&
-      matchesToDate &&
-      matchesCategory
-    );
+    return matchesSearch && matchesFromDate && matchesToDate;
   });
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [
-    filterStatus,
-    search,
-    fromDate,
-    toDate,
-    categoryFilter,
-    itemsPerPage,
-    orders,
-  ]);
+  }, [search, fromDate, toDate, categoryFilter, itemsPerPage, orders]);
 
   const totalItems = filteredOrders.length;
   const paginatedOrders = filteredOrders.slice(
@@ -84,8 +102,21 @@ export default function OrdersPage() {
     currentPage * itemsPerPage
   );
 
-  const handleStatusChange = (id: string, status: OrderStatus) => {
-    setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)));
+  const handleStatusChange = async (id: string, status: OrderStatus) => {
+    try {
+      setUpdating(id);
+      await updateOrder(id, { status });
+
+      // Update local state
+      setOrders((prev) =>
+        prev.map((o) => (o._id === id ? { ...o, status } : o))
+      );
+    } catch (err: any) {
+      console.error("Error updating order status:", err);
+      setError(err.message || "Failed to update order status");
+    } finally {
+      setUpdating(null);
+    }
   };
 
   const handleReject = (id: string) => {
@@ -93,13 +124,29 @@ export default function OrdersPage() {
     setShowRejectModal(true);
   };
 
-  const confirmReject = () => {
+  const confirmReject = async () => {
     if (selectedOrder) {
-      setOrders((prev) =>
-        prev.map((o) =>
-          o.id === selectedOrder ? { ...o, status: "Canceled" } : o
-        )
-      );
+      try {
+        setUpdating(selectedOrder);
+        await updateOrder(selectedOrder, {
+          status: "rejected",
+          rejection_comment: rejectReason,
+        });
+
+        // Update local state
+        setOrders((prev) =>
+          prev.map((o) =>
+            o._id === selectedOrder
+              ? { ...o, status: "rejected", rejection_comment: rejectReason }
+              : o
+          )
+        );
+      } catch (err: any) {
+        console.error("Error rejecting order:", err);
+        setError(err.message || "Failed to reject order");
+      } finally {
+        setUpdating(null);
+      }
     }
     setShowRejectModal(false);
     setRejectReason("");
@@ -155,13 +202,37 @@ export default function OrdersPage() {
           </h1>
         </div>
         <p className="text-muted-foreground text-base sm:text-2xl max-w-3xl mx-auto text-balance -mt-8 md:-mt-4">
-          Order your perfect cake for any ocassion
+          Manage all customer orders
         </p>
       </div>
 
       <div className="border-2 m-4 sm:m-6 rounded-3xl">
         <div className="overview px-3 sm:px-6 lg:px-10 py-6">
-          <h1 className="text-xl sm:text-2xl font-bold mb-4">All Orders</h1>
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-xl sm:text-2xl font-bold">All Orders</h1>
+            <button
+              onClick={fetchOrders}
+              disabled={loading}
+              className="text-sm px-3 py-1 bg-pink-100 hover:bg-pink-200 text-pink-700 rounded-md disabled:opacity-50"
+            >
+              {loading ? "Refreshing..." : "Refresh"}
+            </button>
+          </div>
+
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+              <p>{error}</p>
+              <button
+                onClick={() => {
+                  setError(null);
+                  fetchOrders();
+                }}
+                className="text-sm underline mt-1"
+              >
+                Try again
+              </button>
+            </div>
+          )}
 
           <OrderFilters
             filterStatus={filterStatus}
@@ -185,18 +256,29 @@ export default function OrdersPage() {
 
           {/* Orders List */}
           <div className="space-y-6">
-            {paginatedOrders.map((order) => (
-              <OrderCard
-                key={order.id}
-                order={order}
-                onStatusChange={handleStatusChange}
-                onReject={handleReject}
-                isProductExpanded={isProductExpanded}
-                onToggleProductDetail={toggleProductDetail}
-              />
-            ))}
-
-            {paginatedOrders.length === 0 && (
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mb-4"></div>
+                <p className="text-gray-500">Loading orders...</p>
+              </div>
+            ) : paginatedOrders.length > 0 ? (
+              paginatedOrders.map((order) => (
+                <div key={order._id} className="relative">
+                  {updating === order._id && (
+                    <div className="absolute inset-0 bg-white/50 flex items-center justify-center z-10 rounded-lg">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-600"></div>
+                    </div>
+                  )}
+                  <OrderCard
+                    order={order}
+                    onStatusChange={handleStatusChange}
+                    onReject={handleReject}
+                    isProductExpanded={isProductExpanded}
+                    onToggleProductDetail={toggleProductDetail}
+                  />
+                </div>
+              ))
+            ) : (
               <p className="text-gray-500 text-center mt-10">
                 No orders found.
               </p>
@@ -204,13 +286,15 @@ export default function OrdersPage() {
           </div>
 
           {/* Universal Pagination Component */}
-          <Pagination
-            currentPage={currentPage}
-            totalItems={totalItems}
-            itemsPerPage={itemsPerPage}
-            onPageChange={goToPage}
-            className="mt-6"
-          />
+          {!loading && totalItems > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalItems={totalItems}
+              itemsPerPage={itemsPerPage}
+              onPageChange={goToPage}
+              className="mt-6"
+            />
+          )}
 
           <RejectModal
             isOpen={showRejectModal}

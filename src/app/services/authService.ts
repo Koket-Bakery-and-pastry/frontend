@@ -1,47 +1,84 @@
+/**
+ * Authentication Service
+ * Handles login, registration, and auth-related API calls
+ */
 import { apiClient } from "./api";
 
-// REGISTER user
-interface RegisterUserPayload {
+// Types
+export interface LoginPayload {
+  email: string;
+  password: string;
+}
+
+export interface RegisterPayload {
   name?: string;
   email: string;
   password: string;
-  [key: string]: any;
 }
 
-interface AuthTokens {
+export interface AuthTokens {
   accessToken: string;
   refreshToken?: string;
-  [key: string]: any;
 }
 
-interface User {
-  id?: string;
-  name?: string;
-  email?: string;
-  [key: string]: any;
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
 }
 
-interface RegisterResponse {
+export interface AuthResponse {
   user: User;
   tokens: AuthTokens;
-  [key: string]: any;
 }
 
-export const registerUser = async (
-  userData: RegisterUserPayload
-): Promise<RegisterResponse> => {
+/**
+ * Login user
+ */
+export const loginUser = async (data: LoginPayload): Promise<AuthResponse> => {
   try {
-    const response = await apiClient.post<RegisterResponse>(
-      "/auth/register",
-      userData
-    );
-    return response.data; // contains user + tokens
+    const response = await apiClient.post<AuthResponse>("/auth/login", data);
+    return response.data;
   } catch (error: any) {
-    // handle errors clearly
-    console.error(
-      "Registration failed:",
-      error.response?.data || error.message
-    );
+    console.error("Login failed:", error.response?.data || error.message);
     throw error;
+  }
+};
+
+/**
+ * Register new user
+ */
+export const registerUser = async (data: RegisterPayload): Promise<AuthResponse> => {
+  try {
+    const response = await apiClient.post<AuthResponse>("/auth/register", data);
+    return response.data;
+  } catch (error: any) {
+    console.error("Registration failed:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+/**
+ * Refresh access token
+ */
+export const refreshToken = async (refreshToken: string): Promise<{ accessToken: string }> => {
+  try {
+    const response = await apiClient.post("/auth/refresh", { refreshToken });
+    return response.data;
+  } catch (error: any) {
+    console.error("Token refresh failed:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+/**
+ * Logout user (clear local storage)
+ */
+export const logoutUser = (): void => {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
   }
 };
