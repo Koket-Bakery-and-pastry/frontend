@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 
 type User = {
   id: string;
-  role: "admin" | "user" | "customer";
+  role: "customer" | "admin";
   name: string;
   email: string;
 } | null;
