@@ -107,6 +107,7 @@ export function ProductDetails({ product, onCartUpdate }: ProductDetailsProps) {
     try {
       const payload: AddToCartPayload = {
         product_id: product._id,
+        quantity: 1, // Default quantity
       };
 
       // Add kilo for weight-based products (is_pieceable: false)

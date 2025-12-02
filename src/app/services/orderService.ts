@@ -1,8 +1,21 @@
 import { apiClient } from "./api";
+import type { ProductSummary } from "@/app/types/product";
 
-// Order Item type
+// Order Item DTO for creating orders
 export interface OrderItemDTO {
   product_id?: string;
+  kilo?: number;
+  pieces?: number;
+  quantity: number;
+  custom_text?: string;
+  additional_description?: string;
+}
+
+// Order Item with populated product data (from API response)
+export interface OrderItemResponse {
+  _id: string;
+  product_id?: string;
+  product?: ProductSummary;
   kilo?: number;
   pieces?: number;
   quantity: number;
@@ -16,7 +29,7 @@ export type OrderStatus = "pending" | "accepted" | "rejected" | "completed";
 // Order response from API
 export interface Order {
   _id: string;
-  order_items: OrderItemDTO[];
+  order_items: OrderItemResponse[];
   user_id: string;
   phone_number: string;
   total_price: number;

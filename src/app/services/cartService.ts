@@ -18,6 +18,8 @@ export interface CartItem {
   _id: string;
   user_id?: string;
   product_id: string | ProductSummary;
+  /** Populated product data from backend */
+  product?: ProductSummary;
   kilo?: number;
   pieces?: number;
   quantity: number;

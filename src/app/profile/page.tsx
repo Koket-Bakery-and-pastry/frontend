@@ -97,17 +97,15 @@ export default function ProfilePage() {
   }, [authLoading, isLoggedIn, router, fetchProfile]);
 
   // Transform API reviews to component format
-  const reviews = stats.recentRatings.map(
-    (rating: UserRating, index: number) => ({
-      id: `${rating.product._id}-${index}`,
-      name: user.name,
-      title: rating.product.name,
-      rating: rating.rating,
-      content: rating.comment,
-      initials: user.initials,
-      createdAt: rating.created_at,
-    })
-  );
+  const reviews = stats.recentRatings.map((rating: UserRating) => ({
+    product: {
+      _id: rating.product._id,
+      name: rating.product.name,
+    },
+    rating: rating.rating,
+    comment: rating.comment,
+    created_at: rating.created_at,
+  }));
 
   const handleSaveProfile = async (data: {
     fullName: string;
