@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Star } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import type { ProductReview } from "@/app/types/product";
 
 interface ReviewsListProps {
@@ -34,6 +36,11 @@ const formatDate = (date?: string) => {
 
 export function ReviewsList({ reviews }: ReviewsListProps) {
   const list = reviews ?? [];
+  const [showAll, setShowAll] = useState(false);
+
+  // Show only 3 reviews initially, or all if showAll is true
+  const displayedReviews = showAll ? list : list.slice(0, 3);
+  const hasMore = list.length > 3;
 
   return (
     <div className="relative">
@@ -45,63 +52,91 @@ export function ReviewsList({ reviews }: ReviewsListProps) {
             </p>
           </div>
         ) : (
-          list.map((review) => {
-            const ratingValue = Math.max(0, Math.min(5, review.rating ?? 0));
-            // Handle user_id which can be string or object
-            const userName =
-              typeof review.user_id === "object" && review.user_id?.name
-                ? review.user_id.name
-                : typeof review.user_id === "string"
-                ? review.user_id
-                : "Anonymous";
-            const displayName = review.name ?? userName;
-            const avatar = getInitials(displayName);
-            const subtitle = formatDate(review.created_at);
+          <>
+            {displayedReviews.map((review) => {
+              const ratingValue = Math.max(0, Math.min(5, review.rating ?? 0));
+              // Handle user_id which can be string or object
+              const userName =
+                typeof review.user_id === "object" && review.user_id?.name
+                  ? review.user_id.name
+                  : typeof review.user_id === "string"
+                  ? review.user_id
+                  : "Anonymous";
+              const displayName = review.name ?? userName;
+              const avatar = getInitials(displayName);
+              const subtitle = formatDate(review.created_at);
 
-            return (
-              <Card
-                key={review._id}
-                className="rounded-lg border border-border p-6"
-              >
-                <div className="flex flex-col gap-4">
-                  <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold">
-                        {avatar}
-                      </div>
-                      <div>
-                        <p className="font-semibold text-primary">
-                          {displayName}
-                        </p>
-                        {subtitle && (
-                          <p className="text-xs text-muted-foreground">
-                            {subtitle}
+              return (
+                <Card
+                  key={review._id}
+                  className="rounded-lg border border-border p-6"
+                >
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold">
+                          {avatar}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-primary">
+                            {displayName}
                           </p>
-                        )}
+                          {subtitle && (
+                            <p className="text-xs text-muted-foreground">
+                              {subtitle}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex gap-1">
+                        {[...Array(5)].map((_, index) => (
+                          <Star
+                            key={index}
+                            className={`h-4 w-4 ${
+                              index < ratingValue
+                                ? "fill-amber-400 text-amber-400"
+                                : "text-muted-foreground"
+                            }`}
+                          />
+                        ))}
                       </div>
                     </div>
-                    <div className="flex gap-1">
-                      {[...Array(5)].map((_, index) => (
-                        <Star
-                          key={index}
-                          className={`h-4 w-4 ${
-                            index < ratingValue
-                              ? "fill-amber-400 text-amber-400"
-                              : "text-muted-foreground"
-                          }`}
-                        />
-                      ))}
-                    </div>
+                    {review.comment && (
+                      <p className="text-xs leading-relaxed text-foreground md:text-sm">
+                        {review.comment}
+                      </p>
+                    )}
                   </div>
-                  {review.comment && (
-                    <p className="text-xs leading-relaxed text-foreground md:text-sm">
-                      {review.comment}
-                    </p>
-                  )}
-                </div>
-              </Card>
-            );
-          })
+                </Card>
+              );
+            })}
+
+            {/* Show More Button */}
+            {hasMore && !showAll && (
+              <div className="flex justify-center mt-6">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowAll(true)}
+                  className="border-primary/40 text-primary hover:bg-primary/10"
+                >
+                  Show More Reviews ({list.length - 3} more)
+                </Button>
+              </div>
+            )}
+
+            {/* Show Less Button */}
+            {showAll && hasMore && (
+              <div className="flex justify-center mt-6">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowAll(false)}
+                  className="border-primary/40 text-primary hover:bg-primary/10"
+                >
+                  Show Less
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

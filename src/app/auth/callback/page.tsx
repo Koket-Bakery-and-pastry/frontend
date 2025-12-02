@@ -30,12 +30,8 @@ export default function AuthCallback() {
 
         console.log("📝 Parsed user from Google:", parsedUser);
 
-        const role: "admin" | "user" | "customer" =
-          parsedUser.role === "admin"
-            ? "admin"
-            : parsedUser.role === "customer"
-            ? "customer"
-            : "user";
+        const role: "customer" | "admin" =
+          parsedUser.role === "admin" ? "admin" : "customer";
 
         const userId = parsedUser.id || parsedUser._id;
         console.log("🔑 User ID extracted:", userId);

@@ -37,12 +37,8 @@ function SignUpPage() {
         password,
       });
 
-      const role: "admin" | "user" | "customer" =
-        response.user.role === "admin"
-          ? "admin"
-          : response.user.role === "customer"
-          ? "customer"
-          : "user";
+      const role: "customer" | "admin" =
+        response.user.role === "admin" ? "admin" : "customer";
 
       // Save user & tokens in context/localStorage
       login(
