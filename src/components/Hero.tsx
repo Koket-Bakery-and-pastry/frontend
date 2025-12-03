@@ -9,21 +9,22 @@ function Hero() {
           Delicious Cakes for <br /> Every Celebration
         </h1>
         <p className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-4xl mx-auto mt-4 sm:mt-6 md:mt-8 mb-8 sm:mb-10 md:mb-12 lg:mb-14 leading-relaxed px-4">
-          From birthdays to weddings, we create custom cakes that taste as amazing
-          as they look. Order online and make your special moments sweeter.
+          From birthdays to weddings, we create custom cakes that taste as
+          amazing as they look. Order online and make your special moments
+          sweeter.
         </p>
-        <div className="flex flex-col xs:flex-row gap-3 xs:gap-4 justify-center w-full xs:w-auto">
+        <div className="flex flex-col md:flex-row gap-3 xs:gap-4 justify-center w-full md:w-auto">
           <Link
             href="/products"
-            className="bg-primary hover:bg-primary-hover text-primary-foreground font-bold px-6 xs:px-8 md:px-10 py-3 md:py-4 text-sm xs:text-base md:text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+            className="bg-primary hover:bg-primary-hover text-primary-foreground font-bold px-6 lg:px-8 xl:px-10 py-3 lg:py-4 text-sm xs:text-base lg:text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
           >
             Browse Products
           </Link>
           <Link
-            href="/custom-cake"
-            className="bg-card hover:bg-secondary text-foreground font-semibold px-6 xs:px-8 md:px-10 py-3 md:py-4 text-sm xs:text-base md:text-lg rounded-full shadow-lg hover:shadow-xl border-2 border-border hover:border-primary/50 transition-all duration-300"
+            href="/products"
+            className="bg-card hover:bg-secondary text-foreground font-semibold px-6 lg:px-8 xl:px-10 py-3 lg:py-4 text-sm xs:text-base lg:text-lg rounded-full shadow-lg hover:shadow-xl border-2 border-border hover:border-primary/50 transition-all duration-300"
           >
-            Custom Order
+            Get Your Cake
           </Link>
         </div>
       </div>

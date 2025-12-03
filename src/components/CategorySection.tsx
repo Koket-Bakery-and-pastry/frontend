@@ -13,6 +13,7 @@ import {
 import Image from "next/image";
 import { motion, Variants } from "framer-motion"; // ✅ import motion
 import Header from "./Header";
+import Link from "next/link";
 
 const categories = [
   {
@@ -129,22 +130,24 @@ function CategorySection() {
 
                 {/* Hover effect indicator */}
                 <div className="absolute top-3 right-3 xss:top-4 xss:right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="bg-primary text-primary-foreground rounded-full p-1.5 xss:p-2">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 xss:h-5 xss:w-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
-                  </div>
+                  <Link href="/products">
+                    <div className="bg-primary text-primary-foreground rounded-full p-1.5 xss:p-2">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4 xss:h-5 xss:w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </div>
+                  </Link>
                 </div>
               </Card>
             </motion.div>
