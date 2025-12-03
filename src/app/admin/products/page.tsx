@@ -10,7 +10,7 @@ import Pagination from "../components/Pagination";
 import ConfirmationModal from "../components/ConfirmationModal";
 import ProductFiltersComponent from "../components/ProductFilters";
 
-const API_BASE_URL = "http://localhost:5001";
+const API_BASE_URL = "https://backend-om79.onrender.com";
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);

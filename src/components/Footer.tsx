@@ -11,7 +11,7 @@ import {
 
 function Footer() {
   return (
-    <footer className="bg-[#D9D6D6] px-6 md:px-12 lg:px-24 py-8 md:py-12 mt-8">
+    <footer className="bg-[#D9D6D6] px-6 md:px-12 lg:px-24 py-8 md:pt-12 mt-8">
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
         {/* Brand */}
         <div className="flex flex-col">
