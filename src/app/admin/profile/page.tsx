@@ -1,18 +1,73 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { toast } from "react-toastify";
+import {
+  getAdminProfile,
+  updateAdminProfile,
+  type User,
+} from "@/app/services/admin/userService";
 
 export default function AdminProfilePage() {
-  const [role, setRole] = useState("Admin");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [profile, setProfile] = useState<User | null>(null);
+
+  // Editable fields
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+
+  // Password fields
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordMessage, setPasswordMessage] = useState<string | null>(null);
 
-  const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRole(e.target.value);
-    setPasswordMessage(null);
+  // Fetch profile on mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        setLoading(true);
+        const data = await getAdminProfile();
+        setProfile(data);
+        setName(data.name || "");
+        setEmail(data.email || "");
+        setPhone(data.phone || "");
+      } catch (error: any) {
+        console.error("Error fetching profile:", error);
+        toast.error(error.message || "Failed to load profile");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  const handleProfileUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) {
+      toast.error("Name is required");
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const updated = await updateAdminProfile({
+        name: name.trim(),
+        email: email.trim(),
+        phone_number: phone.trim(),
+      });
+      setProfile(updated);
+      toast.success("Profile updated successfully!");
+    } catch (error: any) {
+      console.error("Error updating profile:", error);
+      toast.error(error.message || "Failed to update profile");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handlePasswordUpdate = (e: React.FormEvent) => {
@@ -26,12 +81,20 @@ export default function AdminProfilePage() {
       setPasswordMessage("New password and confirmation do not match.");
       return;
     }
-    // Simulate success
+    // TODO: Implement password change API when available
     setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
     setPasswordMessage("Password updated successfully.");
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background py-10 px-4">
@@ -44,25 +107,91 @@ export default function AdminProfilePage() {
 
         <div className="bg-white rounded-xl p-6 shadow">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Left: Profile Card */}
+            {/* Left: Profile Card & Edit Form */}
             <div>
-              <div className="flex items-center gap-4 mb-4">
-                <div className="h-20 w-20 rounded-full bg-gray-100 flex items-center justify-center text-3xl">
-                  👤
+              <div className="flex items-center gap-4 mb-6">
+                <div className="h-20 w-20 rounded-full bg-gray-100 flex items-center justify-center text-3xl overflow-hidden">
+                  {profile?.profile_image ? (
+                    <img
+                      src={profile.profile_image}
+                      alt="Profile"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    "👤"
+                  )}
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold">Admin</h2>
-                  <p className="text-sm text-gray-600">admin@cakeshop.com</p>
+                  <h2 className="text-xl font-semibold">
+                    {profile?.name || "Admin"}
+                  </h2>
+                  <p className="text-sm text-gray-600">{profile?.email}</p>
                   <p className="text-sm text-gray-500 mt-1">
-                    Joined October 1, 2025
+                    Joined{" "}
+                    {profile?.created_at
+                      ? new Date(profile.created_at).toLocaleDateString(
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          }
+                        )
+                      : "Unknown"}
                   </p>
                 </div>
               </div>
 
-              <div className="border rounded p-4">
-                <label className="text-sm text-gray-600">Role</label>
-                <h1>Admin</h1>
-              </div>
+              {/* Profile Edit Form */}
+              <form onSubmit={handleProfileUpdate} className="space-y-4">
+                <div>
+                  <label className="text-sm text-gray-600">Name</label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="mt-1 w-full border px-3 py-2 rounded bg-white text-sm"
+                    placeholder="Enter your name"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm text-gray-600">Email</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="mt-1 w-full border px-3 py-2 rounded bg-white text-sm"
+                    placeholder="Enter your email"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm text-gray-600">Phone Number</label>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="mt-1 w-full border px-3 py-2 rounded bg-white text-sm"
+                    placeholder="+1234567890"
+                  />
+                </div>
+
+                <div className="border rounded p-4 bg-gray-50">
+                  <label className="text-sm text-gray-600">Role</label>
+                  <p className="font-semibold capitalize">
+                    {profile?.role || "Admin"}
+                  </p>
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={saving}
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded w-full"
+                >
+                  {saving ? "Saving..." : "Update Profile"}
+                </Button>
+              </form>
             </div>
 
             {/* Right: Password Change */}

@@ -99,3 +99,41 @@ export const deleteUser = async (id: string): Promise<void> => {
     throw new Error(error.response?.data?.message || "Failed to delete user");
   }
 };
+
+export interface UpdateProfilePayload {
+  name?: string;
+  email?: string;
+  phone_number?: string;
+}
+
+/**
+ * Get current user profile
+ * GET /api/v1/users/profile
+ */
+export const getAdminProfile = async (): Promise<User> => {
+  try {
+    const response = await apiClient.get("/users/profile");
+    return response.data.user || response.data;
+  } catch (error: any) {
+    console.error("Failed to fetch profile:", error);
+    throw new Error(error.response?.data?.message || "Failed to fetch profile");
+  }
+};
+
+/**
+ * Update current user profile
+ * PUT /api/v1/users/profile
+ */
+export const updateAdminProfile = async (
+  payload: UpdateProfilePayload
+): Promise<User> => {
+  try {
+    const response = await apiClient.put("/users/profile", payload);
+    return response.data.user || response.data;
+  } catch (error: any) {
+    console.error("Failed to update profile:", error);
+    throw new Error(
+      error.response?.data?.message || "Failed to update profile"
+    );
+  }
+};

@@ -9,8 +9,10 @@ import ProductsGrid from "../components/ProductsGrid";
 import Pagination from "../components/Pagination";
 import ConfirmationModal from "../components/ConfirmationModal";
 import ProductFiltersComponent from "../components/ProductFilters";
-
-const API_BASE_URL = "https://backend-om79.onrender.com";
+import {
+  getAdminProducts,
+  deleteAdminProduct,
+} from "@/app/services/admin/productService";
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -35,23 +37,8 @@ export default function AdminProductsPage() {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-
-        // Build query string from filters
-        const queryParams = new URLSearchParams();
-        if (filters.categoryId)
-          queryParams.append("categoryId", filters.categoryId);
-        if (filters.subcategoryId)
-          queryParams.append("subcategoryId", filters.subcategoryId);
-
-        const url = `${API_BASE_URL}/api/v1/products${
-          queryParams.toString() ? `?${queryParams.toString()}` : ""
-        }`;
-
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("Failed to fetch products");
-
-        const data = await response.json();
-        setProducts(data.products || data.data || data);
+        const data = await getAdminProducts(filters);
+        setProducts(data as Product[]);
       } catch (err) {
         console.error("Error fetching products:", err);
         const message =
@@ -100,17 +87,7 @@ export default function AdminProductsPage() {
     if (!productToDelete) return;
 
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/v1/products/${productToDelete.productId}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to delete product");
-      }
+      await deleteAdminProduct(productToDelete.productId);
 
       // Remove product from state
       setProducts((prev) =>
