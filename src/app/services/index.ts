@@ -35,11 +35,7 @@ export {
   getUserOrders,
   getOrderById,
   createOrder,
-  statusColors,
-  statusLabels,
   type Order,
-  type OrderStatus,
-  type OrderItemDTO,
   type CreateOrderPayload,
 } from "./orderService";
 
