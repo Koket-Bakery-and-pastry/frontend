@@ -139,7 +139,7 @@ export function ContactPaymentForm({
                     Bank Account
                   </span>
                 </div>
-                <button
+                <Button
                   type="button"
                   onClick={() => {
                     navigator.clipboard.writeText("1234-5678-9012");
@@ -167,7 +167,7 @@ export function ContactPaymentForm({
                     />
                   </svg>
                   Copy
-                </button>
+                </Button>
               </div>
               <div className="bg-blue-50 dark:bg-blue-950/50 rounded-md px-3 py-3 text-center">
                 <span className="text-base sm:text-lg font-mono font-bold text-gray-900 dark:text-gray-100">
@@ -197,7 +197,7 @@ export function ContactPaymentForm({
                     Mobile Payment
                   </span>
                 </div>
-                <button
+                <Button
                   type="button"
                   onClick={() => {
                     navigator.clipboard.writeText("+1 (555) 123-4567");
@@ -225,7 +225,7 @@ export function ContactPaymentForm({
                     />
                   </svg>
                   Copy
-                </button>
+                </Button>
               </div>
               <div className="bg-blue-50 dark:bg-blue-950/50 rounded-md px-3 py-3 text-center">
                 <span className="text-base sm:text-lg font-mono font-bold text-gray-900 dark:text-gray-100">
