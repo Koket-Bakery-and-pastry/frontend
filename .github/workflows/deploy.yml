@@ -78,8 +78,7 @@ jobs:
           username: ${{ secrets.CPANEL_FTP_USERNAME }}
           password: ${{ secrets.CPANEL_FTP_PASSWORD }}
           local-dir: ./deploy/
-          server-dir: /public_html/frontend/
-          dangerous-clean-slate: false
+          server-dir: ../public_html/frontend/
           exclude: |
             **/.git*
             **/.git/**
