@@ -206,9 +206,9 @@ export default function CheckoutPage() {
               subtitle="Complete your order and secure your delicious treats from Koket Bakery & Pastry"
             />
           </div>
-          <div className="grid grid-cols-1 2xl:grid-cols-3 gap-6 sm:gap-8 mb-8 section-spacing">
+          <div className="grid grid-cols-1 3xl:grid-cols-3 gap-6 sm:gap-8 mb-8 section-spacing">
             {/* Order Summary - Right Side */}
-            <div className="lg:col-span-1 order-1 2xl:order-2">
+            <div className="lg:col-span-1 order-1 3xl:order-2">
               <div className="sticky top-4 sm:top-6 lg:top-8 space-y-6">
                 {/* Order Summary Card */}
                 <div className="border-2 border-primary/30 rounded-xl p-6 bg-card shadow-lg">
@@ -276,7 +276,7 @@ export default function CheckoutPage() {
                           </svg>
                         </div>
                         <div className="flex-1">
-                          <div className="flex justify-between items-center mb-1">
+                          <div className="flex flex-col sm:flex-row justify-between items-center mb-1">
                             <span className="text-sm font-bold text-foreground">
                               Pay Now (30%)
                             </span>

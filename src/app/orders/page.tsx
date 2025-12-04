@@ -96,7 +96,7 @@ export default function OrdersPage() {
             />
           </div>
 
-          <div className="section-spacing">
+          <div className="section-spacing-x">
             {orders.length === 0 ? (
               <div className="flex items-center justify-center min-h-[500px] py-12 sm:py-16">
                 <div className="max-w-md w-full text-center">
@@ -395,41 +395,29 @@ export default function OrdersPage() {
                             {order.order_items.map((item) => (
                               <div
                                 key={item._id}
-                                className="flex gap-4 p-3 bg-muted/30 rounded-xl border border-border hover:border-primary/30 transition-all"
+                                className="p-3 bg-muted/30 rounded-xl border border-border hover:border-primary/30 transition-all"
                               >
-                                <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 rounded-lg overflow-hidden border-2 border-border">
-                                  <Image
-                                    src={resolveImageUrl(
-                                      item.product?.images?.[0] ||
-                                        item.product?.image_url
-                                    )}
-                                    alt={item.product?.name || "Product"}
-                                    fill
-                                    className="object-cover"
-                                  />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <h4 className="font-bold text-foreground mb-1 truncate">
-                                    {item.product?.name || "Product"}
-                                  </h4>
-                                  <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mb-2">
-                                    <span className="inline-flex items-center gap-1 bg-background px-2 py-1 rounded-md border border-border">
-                                      <svg
-                                        className="w-3 h-3"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                      >
-                                        <path
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          strokeWidth={2}
-                                          d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
-                                        />
-                                      </svg>
-                                      Qty: {item.quantity}
-                                    </span>
-                                    {item.kilo && (
+                                {/* Image, Name, and Badges Row */}
+                                <div className="flex gap-3 lg:gap-4">
+                                  {/* Image */}
+                                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 lg:w-20 lg:h-20 flex-shrink-0 rounded-lg overflow-hidden border-2 border-border">
+                                    <Image
+                                      src={resolveImageUrl(
+                                        item.product?.images?.[0] ||
+                                          item.product?.image_url
+                                      )}
+                                      alt={item.product?.name || "Product"}
+                                      fill
+                                      className="object-cover"
+                                    />
+                                  </div>
+
+                                  {/* Details */}
+                                  <div className="flex-1 min-w-0">
+                                    <h4 className="font-bold text-foreground mb-1 truncate">
+                                      {item.product?.name || "Product"}
+                                    </h4>
+                                    <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                                       <span className="inline-flex items-center gap-1 bg-background px-2 py-1 rounded-md border border-border">
                                         <svg
                                           className="w-3 h-3"
@@ -441,19 +429,41 @@ export default function OrdersPage() {
                                             strokeLinecap="round"
                                             strokeLinejoin="round"
                                             strokeWidth={2}
-                                            d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"
+                                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
                                           />
                                         </svg>
-                                        {item.kilo}kg
+                                        Qty: {item.quantity}
                                       </span>
-                                    )}
+                                      {item.kilo && (
+                                        <span className="inline-flex items-center gap-1 bg-background px-2 py-1 rounded-md border border-border">
+                                          <svg
+                                            className="w-3 h-3"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                          >
+                                            <path
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              strokeWidth={2}
+                                              d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"
+                                            />
+                                          </svg>
+                                          {item.kilo}kg
+                                        </span>
+                                      )}
+                                    </div>
                                   </div>
-                                  {item.custom_text && (
-                                    <p className="text-xs sm:text-sm text-primary font-medium bg-primary/10 px-2 py-1 rounded-md border border-primary/30 mt-2 italic">
+                                </div>
+
+                                {/* Custom Text - Full Width Below on Small Screens */}
+                                {item.custom_text && (
+                                  <div className="mt-3 lg:mt-0 lg:ml-[92px] xl:ml-[92px]">
+                                    <p className="text-xs sm:text-sm text-primary font-medium bg-primary/10 px-3 py-2 rounded-md border border-primary/30 italic">
                                       💬 "{item.custom_text}"
                                     </p>
-                                  )}
-                                </div>
+                                  </div>
+                                )}
                               </div>
                             ))}
                           </div>

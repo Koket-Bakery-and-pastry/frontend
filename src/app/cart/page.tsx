@@ -171,9 +171,13 @@ export default function ShoppingCartPage() {
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 px-4 sm:px-6 md:px-8 lg:px-10 xl:px-16 2xl:px-24 pb-8 sm:pb-12">
-          {/* Cart Items */}
-          <div className={`${items.length > 0 ? "lg:col-span-2" : "lg:col-span-3"} space-y-3 sm:space-y-4`}>
+        <div className="grid grid-cols-1 2xl:grid-cols-3 gap-6 sm:gap-8 px-4 sm:px-6 md:px-8 lg:px-10 xl:px-16 2xl:px-24 pb-8 sm:pb-12">
+          {/* Cart Items - Left Side on Large Screens */}
+          <div
+            className={`${
+              items.length > 0 ? "lg:col-span-2" : "lg:col-span-3"
+            } space-y-3 sm:space-y-4 order-1 lg:order-1`}
+          >
             {/* Selection Info Bar */}
             {items.length > 0 && (
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/30 text-sm px-4 py-3 rounded-xl shadow-sm">
@@ -279,10 +283,10 @@ export default function ShoppingCartPage() {
               </div>
             )}
           </div>
-l
-          {/* Order Summary */}
+
+          {/* Order Summary - Right Side on Large Screens */}
           {items.length > 0 && (
-            <div className="lg:col-span-1">
+            <div className="lg:col-span-1 order-2 lg:order-2">
               <div className="sticky top-4 sm:top-6 lg:top-8">
                 <OrderSummary
                   subtotal={subtotal}

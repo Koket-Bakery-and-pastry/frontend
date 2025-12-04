@@ -8,6 +8,7 @@ import { ProductFilters } from "../types/ProductFilters";
 import { getProducts } from "@/app/services/productService";
 import type { ProductSummary } from "@/app/types/product";
 import LoadingState from "@/components/LoadingState";
+import { Button } from "@/components/ui/button";
 
 const ASSET_BASE_URL =
   process.env.NEXT_PUBLIC_ASSET_BASE_URL ??
@@ -107,8 +108,9 @@ function ProductsPage() {
 
   return (
     <div className="bg-background-2 min-h-screen">
-      <div className="py-6 sm:py-8 md:py-12">
-        <div className="section-spacing mb-8 sm:mb-10">
+      <div>
+        <div className="mb-6 sm:mb-8 md:mb-12">
+          {" "}
           <PageHeader
             title="Our Products"
             subtitle="Discover our handcrafted cakes and delicious desserts made with love"
@@ -256,18 +258,21 @@ function ProductsPage() {
 
       {/* Pagination Controls */}
       {!error && totalPages > 1 && (
-        <div className="section-spacing mt-12">
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 py-8 bg-card border-2 border-border rounded-xl p-6 shadow-sm">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <div className="section-spacing-x pb-2">
+          <div className="flex flex-col lg:flex-row justify-center items-center gap-4 py-6 sm:py-8 bg-card border-2 border-border rounded-xl p-4 sm:p-6">
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
               <span className="font-medium">
                 Page {page} of {totalPages}
               </span>
-              <span>•</span>
-              <span>{filteredProducts.length} total products</span>
+              <span className="hidden xs:inline">•</span>
+              <span className="hidden xs:inline">
+                {filteredProducts.length} products
+              </span>
             </div>
             <div className="flex items-center gap-2">
-              <button
-                className="px-4 py-2 rounded-lg bg-card border-2 border-border text-foreground font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/10 hover:border-primary transition-all flex items-center gap-2"
+              {/* Previous Button */}
+              <Button
+                className="w-10 h-10 sm:w-auto sm:px-4 sm:py-2 rounded-lg bg-card border-2 border-border text-foreground font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/10 hover:border-primary transition-all flex items-center justify-center gap-2"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
               >
@@ -284,42 +289,56 @@ function ProductsPage() {
                     d="M15 19l-7-7 7-7"
                   />
                 </svg>
-                Previous
-              </button>
-              <div className="flex items-center gap-1">
-                {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                  let pageNum;
-                  if (totalPages <= 5) {
-                    pageNum = i + 1;
-                  } else if (page <= 3) {
-                    pageNum = i + 1;
-                  } else if (page >= totalPages - 2) {
-                    pageNum = totalPages - 4 + i;
-                  } else {
-                    pageNum = page - 2 + i;
-                  }
+                <span className="hidden sm:inline">Previous</span>
+              </Button>
 
-                  return (
-                    <button
-                      key={pageNum}
-                      className={`w-10 h-10 rounded-lg font-bold transition-all ${
-                        page === pageNum
-                          ? "bg-primary text-primary-foreground shadow-lg scale-110"
-                          : "bg-card border-2 border-border text-foreground hover:bg-primary/10 hover:border-primary"
-                      }`}
-                      onClick={() => setPage(pageNum)}
-                    >
-                      {pageNum}
-                    </button>
-                  );
-                })}
+              {/* Page Numbers - Show max 3 on mobile, 5 on larger screens */}
+              <div className="flex items-center gap-1">
+                {Array.from(
+                  {
+                    length: Math.min(
+                      totalPages,
+                      window.innerWidth < 640 ? 3 : 5
+                    ),
+                  },
+                  (_, i) => {
+                    let pageNum;
+                    const maxPages = window.innerWidth < 640 ? 3 : 5;
+
+                    if (totalPages <= maxPages) {
+                      pageNum = i + 1;
+                    } else if (page <= Math.ceil(maxPages / 2)) {
+                      pageNum = i + 1;
+                    } else if (page >= totalPages - Math.floor(maxPages / 2)) {
+                      pageNum = totalPages - maxPages + 1 + i;
+                    } else {
+                      pageNum = page - Math.floor(maxPages / 2) + i;
+                    }
+
+                    return (
+                      <Button
+                        key={pageNum}
+                        className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg font-bold transition-all text-sm sm:text-base ${
+                          page === pageNum
+                            ? "bg-primary text-primary-foreground shadow-lg scale-110"
+                            : "bg-card border-2 border-border text-foreground hover:bg-primary/10 hover:border-primary"
+                        }`}
+                        onClick={() => setPage(pageNum)}
+                      >
+                        {pageNum}
+                      </Button>
+                    );
+                  }
+                )}
               </div>
-              <button
-                className="px-4 py-2 rounded-lg bg-card border-2 border-border text-foreground font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/10 hover:border-primary transition-all flex items-center gap-2"
+
+              {/* Next Button */}
+              <Button
+                className="w-10 h-10 sm:w-auto sm:px-4 sm:py-2 rounded-lg bg-card border-2 border-border text-foreground font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/10 hover:border-primary transition-all flex items-center justify-center gap-2"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
               >
-                Next
+                <span className="hidden sm:inline">Next</span>
                 <svg
                   className="w-4 h-4"
                   fill="none"
@@ -333,7 +352,7 @@ function ProductsPage() {
                     d="M9 5l7 7-7 7"
                   />
                 </svg>
-              </button>
+              </Button>
             </div>
           </div>
         </div>

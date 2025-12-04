@@ -273,7 +273,7 @@ export default function ProductPage() {
 
       {/* Product Section */}
       <section className="mx-auto max-w-7xl px-4 py-6 sm:py-8 md:py-12 sm:px-6 lg:px-8">
-        <div className="grid gap-6 sm:gap-8 lg:gap-12 xl:grid-cols-2">
+        <div className="grid gap-6 sm:gap-8 lg:gap-12 2xl:grid-cols-2">
           <Suspense
             fallback={
               <LoadingState
