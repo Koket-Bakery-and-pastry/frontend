@@ -9,7 +9,7 @@ import { PageHeader } from "@/components";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useCart } from "@/app/context/CartContext";
 import LoadingState from "@/components/LoadingState";
-import { createOrder, type OrderItemDTO } from "@/app/services/orderService";
+import { createOrder, type OrderItem } from "@/app/services/orderService";
 import { toast } from "react-toastify";
 
 interface CheckoutItem {
@@ -146,21 +146,14 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
 
     try {
-      // Prepare order items from cart items
-      const orderItems: OrderItemDTO[] = cartItems
+      // Prepare order items - send cart item IDs only
+      // Backend will mark these existing cart items as is_ordered: true
+      const orderItems: OrderItem[] = cartItems
         .filter(
           (item) => selectedIds.length === 0 || selectedIds.includes(item._id)
         )
         .map((item) => ({
-          product_id:
-            typeof item.product_id === "string"
-              ? item.product_id
-              : item.product_id?._id || item.product?._id,
-          quantity: item.quantity,
-          kilo: item.kilo,
-          pieces: item.pieces,
-          custom_text: item.custom_text,
-          additional_description: item.additional_description,
+          _id: item._id, // Send cart item ID
         }));
 
       // Convert delivery date to ISO string

@@ -32,7 +32,7 @@ function OurValues() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 md:gap-8 lg:gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-6 sm:gap-7 md:gap-8 lg:gap-10">
           {values.map((v, i) => (
             <div
               key={i}

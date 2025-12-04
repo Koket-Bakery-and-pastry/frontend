@@ -14,7 +14,7 @@ const ASSET_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/api\/v1\/?$/, "") ??
   "https://backend-om79.onrender.com";
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 8;
 
 function ProductsPage() {
   const [allProducts, setAllProducts] = useState<ProductSummary[]>([]);
@@ -114,7 +114,7 @@ function ProductsPage() {
 
       <ProductFiltration filters={filters} setFilters={setFilters} />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-4 gap-4 section-spacing bg-background-2 px-4 sm:px-8 md:px-12 lg:px-16">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-4 gap-4 section-spacing bg-background-2 px-4 sm:px-8 md:px-12 lg:px-16">
         {error && (
           <div className="col-span-full text-center py-10 text-red-500">
             {error}
@@ -139,7 +139,7 @@ function ProductsPage() {
             ) {
               const prices = Object.values(product.kilo_to_price_map);
               const minPrice = Math.min(...prices);
-              displayPrice = `From $${minPrice.toFixed(2)}`;
+              displayPrice = `$${minPrice.toFixed(2)}`;
             }
             // Check if product is pieceable (sold per piece with subcategory price)
             else if (product.is_pieceable && product.subcategory_id?.price) {
@@ -157,6 +157,7 @@ function ProductsPage() {
                 name={product.name}
                 description={product.description ?? ""}
                 price={displayPrice}
+                category={product.category_id?.name}
                 productId={product._id}
               />
             );
