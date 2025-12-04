@@ -17,7 +17,10 @@ interface FormData {
   paymentProof: File | null;
 }
 
-export function ContactPaymentForm({ onSubmit, isSubmitting = false }: ContactPaymentFormProps) {
+export function ContactPaymentForm({
+  onSubmit,
+  isSubmitting = false,
+}: ContactPaymentFormProps) {
   const [formData, setFormData] = useState<FormData>({
     deliveryDate: "",
     recipientPhone: "",
@@ -66,35 +69,253 @@ export function ContactPaymentForm({ onSubmit, isSubmitting = false }: ContactPa
   return (
     <form
       onSubmit={handleSubmit}
-      className="border-2 border-border rounded-lg p-6 bg-card"
+      className="border-2 border-border rounded-xl p-6 sm:p-8 bg-card shadow-lg"
     >
-      <h2 className="text-2xl font-semibold text-foreground mb-6">
-        Contact & Payment Information
+      <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
+        <svg
+          className="w-6 h-6 text-primary"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+          />
+        </svg>
+        Payment & Contact Details
       </h2>
 
       <div className="space-y-6">
+        {/* Payment Instructions - MOVED TO TOP */}
+        <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 border-2 border-blue-400 dark:border-blue-600 rounded-xl p-5 sm:p-6 shadow-md">
+          <div className="flex items-start gap-3 mb-4">
+            <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
+              <svg
+                className="w-5 h-5 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-blue-900 dark:text-blue-100 mb-1">
+                Payment Instructions
+              </h3>
+              <p className="text-sm text-blue-800 dark:text-blue-200 font-medium">
+                Please pay 30% of the total amount to confirm your order
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {/* Bank Account */}
+            <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-blue-300 dark:border-blue-700">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <svg
+                    className="w-5 h-5 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"
+                    />
+                  </svg>
+                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Bank Account
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText("1234-5678-9012");
+                    // Optional: Add a toast notification here
+                    const btn = document.activeElement as HTMLButtonElement;
+                    const originalText = btn.textContent;
+                    btn.textContent = "Copied!";
+                    setTimeout(() => {
+                      btn.textContent = originalText;
+                    }, 2000);
+                  }}
+                  className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-xs font-medium px-3 py-1 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-all flex items-center gap-1"
+                >
+                  <svg
+                    className="w-3 h-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                    />
+                  </svg>
+                  Copy
+                </button>
+              </div>
+              <div className="bg-blue-50 dark:bg-blue-950/50 rounded-md px-3 py-3 text-center">
+                <span className="text-base sm:text-lg font-mono font-bold text-gray-900 dark:text-gray-100">
+                  1234-5678-9012
+                </span>
+              </div>
+            </div>
+
+            {/* Mobile Payment */}
+            <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-blue-300 dark:border-blue-700">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <svg
+                    className="w-5 h-5 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+                    />
+                  </svg>
+                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Mobile Payment
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText("+1 (555) 123-4567");
+                    // Optional: Add a toast notification here
+                    const btn = document.activeElement as HTMLButtonElement;
+                    const originalText = btn.textContent;
+                    btn.textContent = "Copied!";
+                    setTimeout(() => {
+                      btn.textContent = originalText;
+                    }, 2000);
+                  }}
+                  className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-xs font-medium px-3 py-1 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-all flex items-center gap-1"
+                >
+                  <svg
+                    className="w-3 h-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                    />
+                  </svg>
+                  Copy
+                </button>
+              </div>
+              <div className="bg-blue-50 dark:bg-blue-950/50 rounded-md px-3 py-3 text-center">
+                <span className="text-base sm:text-lg font-mono font-bold text-gray-900 dark:text-gray-100">
+                  +1 (555) 123-4567
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 flex items-start gap-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-400 dark:border-yellow-600 rounded-lg p-3">
+            <svg
+              className="w-5 h-5 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+            <p className="text-xs text-yellow-800 dark:text-yellow-200 leading-relaxed">
+              <strong>Important:</strong> After making the payment, upload your
+              payment proof below to confirm your order.
+            </p>
+          </div>
+        </div>
         {/* Delivery Date */}
         <div>
-          <label className="block text-sm font-medium text-foreground mb-2">
-            Desired Delivery Date
+          <label className="block text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
+            <svg
+              className="w-4 h-4 text-primary"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+            Desired Delivery Date *
           </label>
           <Input
             type="date"
             name="deliveryDate"
             value={formData.deliveryDate}
             onChange={handleInputChange}
-            placeholder="mm/dd/yyyy"
-            className="w-full"
+            required
+            className="w-full h-11"
           />
-          <p className="text-xs text-muted-foreground mt-2">
-            Custom orders require at least 3 days advance notice
-          </p>
+          <div className="flex items-start gap-2 mt-2 text-xs text-muted-foreground">
+            <svg
+              className="w-4 h-4 flex-shrink-0 mt-0.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <span>Custom orders require at least 3 days advance notice</span>
+          </div>
         </div>
 
         {/* Recipient Phone */}
         <div>
-          <label className="block text-sm font-medium text-foreground mb-2">
-            Recipient Phone
+          <label className="block text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
+            <svg
+              className="w-4 h-4 text-primary"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+              />
+            </svg>
+            Recipient Phone Number *
           </label>
           <Input
             type="tel"
@@ -102,17 +323,34 @@ export function ContactPaymentForm({ onSubmit, isSubmitting = false }: ContactPa
             value={formData.recipientPhone}
             onChange={handleInputChange}
             placeholder="+251 911334455"
-            className="w-full"
+            required
+            className="w-full h-11"
           />
+          <p className="text-xs text-muted-foreground mt-2">
+            We'll contact you for order confirmation and delivery updates
+          </p>
         </div>
 
-        {/* Payment Information */}
+        {/* Payment Proof Upload */}
         <div>
-          <label className="block text-sm font-medium text-foreground mb-2">
-            Payment Information
+          <label className="block text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
+            <svg
+              className="w-4 h-4 text-primary"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </svg>
+            Upload Payment Proof *
           </label>
           <p className="text-xs text-muted-foreground mb-3">
-            Upload screen shot or image of the payment proof
+            Screenshot or photo of your payment receipt/confirmation
           </p>
 
           <div
@@ -120,55 +358,136 @@ export function ContactPaymentForm({ onSubmit, isSubmitting = false }: ContactPa
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
             onDrop={handleDrop}
-            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+            className={`border-2 border-dashed rounded-xl p-8 text-center transition-all ${
               dragActive
-                ? "border-primary bg-primary/10"
-                : "border-border bg-background"
+                ? "border-primary bg-primary/10 scale-[1.02]"
+                : formData.paymentProof
+                ? "border-green-500 bg-green-50 dark:bg-green-950/20"
+                : "border-border bg-background hover:border-primary/50 hover:bg-primary/5"
             }`}
           >
             <input
               type="file"
               id="payment-proof"
               onChange={handleFileChange}
-              accept="image/png,image/jpeg"
+              accept="image/png,image/jpeg,image/jpg"
+              required
               className="hidden"
             />
-            <label htmlFor="payment-proof" className="cursor-pointer">
-              <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-              <p className="text-sm font-medium text-foreground">
-                Click to upload images
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                PNG, JPG up to 5MB each
-              </p>
+            <label htmlFor="payment-proof" className="cursor-pointer block">
+              {formData.paymentProof ? (
+                <div className="space-y-3">
+                  <div className="w-16 h-16 mx-auto bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                    <svg
+                      className="w-8 h-8 text-green-600 dark:text-green-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-green-700 dark:text-green-400">
+                      ✓ File Uploaded Successfully
+                    </p>
+                    <p className="text-xs text-green-600 dark:text-green-500 mt-1 truncate max-w-xs mx-auto">
+                      {formData.paymentProof.name}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setFormData((prev) => ({ ...prev, paymentProof: null }));
+                    }}
+                    className="text-xs text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 font-medium"
+                  >
+                    Remove & Upload Different File
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="w-16 h-16 mx-auto mb-3 bg-primary/10 rounded-full flex items-center justify-center">
+                    <Upload className="w-8 h-8 text-primary" />
+                  </div>
+                  <p className="text-sm font-semibold text-foreground mb-1">
+                    Click to upload or drag and drop
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    PNG, JPG or JPEG (max 5MB)
+                  </p>
+                </>
+              )}
             </label>
-            {formData.paymentProof && (
-              <p className="text-sm text-green-600 mt-2">
-                ✓ {formData.paymentProof.name}
-              </p>
-            )}
           </div>
-        </div>
-
-        {/* Payment Instructions */}
-        <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
-          <p className="text-sm font-semibold text-foreground mb-2">
-            Payment Instructions:
-          </p>
-          <p className="text-xs text-muted-foreground">
-            Transfer to Bank Account: 1234-5678-9012 or use Mobile Payment: +1
-            (555) 123-4567. Upload your payment receipt above.
-          </p>
         </div>
 
         {/* Submit Button */}
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full mt-6 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full mt-6 bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-base"
         >
-          {isSubmitting ? "Placing Order..." : "Place Order"}
+          {isSubmitting ? (
+            <>
+              <svg
+                className="animate-spin h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Placing Order...
+            </>
+          ) : (
+            <>
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              Confirm & Place Order
+            </>
+          )}
         </button>
+
+        <p className="text-center text-xs text-muted-foreground mt-4 leading-relaxed">
+          By placing this order, you agree to our{" "}
+          <a href="/terms" className="text-primary hover:underline">
+            terms and conditions
+          </a>{" "}
+          and{" "}
+          <a href="/privacy" className="text-primary hover:underline">
+            privacy policy
+          </a>
+        </p>
       </div>
     </form>
   );

@@ -12,7 +12,7 @@ function CallToAction() {
       }}
     >
       {/* Gradient overlay for better contrast */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50"></div>
 
       <div className="relative z-10 px-4 sm:px-6 md:px-8 w-full">
         <div className="flex flex-col items-center justify-center text-center max-w-4xl mx-auto">
