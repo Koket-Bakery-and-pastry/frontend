@@ -5,6 +5,7 @@ import type React from "react";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Upload } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface ContactPaymentFormProps {
   onSubmit?: (data: FormData) => void;
