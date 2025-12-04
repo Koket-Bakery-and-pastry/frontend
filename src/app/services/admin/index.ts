@@ -9,5 +9,8 @@ export * from "./analyticsService";
 // Orders
 export * from "./orderService";
 
+// Products
+export * from "./productService";
+
 // Users
 export * from "./userService";
