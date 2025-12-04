@@ -193,36 +193,62 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background-2 p-6">
-      <div className="max-w-4xl mx-auto">
-        <Link
-          href="/"
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          Back to Home
-        </Link>
+    <div className="min-h-screen bg-background-2">
+      <div className="py-6 sm:py-8 md:py-12">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Back Navigation */}
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 sm:mb-8 transition-colors font-medium group"
+          >
+            <div className="w-8 h-8 rounded-full bg-card border-2 border-border flex items-center justify-center group-hover:bg-primary/10 group-hover:border-primary transition-all">
+              <ChevronLeft className="h-4 w-4" />
+            </div>
+            Back to Home
+          </Link>
 
-        <UserProfileCard
-          user={user}
-          stats={stats}
-          onEdit={() => setEditModalOpen(true)}
-          onDelete={() => setDeleteDialogOpen(true)}
-        />
-        <EditProfileModal
-          open={editModalOpen}
-          onOpenChange={setEditModalOpen}
-          user={{ fullName: user.name, email: user.email, phone: user.phone }}
-          onSave={handleSaveProfile}
-        />
+          {/* Page Header */}
+          <div className="mb-8 sm:mb-10">
+            <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2 flex items-center gap-3">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              My Profile
+            </h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
+              Manage your account, view your orders, and track your activity
+            </p>
+          </div>
 
-        <MyReviewsSection reviews={reviews} />
+          {/* Profile Card */}
+          <div className="mb-8">
+            <UserProfileCard
+              user={user}
+              stats={stats}
+              onEdit={() => setEditModalOpen(true)}
+              onDelete={() => setDeleteDialogOpen(true)}
+            />
+          </div>
 
-        <DeleteAccountDialog
-          open={deleteDialogOpen}
-          onOpenChange={setDeleteDialogOpen}
-          onConfirm={handleDeleteAccount}
-        />
+          {/* Reviews Section */}
+          <MyReviewsSection reviews={reviews} />
+
+          {/* Modals */}
+          <EditProfileModal
+            open={editModalOpen}
+            onOpenChange={setEditModalOpen}
+            user={{ fullName: user.name, email: user.email, phone: user.phone }}
+            onSave={handleSaveProfile}
+          />
+
+          <DeleteAccountDialog
+            open={deleteDialogOpen}
+            onOpenChange={setDeleteDialogOpen}
+            onConfirm={handleDeleteAccount}
+          />
+        </div>
       </div>
     </div>
   );

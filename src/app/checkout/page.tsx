@@ -198,56 +198,132 @@ export default function CheckoutPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-background ">
-        <div className="">
-          <div className="mb-12">
+      <div className="min-h-screen bg-background-2">
+        <div>
+          <div className="mb-6 sm:mb-8 md:mb-12">
             <PageHeader
-              title="Shopping Cart"
-              subtitle="Thank you for choosing Koket Bakery & Pastry! Review your order below and proceed to payment."
+              title="Checkout"
+              subtitle="Complete your order and secure your delicious treats from Koket Bakery & Pastry"
             />
           </div>
-          <div className="grid grid-cols-1 2xl:grid-cols-3 gap-8 mb-8 section-spacing">
-            {/* Order Summary - Moved to top/left */}
+          <div className="grid grid-cols-1 2xl:grid-cols-3 gap-6 sm:gap-8 mb-8 section-spacing">
+            {/* Order Summary - Right Side */}
             <div className="lg:col-span-1 order-1 2xl:order-2">
-              <div className="sticky top-8">
-                <div className="border-2 border-blue-400 rounded-lg p-6 bg-white">
-                  <h2 className="text-2xl font-semibold text-foreground mb-6">
+              <div className="sticky top-4 sm:top-6 lg:top-8 space-y-6">
+                {/* Order Summary Card */}
+                <div className="border-2 border-primary/30 rounded-xl p-6 bg-card shadow-lg">
+                  <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
+                    <svg
+                      className="w-6 h-6 text-primary"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                      />
+                    </svg>
                     Order Summary
                   </h2>
+
                   <div className="space-y-4">
-                    <div className="flex justify-between text-muted-foreground">
-                      <span>Subtotal</span>
-                      <span className="font-semibold">
+                    {/* Items Count */}
+                    <div className="flex justify-between text-sm text-muted-foreground">
+                      <span>Items ({items.length})</span>
+                      <span className="font-medium text-foreground">
+                        {items.reduce((sum, item) => sum + item.quantity, 0)}{" "}
+                        total
+                      </span>
+                    </div>
+
+                    {/* Subtotal */}
+                    <div className="flex justify-between text-base">
+                      <span className="text-muted-foreground">Subtotal</span>
+                      <span className="font-semibold text-foreground">
                         ${subtotal.toFixed(2)}
                       </span>
                     </div>
-                    <div className="border-t border-border pt-4 flex justify-between font-semibold text-lg">
-                      <span className="text-foreground">Total Price</span>
-                      <span className="text-pink-500">${total.toFixed(2)}</span>
+
+                    {/* Total */}
+                    <div className="border-t-2 border-border pt-4 flex justify-between items-center">
+                      <span className="text-lg font-semibold text-foreground">
+                        Total Price
+                      </span>
+                      <span className="text-2xl font-bold text-primary">
+                        ${total.toFixed(2)}
+                      </span>
                     </div>
-                    <div className="bg-primary/10 border border-primary/30 rounded-lg p-4 mt-4">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-semibold text-foreground">
-                          Upfront Payment Required
-                        </span>
-                        <span className="text-lg font-bold text-primary">
-                          ${(total * 0.3).toFixed(2)}
-                        </span>
+
+                    {/* Upfront Payment Box */}
+                    <div className="bg-gradient-to-br from-primary/15 to-primary/5 border-2 border-primary/40 rounded-xl p-4 mt-4">
+                      <div className="flex items-start gap-3 mb-3">
+                        <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                          <svg
+                            className="w-5 h-5 text-primary"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                            />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="text-sm font-bold text-foreground">
+                              Pay Now (30%)
+                            </span>
+                            <span className="text-2xl font-bold text-primary">
+                              ${(total * 0.3).toFixed(2)}
+                            </span>
+                          </div>
+                          <p className="text-xs text-muted-foreground leading-relaxed">
+                            Required upfront payment to confirm your order
+                          </p>
+                        </div>
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        Pay 30% of the total price now. The remaining balance of{" "}
-                        <span className="font-semibold">
-                          ${(total * 0.7).toFixed(2)}
-                        </span>{" "}
-                        will be paid upon delivery.
-                      </p>
+
+                      <div className="bg-white/50 dark:bg-gray-900/30 rounded-lg p-3 border border-primary/20">
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-muted-foreground">
+                            Remaining Balance
+                          </span>
+                          <span className="font-bold text-foreground">
+                            ${(total * 0.7).toFixed(2)}
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Pay upon delivery
+                        </p>
+                      </div>
                     </div>
                   </div>
-                  <p className="text-center text-xs text-muted-foreground mt-4">
-                    By placing this order, you agree to our terms and
-                    conditions. Please ensure payment is completed before
-                    delivery.
-                  </p>
+
+                  <div className="mt-6 pt-4 border-t border-border">
+                    <p className="text-center text-xs text-muted-foreground leading-relaxed">
+                      <svg
+                        className="w-4 h-4 inline mr-1 text-primary"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      Secure checkout • Your payment is protected
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>

@@ -36,50 +36,70 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3 sm:gap-4">
       {/* Main Image */}
-      <div className="relative overflow-hidden rounded-lg bg-muted">
+      <div className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-br from-muted to-muted/50 group">
         <img
           src={galleryImages[currentImage] || "/placeholder.svg"}
           alt={name ? `${name} image ${currentImage + 1}` : "Product image"}
-          className="w-full h-[250px] md:h-[420px] object-cover"
+          className="w-full h-[280px] sm:h-[350px] md:h-[450px] lg:h-[500px] object-cover transition-transform duration-300 group-hover:scale-105"
         />
-        <button
-          onClick={prevImage}
-          className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/80 p-2 hover:bg-white"
-        >
-          <ChevronLeft className="h-5 w-5" />
-        </button>
-        <button
-          onClick={nextImage}
-          className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/80 p-2 hover:bg-white"
-        >
-          <ChevronRight className="h-5 w-5" />
-        </button>
+
+        {/* Navigation Arrows - Hidden on single image */}
+        {galleryImages.length > 1 && (
+          <>
+            <button
+              onClick={prevImage}
+              aria-label="Previous image"
+              className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm p-2 sm:p-2.5 hover:bg-white dark:hover:bg-gray-900 shadow-lg transition-all hover:scale-110 active:scale-95"
+            >
+              <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5 text-foreground" />
+            </button>
+            <button
+              onClick={nextImage}
+              aria-label="Next image"
+              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm p-2 sm:p-2.5 hover:bg-white dark:hover:bg-gray-900 shadow-lg transition-all hover:scale-110 active:scale-95"
+            >
+              <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 text-foreground" />
+            </button>
+          </>
+        )}
+
+        {/* Image Counter */}
+        {galleryImages.length > 1 && (
+          <div className="absolute bottom-3 sm:bottom-4 right-3 sm:right-4 bg-black/70 backdrop-blur-sm text-white text-xs sm:text-sm px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full font-medium">
+            {currentImage + 1} / {galleryImages.length}
+          </div>
+        )}
       </div>
 
       {/* Thumbnail Gallery */}
-      <div className="flex gap-3">
-        {galleryImages.map((image, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentImage(index)}
-            className={`h-15 w-15 md:h-20 md:w-20 overflow-hidden rounded-lg border-2 transition-colors ${
-              currentImage === index ? "border-primary" : "border-border"
-            }`}
-          >
-            <img
-              src={image || "/placeholder.svg"}
-              alt={
-                name
-                  ? `${name} thumbnail ${index + 1}`
-                  : `Thumbnail ${index + 1}`
-              }
-              className="h-full w-full object-cover"
-            />
-          </button>
-        ))}
-      </div>
+      {galleryImages.length > 1 && (
+        <div className="flex gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-2">
+          {galleryImages.map((image, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentImage(index)}
+              aria-label={`View image ${index + 1}`}
+              className={`flex-shrink-0 h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 overflow-hidden rounded-lg sm:rounded-xl border-2 transition-all ${
+                currentImage === index
+                  ? "border-primary ring-2 ring-primary/20 scale-105"
+                  : "border-border hover:border-primary/50 opacity-70 hover:opacity-100"
+              }`}
+            >
+              <img
+                src={image || "/placeholder.svg"}
+                alt={
+                  name
+                    ? `${name} thumbnail ${index + 1}`
+                    : `Thumbnail ${index + 1}`
+                }
+                className="h-full w-full object-cover"
+              />
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

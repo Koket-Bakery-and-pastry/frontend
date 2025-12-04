@@ -245,18 +245,35 @@ export default function ProductPage() {
   };
 
   return (
-    <main className="min-h-screen bg-background-2 px-4 lg:px-6 xl:px-10 2xl:px-16 3xl:px-24">
-      <header className="border-b border-border py-4">
+    <main className="min-h-screen bg-background-2">
+      {/* Breadcrumb Navigation */}
+      <div className="border-b border-border bg-background">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <ChevronLeft className="h-5 w-5" />
-            <span className="text-sm">Back to Products</span>
+          <div className="flex items-center gap-2 py-3 sm:py-4 text-sm">
+            <a
+              href="/"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Home
+            </a>
+            <span className="text-muted-foreground">/</span>
+            <a
+              href="/products"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Products
+            </a>
+            <span className="text-muted-foreground">/</span>
+            <span className="text-foreground font-medium truncate max-w-[200px] sm:max-w-none">
+              {product.name}
+            </span>
           </div>
         </div>
-      </header>
+      </div>
 
-      <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 xl:px-0">
-        <div className="grid gap-8 4xl:gap-20 xl:grid-cols-2">
+      {/* Product Section */}
+      <section className="mx-auto max-w-7xl px-4 py-6 sm:py-8 md:py-12 sm:px-6 lg:px-8">
+        <div className="grid gap-6 sm:gap-8 lg:gap-12 xl:grid-cols-2">
           <Suspense
             fallback={
               <LoadingState
@@ -273,28 +290,44 @@ export default function ProductPage() {
         </div>
       </section>
 
-      <section className="border-t border-border bg-card">
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="mb-8 flex items-center justify-between">
-            <h2 className="text-lg font-bold md:text-2xl">Customer Reviews</h2>
+      {/* Reviews Section */}
+      <section className="border-t border-border bg-card/30">
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:py-12 md:py-16 sm:px-6 lg:px-8">
+          <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-1">
+                Customer Reviews
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {totalReviews > 0
+                  ? `${totalReviews} review${
+                      totalReviews === 1 ? "" : "s"
+                    } • ${averageRating.toFixed(1)} average rating`
+                  : "Be the first to review this product"}
+              </p>
+            </div>
             <Button
               onClick={() => setShowReviewForm((prev) => !prev)}
               disabled={isSubmittingReview}
-              className="rounded-full bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
+              className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-all hover:shadow-lg w-full sm:w-auto"
             >
-              + Add Review
+              {showReviewForm ? "Cancel" : "+ Write a Review"}
             </Button>
           </div>
 
           {showReviewForm && (
-            <div className="mb-8">
+            <div className="mb-8 bg-card border border-border rounded-xl p-4 sm:p-6 shadow-sm">
               <ReviewForm
                 onSubmit={handleReviewSubmit}
                 defaultRating={Math.max(1, ratingValue || 5)}
                 isSubmitting={isSubmittingReview}
               />
               {reviewError && (
-                <p className="mt-2 text-sm text-red-500">{reviewError}</p>
+                <div className="mt-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                  <p className="text-sm text-red-600 dark:text-red-400">
+                    {reviewError}
+                  </p>
+                </div>
               )}
             </div>
           )}
@@ -313,10 +346,18 @@ export default function ProductPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <h2 className="mb-8 text-2xl font-bold">You May Also Like</h2>
+      {/* Related Products Section */}
+      <section className="mx-auto max-w-7xl px-4 py-8 sm:py-12 md:py-16 sm:px-6 lg:px-8">
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-2">
+            You May Also Like
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Discover more delicious options handpicked for you
+          </p>
+        </div>
         {relatedProducts.length ? (
-          <div className="2xl:my-16 grid grid-cols-1 gap-6 sm:grid-cols-2 2xl:grid-cols-3 3xl:gap-10">
+          <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:gap-8">
             {relatedProducts.map((item) => (
               <ProductCard
                 key={item._id}
@@ -326,13 +367,28 @@ export default function ProductPage() {
                   item.description ?? "Freshly made with premium ingredients."
                 }
                 price={computePriceLabel(item)}
+                category={item.category_id?.name}
                 productId={item._id}
               />
             ))}
           </div>
         ) : (
-          <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-            No related products available right now.
+          <div className="rounded-xl border-2 border-dashed border-border bg-muted/30 p-8 sm:p-12 text-center">
+            <div className="mx-auto max-w-sm">
+              <div className="mb-3 text-4xl">🍰</div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">
+                No Related Products Yet
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Check back soon for more delicious recommendations
+              </p>
+              <a
+                href="/products"
+                className="inline-block text-sm font-medium text-primary hover:underline"
+              >
+                Browse All Products →
+              </a>
+            </div>
           </div>
         )}
       </section>
