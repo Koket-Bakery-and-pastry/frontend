@@ -43,7 +43,7 @@ interface CartMutationResponse {
 export async function addToCart(payload: AddToCartPayload) {
   try {
     const { data } = await apiClient.post<CartMutationResponse>(
-      "/carts",
+      "/orders/items",
       payload
     );
     return data;
@@ -58,7 +58,13 @@ export async function addToCart(payload: AddToCartPayload) {
  */
 export async function getCartItems(): Promise<CartItem[]> {
   try {
-    const { data } = await apiClient.get<CartItemsResponse>("/carts");
+    const { data } = await apiClient.get<CartItem[] | CartItemsResponse>(
+      "/orders/items/user"
+    );
+    // Handle both response formats: array directly or object with cartItems property
+    if (Array.isArray(data)) {
+      return data;
+    }
     return data.cartItems ?? [];
   } catch (error: any) {
     console.error("Failed to fetch cart items", error?.response?.data ?? error);
@@ -75,7 +81,7 @@ export async function updateCartItem(
 ) {
   try {
     const { data } = await apiClient.put<CartMutationResponse>(
-      `/carts/${id}`,
+      `/orders/items/${id}`,
       payload
     );
     return data;
@@ -91,7 +97,7 @@ export async function updateCartItem(
 export async function removeFromCart(id: string) {
   try {
     const { data } = await apiClient.delete<CartMutationResponse>(
-      `/carts/${id}`
+      `/orders/items/${id}`
     );
     return data;
   } catch (error: any) {
@@ -108,7 +114,9 @@ export async function removeFromCart(id: string) {
  */
 export async function clearCart() {
   try {
-    const { data } = await apiClient.delete<CartMutationResponse>("/carts");
+    const { data } = await apiClient.delete<CartMutationResponse>(
+      "/orders/items"
+    );
     return data;
   } catch (error: any) {
     console.error("Failed to clear cart", error?.response?.data ?? error);
