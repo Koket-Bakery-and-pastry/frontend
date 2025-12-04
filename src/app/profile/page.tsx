@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
+import { toast } from "react-toastify";
 import { UserProfileCard } from "./components/UserProfileCard";
 import { UserStats } from "./components/UserStats";
 import { MyReviewsSection } from "./components/MyReviewsSection";
@@ -112,13 +113,38 @@ export default function ProfilePage() {
     email: string;
     phone: string;
   }) => {
-    setUser({
-      ...user,
-      name: data.fullName,
-      email: data.email,
-      phone: data.phone,
-      initials: getInitials(data.fullName),
-    });
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Import the update function
+      const { updateUserProfile } = await import("../services/profileService");
+
+      // Call API to update profile
+      await updateUserProfile({
+        name: data.fullName,
+        email: data.email,
+        phone_number: data.phone,
+      });
+
+      // Update local state
+      setUser({
+        ...user,
+        name: data.fullName,
+        email: data.email,
+        phone: data.phone,
+        initials: getInitials(data.fullName),
+      });
+
+      // Show success message
+      toast.success("Profile updated successfully!");
+    } catch (err: any) {
+      console.error("Error updating profile:", err);
+      setError(err.message || "Failed to update profile");
+      toast.error(err.message || "Failed to update profile");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDeleteAccount = () => {

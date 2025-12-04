@@ -40,17 +40,7 @@ export interface ProfileResponse {
  */
 export async function getUserProfile(): Promise<UserProfile> {
   try {
-    const token = localStorage.getItem("accessToken");
-
-    if (!token) {
-      throw new Error("Please login to view profile");
-    }
-
-    const { data } = await api.get<ProfileResponse>("/users/profile", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const { data } = await api.get<ProfileResponse>("/users/profile");
 
     // Transform response to UserProfile format
     return {
@@ -66,7 +56,10 @@ export async function getUserProfile(): Promise<UserProfile> {
       stats: data.stats,
     };
   } catch (error: any) {
-    console.error("Failed to fetch user profile", error?.response?.data ?? error);
+    console.error(
+      "Failed to fetch user profile",
+      error?.response?.data ?? error
+    );
     throw error;
   }
 }
@@ -80,25 +73,18 @@ export async function updateUserProfile(updates: {
   phone_number?: string;
 }): Promise<{ message: string; user: UserProfile }> {
   try {
-    const token = localStorage.getItem("accessToken");
-
-    if (!token) {
-      throw new Error("Please login to update profile");
-    }
-
     const { data } = await api.put<{ message: string; user: UserProfile }>(
-      "/users/profile", 
-      updates, 
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+      "/users/profile",
+      updates
     );
 
     return data;
   } catch (error: any) {
     console.error("Failed to update profile", error?.response?.data ?? error);
-    throw error;
+    const errorMessage =
+      error?.response?.data?.message ||
+      error?.message ||
+      "Failed to update profile";
+    throw new Error(errorMessage);
   }
 }
