@@ -438,7 +438,7 @@ function Navbar() {
             </SheetTrigger>
 
             <SheetContent
-              side="left"
+              side="right"
               className="p-6 w-4/5 max-w-xs bg-white border-r border-border"
             >
               <SheetHeader>
